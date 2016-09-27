@@ -1,4 +1,5 @@
 attribute vec4 positionAttribute;
+varying vec2 varyingPosiiton;
 uniform vec2 positionUniform;
 
 void main() {

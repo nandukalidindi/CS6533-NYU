@@ -15,9 +15,9 @@
             <BuildableReference
                BuildableIdentifier = "primary"
                BlueprintIdentifier = "6D5ABB241D7E261400E93B80"
-               BuildableName = "ColorUniform"
-               BlueprintName = "ColorUniform"
-               ReferencedContainer = "container:ColorUniform.xcodeproj">
+               BuildableName = "ColorPalette"
+               BlueprintName = "ColorPalette"
+               ReferencedContainer = "container:ColorPalette.xcodeproj">
             </BuildableReference>
          </BuildActionEntry>
       </BuildActionEntries>
@@ -33,9 +33,9 @@
          <BuildableReference
             BuildableIdentifier = "primary"
             BlueprintIdentifier = "6D5ABB241D7E261400E93B80"
-            BuildableName = "ColorUniform"
-            BlueprintName = "ColorUniform"
-            ReferencedContainer = "container:ColorUniform.xcodeproj">
+            BuildableName = "ColorPalette"
+            BlueprintName = "ColorPalette"
+            ReferencedContainer = "container:ColorPalette.xcodeproj">
          </BuildableReference>
       </MacroExpansion>
       <AdditionalOptions>
@@ -56,9 +56,9 @@
          <BuildableReference
             BuildableIdentifier = "primary"
             BlueprintIdentifier = "6D5ABB241D7E261400E93B80"
-            BuildableName = "ColorUniform"
-            BlueprintName = "ColorUniform"
-            ReferencedContainer = "container:ColorUniform.xcodeproj">
+            BuildableName = "ColorPalette"
+            BlueprintName = "ColorPalette"
+            ReferencedContainer = "container:ColorPalette.xcodeproj">
          </BuildableReference>
       </BuildableProductRunnable>
       <AdditionalOptions>
@@ -75,9 +75,9 @@
          <BuildableReference
             BuildableIdentifier = "primary"
             BlueprintIdentifier = "6D5ABB241D7E261400E93B80"
-            BuildableName = "ColorUniform"
-            BlueprintName = "ColorUniform"
-            ReferencedContainer = "container:ColorUniform.xcodeproj">
+            BuildableName = "ColorPalette"
+            BlueprintName = "ColorPalette"
+            ReferencedContainer = "container:ColorPalette.xcodeproj">
          </BuildableReference>
       </BuildableProductRunnable>
    </ProfileAction>
