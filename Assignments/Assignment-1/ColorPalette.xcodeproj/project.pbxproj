@@ -28,12 +28,12 @@
 /* Begin PBXFileReference section */
 		5B817F281D8B60CF000C13B8 /* vertex.glsl */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = vertex.glsl; sourceTree = "<group>"; };
 		5B817F291D8B60FC000C13B8 /* fragment.glsl */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = fragment.glsl; sourceTree = "<group>"; };
-		6D5ABB251D7E261400E93B80 /* TextureUniform */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = TextureUniform; sourceTree = BUILT_PRODUCTS_DIR; };
+		6D5ABB251D7E261400E93B80 /* ColorPalette */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = ColorPalette; sourceTree = BUILT_PRODUCTS_DIR; };
 		6D5ABB281D7E261400E93B80 /* main.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = main.cpp; sourceTree = "<group>"; };
 		6D5ABB2F1D7E273300E93B80 /* GLUT.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = GLUT.framework; path = System/Library/Frameworks/GLUT.framework; sourceTree = SDKROOT; };
 		6D5ABB311D7E274900E93B80 /* OpenGL.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = OpenGL.framework; path = System/Library/Frameworks/OpenGL.framework; sourceTree = SDKROOT; };
 		6D5ABB331D7EA08000E93B80 /* glsupport.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = glsupport.cpp; sourceTree = "<group>"; };
-		6D5ABB351D7EA08900E93B80 /* glsupport.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = glsupport.h; sourceTree = "<group>"; };
+		6D5ABB351D7EA08900E93B80 /* ColorUniform */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; name = ColorUniform; path = "/Users/kaybus/Documents/nandukalidindi-github/CS6533/Assignments/Assignment-1/TemplateProject/ColorUniform"; sourceTree = "<absolute>"; };
 		6D5ABB361D7EA08900E93B80 /* matrix4.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = matrix4.h; sourceTree = "<group>"; };
 		6D5ABB371D7EA72800E93B80 /* stb_image.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = stb_image.h; sourceTree = "<group>"; };
 /* End PBXFileReference section */
@@ -51,12 +51,17 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		5B8B030A1D8FC00F0015A335 /* Products */ = {
+			isa = PBXGroup;
+			name = Products;
+			sourceTree = "<group>";
+		};
 		6D5ABB1C1D7E261400E93B80 = {
 			isa = PBXGroup;
 			children = (
 				6D5ABB311D7E274900E93B80 /* OpenGL.framework */,
 				6D5ABB2F1D7E273300E93B80 /* GLUT.framework */,
-				6D5ABB271D7E261400E93B80 /* TextureUniform */,
+				6D5ABB271D7E261400E93B80 /* ColorPalette */,
 				6D5ABB261D7E261400E93B80 /* Products */,
 			);
 			sourceTree = "<group>";
@@ -64,15 +69,14 @@
 		6D5ABB261D7E261400E93B80 /* Products */ = {
 			isa = PBXGroup;
 			children = (
-				6D5ABB251D7E261400E93B80 /* TextureUniform */,
+				6D5ABB251D7E261400E93B80 /* ColorPalette */,
 			);
 			name = Products;
 			sourceTree = "<group>";
 		};
-		6D5ABB271D7E261400E93B80 /* TextureUniform */ = {
+		6D5ABB271D7E261400E93B80 /* ColorPalette */ = {
 			isa = PBXGroup;
 			children = (
-				6D5ABB351D7EA08900E93B80 /* glsupport.h */,
 				6D5ABB361D7EA08900E93B80 /* matrix4.h */,
 				6D5ABB371D7EA72800E93B80 /* stb_image.h */,
 				6D5ABB331D7EA08000E93B80 /* glsupport.cpp */,
@@ -80,15 +84,15 @@
 				5B817F281D8B60CF000C13B8 /* vertex.glsl */,
 				5B817F291D8B60FC000C13B8 /* fragment.glsl */,
 			);
-			path = TextureUniform;
+			path = ColorPalette;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
-		6D5ABB241D7E261400E93B80 /* TextureUniform */ = {
+		6D5ABB241D7E261400E93B80 /* ColorPalette */ = {
 			isa = PBXNativeTarget;
-			buildConfigurationList = 6D5ABB2C1D7E261400E93B80 /* Build configuration list for PBXNativeTarget "TextureUniform" */;
+			buildConfigurationList = 6D5ABB2C1D7E261400E93B80 /* Build configuration list for PBXNativeTarget "ColorPalette" */;
 			buildPhases = (
 				6D5ABB211D7E261400E93B80 /* Sources */,
 				6D5ABB221D7E261400E93B80 /* Frameworks */,
@@ -98,9 +102,9 @@
 			);
 			dependencies = (
 			);
-			name = TextureUniform;
+			name = ColorPalette;
 			productName = TemplateProject;
-			productReference = 6D5ABB251D7E261400E93B80 /* TextureUniform */;
+			productReference = 6D5ABB251D7E261400E93B80 /* ColorPalette */;
 			productType = "com.apple.product-type.tool";
 		};
 /* End PBXNativeTarget section */
@@ -117,7 +121,7 @@
 					};
 				};
 			};
-			buildConfigurationList = 6D5ABB201D7E261400E93B80 /* Build configuration list for PBXProject "TextureUniform" */;
+			buildConfigurationList = 6D5ABB201D7E261400E93B80 /* Build configuration list for PBXProject "ColorPalette" */;
 			compatibilityVersion = "Xcode 3.2";
 			developmentRegion = English;
 			hasScannedForEncodings = 0;
@@ -127,9 +131,15 @@
 			mainGroup = 6D5ABB1C1D7E261400E93B80;
 			productRefGroup = 6D5ABB261D7E261400E93B80 /* Products */;
 			projectDirPath = "";
+			projectReferences = (
+				{
+					ProductGroup = 5B8B030A1D8FC00F0015A335 /* Products */;
+					ProjectRef = 6D5ABB351D7EA08900E93B80 /* ColorUniform */;
+				},
+			);
 			projectRoot = "";
 			targets = (
-				6D5ABB241D7E261400E93B80 /* TextureUniform */,
+				6D5ABB241D7E261400E93B80 /* ColorPalette */,
 			);
 		};
 /* End PBXProject section */
@@ -233,7 +243,7 @@
 			buildSettings = {
 				GCC_WARN_ABOUT_DEPRECATED_FUNCTIONS = NO;
 				HEADER_SEARCH_PATHS = /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.11.sdk/System/Library/Frameworks/GLUT.framework/Versions/A/Headers;
-				PRODUCT_NAME = TextureUniform;
+				PRODUCT_NAME = ColorPalette;
 			};
 			name = Debug;
 		};
@@ -242,14 +252,14 @@
 			buildSettings = {
 				GCC_WARN_ABOUT_DEPRECATED_FUNCTIONS = NO;
 				HEADER_SEARCH_PATHS = /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.11.sdk/System/Library/Frameworks/GLUT.framework/Versions/A/Headers;
-				PRODUCT_NAME = TextureUniform;
+				PRODUCT_NAME = ColorPalette;
 			};
 			name = Release;
 		};
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
-		6D5ABB201D7E261400E93B80 /* Build configuration list for PBXProject "TextureUniform" */ = {
+		6D5ABB201D7E261400E93B80 /* Build configuration list for PBXProject "ColorPalette" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				6D5ABB2A1D7E261400E93B80 /* Debug */,
@@ -258,7 +268,7 @@
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
 		};
-		6D5ABB2C1D7E261400E93B80 /* Build configuration list for PBXNativeTarget "TextureUniform" */ = {
+		6D5ABB2C1D7E261400E93B80 /* Build configuration list for PBXNativeTarget "ColorPalette" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				6D5ABB2D1D7E261400E93B80 /* Debug */,
