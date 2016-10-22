@@ -28,8 +28,7 @@
 /* Begin PBXFileReference section */
 		5B7764761DA90237008AF42E /* vertex.glsl */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = vertex.glsl; sourceTree = "<group>"; };
 		5B7764771DA90246008AF42E /* fragment.glsl */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = fragment.glsl; sourceTree = "<group>"; };
-		5BDA3BFC1DBBDE8A009DCDA0 /* quat.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = quat.h; sourceTree = "<group>"; };
-		6D5ABB251D7E261400E93B80 /* RunningBot */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = RunningBot; sourceTree = BUILT_PRODUCTS_DIR; };
+		6D5ABB251D7E261400E93B80 /* SphereHierarchy */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = SphereHierarchy; sourceTree = BUILT_PRODUCTS_DIR; };
 		6D5ABB281D7E261400E93B80 /* main.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = main.cpp; sourceTree = "<group>"; };
 		6D5ABB2F1D7E273300E93B80 /* GLUT.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = GLUT.framework; path = System/Library/Frameworks/GLUT.framework; sourceTree = SDKROOT; };
 		6D5ABB311D7E274900E93B80 /* OpenGL.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = OpenGL.framework; path = System/Library/Frameworks/OpenGL.framework; sourceTree = SDKROOT; };
@@ -57,7 +56,7 @@
 			children = (
 				6D5ABB311D7E274900E93B80 /* OpenGL.framework */,
 				6D5ABB2F1D7E273300E93B80 /* GLUT.framework */,
-				6D5ABB271D7E261400E93B80 /* RunningBot */,
+				6D5ABB271D7E261400E93B80 /* SphereHierarchy */,
 				6D5ABB261D7E261400E93B80 /* Products */,
 			);
 			sourceTree = "<group>";
@@ -65,15 +64,14 @@
 		6D5ABB261D7E261400E93B80 /* Products */ = {
 			isa = PBXGroup;
 			children = (
-				6D5ABB251D7E261400E93B80 /* RunningBot */,
+				6D5ABB251D7E261400E93B80 /* SphereHierarchy */,
 			);
 			name = Products;
 			sourceTree = "<group>";
 		};
-		6D5ABB271D7E261400E93B80 /* RunningBot */ = {
+		6D5ABB271D7E261400E93B80 /* SphereHierarchy */ = {
 			isa = PBXGroup;
 			children = (
-				5BDA3BFC1DBBDE8A009DCDA0 /* quat.h */,
 				6D5ABB351D7EA08900E93B80 /* glsupport.h */,
 				6D5ABB361D7EA08900E93B80 /* matrix4.h */,
 				6D5ABB371D7EA72800E93B80 /* stb_image.h */,
@@ -82,16 +80,15 @@
 				5B7764761DA90237008AF42E /* vertex.glsl */,
 				5B7764771DA90246008AF42E /* fragment.glsl */,
 			);
-			name = RunningBot;
-			path = "/Users/kaybus/Documents/nandukalidindi-github/CS6533-NYU/Assignments/Assignment-2/RunningBot/RunningBot";
-			sourceTree = "<absolute>";
+			path = SphereHierarchy;
+			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
-		6D5ABB241D7E261400E93B80 /* RunningBot */ = {
+		6D5ABB241D7E261400E93B80 /* SphereHierarchy */ = {
 			isa = PBXNativeTarget;
-			buildConfigurationList = 6D5ABB2C1D7E261400E93B80 /* Build configuration list for PBXNativeTarget "RunningBot" */;
+			buildConfigurationList = 6D5ABB2C1D7E261400E93B80 /* Build configuration list for PBXNativeTarget "SphereHierarchy" */;
 			buildPhases = (
 				6D5ABB211D7E261400E93B80 /* Sources */,
 				6D5ABB221D7E261400E93B80 /* Frameworks */,
@@ -101,9 +98,9 @@
 			);
 			dependencies = (
 			);
-			name = RunningBot;
+			name = SphereHierarchy;
 			productName = TemplateProject;
-			productReference = 6D5ABB251D7E261400E93B80 /* RunningBot */;
+			productReference = 6D5ABB251D7E261400E93B80 /* SphereHierarchy */;
 			productType = "com.apple.product-type.tool";
 		};
 /* End PBXNativeTarget section */
@@ -120,7 +117,7 @@
 					};
 				};
 			};
-			buildConfigurationList = 6D5ABB201D7E261400E93B80 /* Build configuration list for PBXProject "RunningBot" */;
+			buildConfigurationList = 6D5ABB201D7E261400E93B80 /* Build configuration list for PBXProject "SphereHierarchy" */;
 			compatibilityVersion = "Xcode 3.2";
 			developmentRegion = English;
 			hasScannedForEncodings = 0;
@@ -132,7 +129,7 @@
 			projectDirPath = "";
 			projectRoot = "";
 			targets = (
-				6D5ABB241D7E261400E93B80 /* RunningBot */,
+				6D5ABB241D7E261400E93B80 /* SphereHierarchy */,
 			);
 		};
 /* End PBXProject section */
@@ -236,7 +233,7 @@
 			buildSettings = {
 				GCC_WARN_ABOUT_DEPRECATED_FUNCTIONS = NO;
 				HEADER_SEARCH_PATHS = /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.11.sdk/System/Library/Frameworks/GLUT.framework/Versions/A/Headers;
-				PRODUCT_NAME = RunningBot;
+				PRODUCT_NAME = SphereHierarchy;
 			};
 			name = Debug;
 		};
@@ -245,14 +242,14 @@
 			buildSettings = {
 				GCC_WARN_ABOUT_DEPRECATED_FUNCTIONS = NO;
 				HEADER_SEARCH_PATHS = /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.11.sdk/System/Library/Frameworks/GLUT.framework/Versions/A/Headers;
-				PRODUCT_NAME = RunningBot;
+				PRODUCT_NAME = SphereHierarchy;
 			};
 			name = Release;
 		};
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
-		6D5ABB201D7E261400E93B80 /* Build configuration list for PBXProject "RunningBot" */ = {
+		6D5ABB201D7E261400E93B80 /* Build configuration list for PBXProject "SphereHierarchy" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				6D5ABB2A1D7E261400E93B80 /* Debug */,
@@ -261,7 +258,7 @@
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
 		};
-		6D5ABB2C1D7E261400E93B80 /* Build configuration list for PBXNativeTarget "RunningBot" */ = {
+		6D5ABB2C1D7E261400E93B80 /* Build configuration list for PBXNativeTarget "SphereHierarchy" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				6D5ABB2D1D7E261400E93B80 /* Debug */,

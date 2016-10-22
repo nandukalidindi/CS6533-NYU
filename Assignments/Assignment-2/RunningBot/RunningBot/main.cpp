@@ -5,6 +5,7 @@
 #include "geometrymaker.h"
 #include <vector>
 #include <math.h>
+#include "quat.h"
 
 GLuint program;
 GLuint vertexPositionVBO;
@@ -138,8 +139,7 @@ void display(void) {
     
     //Eye Matrix
     Matrix4 eyeMatrix;
-    //    eyeMatrix = eyeMatrix.makeYRotation(calculateTimeAngle(90.0, timeSinceStart/10.0f)-45);
-    eyeMatrix = eyeMatrix.makeYRotation(40.0) /* eyeMatrix.makeZRotation(timeSinceStart/10.0f)*/;
+    eyeMatrix = quatToMatrix(Quat::makeYRotation(40.0))/* eyeMatrix.makeZRotation(timeSinceStart/10.0f)*/;
     eyeMatrix = eyeMatrix * eyeMatrix.makeTranslation(Cvec3(0.0, 0.0, 30.0));
     
     trunkGeometry.vertexVBO = vertexPositionVBO;
@@ -178,7 +178,7 @@ void display(void) {
     
     headMatrix = headMatrix.makeScale(Cvec3(1.0/2.0, 1.0/3.0, 1.0)) *
                  headMatrix.makeTranslation(Cvec3(0.0, 4.5, 0.0)) *
-                 headMatrix.makeYRotation(timeSinceStart/10.0f) *
+                 quatToMatrix(Quat::makeYRotation(timeSinceStart/10.0f)) *
                  headMatrix.makeScale(Cvec3(1.0, 1.0, 1.0));
     
     headEntity->objectMatrix = headMatrix;
@@ -192,7 +192,7 @@ void display(void) {
     
     leftThighMatrix = leftThighMatrix.makeScale(Cvec3(1.0/2.0, 1.0/3.0, 1.0)) *
                       leftThighMatrix.makeTranslation(Cvec3(1.5, -6.0, 0.0)) *
-                      rightThighMatrix.makeXRotation(calculateTimeAngle(90, timeSinceStart/frameSpeed)-45) *
+                      quatToMatrix(Quat::makeXRotation(calculateTimeAngle(90, timeSinceStart/frameSpeed)-45)) *
                       leftThighMatrix.makeScale(Cvec3(1.0/3.0, 1.5, 1.0));
     
     axisShiftMatrix = axisShiftMatrix.makeTranslation(Cvec3(0.0, 1.0, 0.0));
@@ -207,8 +207,8 @@ void display(void) {
     
     // Left KNEE
     leftKneeMatrix = leftKneeMatrix.makeScale(Cvec3(3.0, 1.0/1.5, 1.0)) *
-                     leftKneeMatrix.makeTranslation(Cvec3(0.0, -3.0, 0.0)) *
-                     rightThighMatrix.makeXRotation(45 - calculateTimeAngle(45, timeSinceStart/frameSpeed))*
+                     leftKneeMatrix.makeTranslation(Cvec3(0.001, -3.0, 0.0)) *
+                     quatToMatrix(Quat::makeXRotation(45 - calculateTimeAngle(45, timeSinceStart/frameSpeed)))*
                      leftKneeMatrix.makeScale(Cvec3(1.0/3.0, 1.5, 1.0));
     
     axisShiftMatrix = axisShiftMatrix.makeTranslation(Cvec3(0.0, 1.0, 0.0));
@@ -226,7 +226,7 @@ void display(void) {
     // RIGHT THIGH AND KNEE
     rightThighMatrix = rightThighMatrix.makeScale(Cvec3(1.0/2.0, 1.0/3.0, 1.0)) *
                        rightThighMatrix.makeTranslation(Cvec3(-1.5, -6.0, 0.0)) *
-                       rightThighMatrix.makeXRotation(45-calculateTimeAngle(90, timeSinceStart/frameSpeed))*
+                       quatToMatrix(Quat::makeXRotation(45-calculateTimeAngle(90, timeSinceStart/frameSpeed)))*
                        rightThighMatrix.makeScale(Cvec3(1.0/3.0, 1.5, 1.0));
     
     axisShiftMatrix = axisShiftMatrix.makeTranslation(Cvec3(0.0, 1.0, 0.0));
@@ -241,8 +241,8 @@ void display(void) {
     
     //Right KNEE
     rightKneeMatrix = rightKneeMatrix.makeScale(Cvec3(3.0, 1.0/1.5, 1.0)) *
-                      rightKneeMatrix.makeTranslation(Cvec3(0.0, -3.0, 0.0)) *
-                      rightKneeMatrix.makeXRotation(45 - calculateTimeAngle(45, timeSinceStart/frameSpeed))*
+                      rightKneeMatrix.makeTranslation(Cvec3(0.001, -3.0, 0.0)) *
+                      quatToMatrix(Quat::makeXRotation(45 - calculateTimeAngle(45, timeSinceStart/frameSpeed)))*
                       rightKneeMatrix.makeScale(Cvec3(1.0/3.0, 1.5, 1.0));
     
     axisShiftMatrix = axisShiftMatrix.makeTranslation(Cvec3(0.0, 1.0, 0.0));
@@ -261,8 +261,8 @@ void display(void) {
     
     leftArmMatrix = leftArmMatrix.makeScale(Cvec3(1.0/2.0, 1.0/3.0, 1.0)) *
                     leftArmMatrix.makeTranslation(Cvec3(-2.5, 5.0, 0.0)) *
-                    leftArmMatrix.makeXRotation(180.0) *
-                    leftArmMatrix.makeXRotation(calculateTimeAngle(90, timeSinceStart/frameSpeed)-45) *
+                    quatToMatrix(Quat::makeXRotation(180.0) *
+                                 Quat::makeXRotation(calculateTimeAngle(90, timeSinceStart/frameSpeed)-45)) *
                     leftArmMatrix.makeScale(Cvec3(1.0/3.0, 1.5, 1.0));
     
     axisShiftMatrix = axisShiftMatrix.makeTranslation(Cvec3(0.0, -1.0, 0.0));
@@ -277,8 +277,8 @@ void display(void) {
 
     // Left ELBOW
     leftElbowMatrix = leftElbowMatrix.makeScale(Cvec3(3.0, 1.0/1.5, 1.0)) *
-                      leftElbowMatrix.makeTranslation(Cvec3(0.0, 3.0, 0.0)) *
-                      leftElbowMatrix.makeXRotation(-45.0) *
+                      leftElbowMatrix.makeTranslation(Cvec3(0.001, 3.0, 0.0)) *
+                      quatToMatrix(Quat::makeXRotation(-45.0)) *
                       leftElbowMatrix.makeScale(Cvec3(1.0/3.0, 1.5, 1.0));
     
     axisShiftMatrix = axisShiftMatrix.makeTranslation(Cvec3(0.0, -1.0, 0.0));
@@ -294,8 +294,8 @@ void display(void) {
     // Right ARM
     rightArmMatrix = rightArmMatrix.makeScale(Cvec3(1.0/2.0, 1.0/3.0, 1.0)) *
                      rightArmMatrix.makeTranslation(Cvec3(2.5, 5.0, 0.0)) *
-                     rightArmMatrix.makeXRotation(180.0) *
-                     rightArmMatrix.makeXRotation(45 - calculateTimeAngle(90, timeSinceStart/frameSpeed)) *
+                     quatToMatrix(Quat::makeXRotation(180.0) *
+                                  Quat::makeXRotation(45 - calculateTimeAngle(90, timeSinceStart/frameSpeed))) *
                      rightArmMatrix.makeScale(Cvec3(1.0/3.0, 1.5, 1.0));
     
     axisShiftMatrix = axisShiftMatrix.makeTranslation(Cvec3(0.0, -1.0, 0.0));
@@ -310,8 +310,8 @@ void display(void) {
 
     // Right ELBOW
     rightElbowMatrix = rightElbowMatrix.makeScale(Cvec3(3.0, 1.0/1.5, 1.0)) *
-                       rightElbowMatrix.makeTranslation(Cvec3(0.0, 3.0, 0.0)) *
-                       rightElbowMatrix.makeXRotation(-45.0)*
+                       rightElbowMatrix.makeTranslation(Cvec3(0.001, 3.0, 0.0)) *
+                       quatToMatrix(Quat::makeXRotation(-45.0)) *
                        rightElbowMatrix.makeScale(Cvec3(1.0/3.0, 1.5, 1.0));
     
     axisShiftMatrix = axisShiftMatrix.makeTranslation(Cvec3(0.0, -1.0, 0.0));
@@ -475,7 +475,7 @@ int main(int argc, char **argv) {
     glutInit(&argc, argv);
     glutInitDisplayMode(GLUT_DOUBLE | GLUT_RGB | GLUT_DEPTH);
     glutInitWindowSize(1280, 800);
-    glutCreateWindow("CS-6533");
+    glutCreateWindow("Running Bot.");
     
     glutDisplayFunc(display);
     glutReshapeFunc(reshape);
