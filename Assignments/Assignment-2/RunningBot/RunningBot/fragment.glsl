@@ -14,5 +14,4 @@ void main() {
 //    float diffuse = max(0.0, dot(varyingNormal, lightPosition));
 //    vec4 intensity = varyingColor * uColor * diffuse * 3.0;
 //    gl_FragColor = intensity;
-
 }

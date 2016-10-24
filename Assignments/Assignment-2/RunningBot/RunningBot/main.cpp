@@ -22,6 +22,8 @@ GLuint modelViewMatrixUniform;
 GLuint normalMatrixUniform;
 GLuint projectionMatrixUniform;
 
+Matrix4 eyeMatrix;
+
 float frameSpeed = 10.0f;
 
 float xOffset = 0.5773, yOffset = 0.5773, zOffset = 0.5773;
@@ -50,6 +52,8 @@ struct Geometry {
     GLuint positionAttribute;
     GLuint colorAttribute;
     GLuint normalAttribute;
+    GLuint modelViewMatrixUniform;
+    GLuint normalMatrixUniform;
     int numIndices;
     
     void draw() {
@@ -75,18 +79,23 @@ struct Entity {
     Geometry geometry;
     Matrix4 modelViewMatrix;
     Entity *parent;
+    bool inheritGeometryFromParent;
     
-    void draw(Matrix4 &eyeMatrix, GLuint modelViewMatrixUniform, GLuint normalMatrixUniform) {
+    void draw(Matrix4 &eyeMatrix) {
         if(parent == NULL) {
             modelViewMatrix = inv(eyeMatrix) * objectMatrix;
         } else {
-            geometry.vertexVBO = parent->geometry.vertexVBO;
-            geometry.colorVBO = parent->geometry.colorVBO;
-            geometry.indexBO = parent->geometry.indexBO;
-            geometry.numIndices = parent->geometry.numIndices;
-            geometry.positionAttribute = parent->geometry.positionAttribute;
-            geometry.colorAttribute = parent->geometry.colorAttribute;
-            geometry.normalAttribute = parent->geometry.normalAttribute;
+//            if(inheritGeometryFromParent) {
+//                geometry.vertexVBO = parent->geometry.vertexVBO;
+//                geometry.colorVBO = parent->geometry.colorVBO;
+//                geometry.indexBO = parent->geometry.indexBO;
+//                geometry.numIndices = parent->geometry.numIndices;
+//                geometry.positionAttribute = parent->geometry.positionAttribute;
+//                geometry.colorAttribute = parent->geometry.colorAttribute;
+//                geometry.normalAttribute = parent->geometry.normalAttribute;
+//                geometry.modelViewMatrixUniform = parent->geometry.modelViewMatrixUniform;
+//                geometry.normalMatrixUniform = parent->geometry.normalMatrixUniform;
+//            }
             
             modelViewMatrix = (parent->modelViewMatrix) * (objectMatrix);
         }
@@ -104,6 +113,16 @@ struct Entity {
         glDrawElements(GL_TRIANGLES, geometry.numIndices, GL_UNSIGNED_SHORT, 0);
     }
 };
+
+Entity *drawBodyParts(Geometry geometry, Matrix4 objectMatrix, Entity *parent, bool inheritGeometryFromParent) {
+    Entity *partEntity = new Entity;
+    partEntity->parent = parent;
+    partEntity->geometry = geometry;
+    partEntity->objectMatrix = objectMatrix;
+    partEntity->inheritGeometryFromParent = inheritGeometryFromParent;
+    partEntity->draw(eyeMatrix);
+    return partEntity;
+}
 
 
 float calculateTimeAngle(float anglePerRev, float timeSinceStart) {
@@ -128,18 +147,13 @@ void display(void) {
     
     int timeSinceStart = glutGet(GLUT_ELAPSED_TIME);
     glUniform1f(timeUniform, (float)timeSinceStart/1000.0f);
-    
     glUniform4f(lightPositionUniform, xOffset, yOffset, zOffset, 0.0);
-    
     glUniform4f(uColorUniform, redOffset, greenOffset, blueOffset, 1.0);
     
-    Entity *trunkEntity = new Entity;
-    trunkEntity->parent = NULL;
     Geometry trunkGeometry;
     
     //Eye Matrix
-    Matrix4 eyeMatrix;
-    eyeMatrix = quatToMatrix(Quat::makeYRotation(40.0))/* eyeMatrix.makeZRotation(timeSinceStart/10.0f)*/;
+    eyeMatrix = quatToMatrix(Quat::makeYRotation(40.0)) /* eyeMatrix.makeYRotation(timeSinceStart/10.0f) */;
     eyeMatrix = eyeMatrix * eyeMatrix.makeTranslation(Cvec3(0.0, 0.0, 30.0));
     
     trunkGeometry.vertexVBO = vertexPositionVBO;
@@ -150,19 +164,9 @@ void display(void) {
     trunkGeometry.colorAttribute = colorAttribute;
     trunkGeometry.normalAttribute = normalAttribute;
     
-    trunkEntity->geometry = trunkGeometry;
-    
-    Matrix4 trunkMatrix, trunkScaleMatrix;
-    
-    trunkScaleMatrix = trunkScaleMatrix.makeScale(Cvec3(2.0, 3.0, 1.0));
-
-    trunkEntity->objectMatrix = (trunkMatrix * trunkScaleMatrix);
-    
-    trunkEntity->draw(eyeMatrix, modelViewMatrixUniform, normalMatrixUniform);
-    //Model view matrix
-    Matrix4 trunkModelViewMatrix, modelViewMatrix;
-    
-    //Draw Trunk 2 3 4 5 7 Sec 2
+    Matrix4 trunkMatrix;
+    trunkMatrix = trunkMatrix * Matrix4::makeScale(Cvec3(2.0, 3.0, 1.0));
+    Entity *trunkEntity = drawBodyParts(trunkGeometry, trunkMatrix, NULL, false);
     
     Matrix4 projectionMatrix;
     projectionMatrix = projectionMatrix.makeProjection(45, (1280.0/800.0), -0.5, -1000.0);
@@ -171,158 +175,238 @@ void display(void) {
     glUniformMatrix4fv(projectionMatrixUniform, 1, GL_FALSE, glmatrixProjection);
     
     // HEAD
-    
-    Entity *headEntity = new Entity;
-    
     Matrix4 headMatrix, axisShiftMatrix, headModelViewMatrix;
     
     headMatrix = headMatrix.makeScale(Cvec3(1.0/2.0, 1.0/3.0, 1.0)) *
                  headMatrix.makeTranslation(Cvec3(0.0, 4.5, 0.0)) *
-                 quatToMatrix(Quat::makeYRotation(timeSinceStart/10.0f)) *
-                 headMatrix.makeScale(Cvec3(1.0, 1.0, 1.0));
+                 quatToMatrix(Quat::makeYRotation(45-calculateTimeAngle(90, timeSinceStart/frameSpeed))) *
+                 headMatrix.makeScale(Cvec3(1.0, 1.2, 1.0));
     
-    headEntity->objectMatrix = headMatrix;
-    headEntity->parent = trunkEntity;
+    Entity *headEntity = drawBodyParts(trunkGeometry, headMatrix, trunkEntity, true);
     
-    headEntity->draw(eyeMatrix, modelViewMatrixUniform, normalMatrixUniform);
+    for(int i=0; i<2; i++) {
+        Matrix4 botEyeMatrix = Matrix4::makeScale(Cvec3(1.0/1.0, 1.0/1.2, 1.0/1.0)) *
+                               Matrix4::makeTranslation(Cvec3(0.7 - (1.4*i), 0.4, 1.0)) *
+                               Matrix4::makeScale(Cvec3(1.0/5.0, 1.0/5.0, 1.0/5.0));
+        
+        drawBodyParts(trunkGeometry, botEyeMatrix, headEntity, true);
+    }
+    
+//    leftEyeMatrix = leftEyeMatrix.makeScale(Cvec3(1.0/1.0, 1.0/1.2, 1.0/1.0)) *
+//                    leftEyeMatrix.makeTranslation(Cvec3(0.7, 0.4, 1.0)) *
+//                    leftEyeMatrix.makeScale(Cvec3(1.0/5.0, 1.0/5.0, 1.0/5.0));
+//    
+//    Entity *leftEyeEntity = drawBodyParts(trunkGeometry, leftEyeMatrix, headEntity, true);
+//    
+//    //Right Eye
+//    Matrix4 rightEyeMatrix;
+//    
+//    rightEyeMatrix = rightEyeMatrix.makeScale(Cvec3(1.0/1.0, 1.0/1.2, 1.0/1.0)) *
+//    rightEyeMatrix.makeTranslation(Cvec3(-0.7, 0.4, 1.0)) *
+//    rightEyeMatrix.makeScale(Cvec3(1.0/5.0, 1.0/5.0, 1.0/5.0));
+//    
+//    Entity *rightEyeEntity = drawBodyParts(trunkGeometry, rightEyeMatrix, headEntity, true);
+    
     
     // LEFT THIGH AND KNEE
-    Matrix4 leftThighMatrix, leftKneeMatrix, rightThighMatrix, rightKneeMatrix, leftThighModelViewMatrix, leftKneeModelViewMatrix,
-            rightThighModelViewMatrix, rightKneeModelViewMatrix;
+    Matrix4 leftThighMatrix, leftKneeMatrix, rightThighMatrix, rightKneeMatrix, leftThighModelViewMatrix,
+            leftKneeModelViewMatrix, rightThighModelViewMatrix, rightKneeModelViewMatrix;
     
     leftThighMatrix = leftThighMatrix.makeScale(Cvec3(1.0/2.0, 1.0/3.0, 1.0)) *
                       leftThighMatrix.makeTranslation(Cvec3(1.5, -6.0, 0.0)) *
                       quatToMatrix(Quat::makeXRotation(calculateTimeAngle(90, timeSinceStart/frameSpeed)-45)) *
-                      leftThighMatrix.makeScale(Cvec3(1.0/3.0, 1.5, 1.0));
+                      leftThighMatrix.makeScale(Cvec3(1.0/1.5, 1.5, 1.0));
     
     axisShiftMatrix = axisShiftMatrix.makeTranslation(Cvec3(0.0, 1.0, 0.0));
     
     leftThighMatrix = axisShiftMatrix * leftThighMatrix * inv(axisShiftMatrix);
     
-    Entity *leftThighEntity = new Entity;
-    
-    leftThighEntity->parent = trunkEntity;
-    leftThighEntity->objectMatrix = leftThighMatrix;
-    leftThighEntity->draw(eyeMatrix, modelViewMatrixUniform, normalMatrixUniform);
+    Entity *leftThighEntity = drawBodyParts(trunkGeometry, leftThighMatrix, trunkEntity, true);
     
     // Left KNEE
-    leftKneeMatrix = leftKneeMatrix.makeScale(Cvec3(3.0, 1.0/1.5, 1.0)) *
+    leftKneeMatrix = leftKneeMatrix.makeScale(Cvec3(1.5, 1.0/1.5, 1.0)) *
                      leftKneeMatrix.makeTranslation(Cvec3(0.001, -3.0, 0.0)) *
                      quatToMatrix(Quat::makeXRotation(45 - calculateTimeAngle(45, timeSinceStart/frameSpeed)))*
-                     leftKneeMatrix.makeScale(Cvec3(1.0/3.0, 1.5, 1.0));
+                     leftKneeMatrix.makeScale(Cvec3(1.0/2.0, 1.5, 1.0));
     
     axisShiftMatrix = axisShiftMatrix.makeTranslation(Cvec3(0.0, 1.0, 0.0));
-    
     leftKneeMatrix = axisShiftMatrix * leftKneeMatrix * inv(axisShiftMatrix);
     
+    Entity *leftKneeEntity = drawBodyParts(trunkGeometry, leftKneeMatrix, leftThighEntity, true);
     
-    Entity *leftKneeEntity = new Entity;
+    for(int i=0; i<3; i++) {
+        Matrix4 leftFootFingerMatrix = Matrix4::makeScale(Cvec3(2.0, 1/1.5, 1.0)) *
+                                        Matrix4::makeTranslation(Cvec3(0.4-(i*0.4), -1.8, 0.8)) *
+                                        Matrix4::makeScale(Cvec3(1.0/8.0, 1.0/8.0, 1.0/2.0));
+        drawBodyParts(trunkGeometry, leftFootFingerMatrix, leftKneeEntity, true);
+    }
     
-    leftKneeEntity->parent = leftThighEntity;
-    leftKneeEntity->objectMatrix = leftKneeMatrix;
-    
-    leftKneeEntity->draw(eyeMatrix, modelViewMatrixUniform, normalMatrixUniform);
+//    Entity *leftFootFingerEntity1 = drawBodyParts(trunkGeometry, leftFootFingerMatrix1, leftKneeEntity, true);
+//    
+//    Matrix4 leftFootFingerMatrix2 = Matrix4::makeScale(Cvec3(2.0, 1/1.5, 1.0)) *
+//                                    Matrix4::makeTranslation(Cvec3(0.4, -1.8, 0.8)) *
+//                                    Matrix4::makeScale(Cvec3(1.0/8.0, 1.0/8.0, 1.0/2.0));
+//    
+//    Entity *leftFootFingerEntity2 = drawBodyParts(trunkGeometry, leftFootFingerMatrix2, leftKneeEntity, true);
+//    
+//    Matrix4 leftFootFingerMatrix3 = Matrix4::makeScale(Cvec3(2.0, 1/1.5, 1.0)) *
+//                                    Matrix4::makeTranslation(Cvec3(-0.4, -1.8,  0.8)) *
+//                                    Matrix4::makeScale(Cvec3(1.0/8.0, 1.0/8.0, 1.0/2.0));
+//    
+//    Entity *leftFootFingerEntity3 = drawBodyParts(trunkGeometry, leftFootFingerMatrix3, leftKneeEntity, true);
     
     // RIGHT THIGH AND KNEE
     rightThighMatrix = rightThighMatrix.makeScale(Cvec3(1.0/2.0, 1.0/3.0, 1.0)) *
                        rightThighMatrix.makeTranslation(Cvec3(-1.5, -6.0, 0.0)) *
                        quatToMatrix(Quat::makeXRotation(45-calculateTimeAngle(90, timeSinceStart/frameSpeed)))*
-                       rightThighMatrix.makeScale(Cvec3(1.0/3.0, 1.5, 1.0));
+                       rightThighMatrix.makeScale(Cvec3(1.0/1.5, 1.5, 1.0));
     
     axisShiftMatrix = axisShiftMatrix.makeTranslation(Cvec3(0.0, 1.0, 0.0));
     
     rightThighMatrix = axisShiftMatrix * rightThighMatrix * inv(axisShiftMatrix);
     
-    Entity *rightThighEntity = new Entity;
-    
-    rightThighEntity->parent = trunkEntity;
-    rightThighEntity->objectMatrix = rightThighMatrix;
-    rightThighEntity->draw(eyeMatrix, modelViewMatrixUniform, normalMatrixUniform);
+    Entity *rightThighEntity = drawBodyParts(trunkGeometry, rightThighMatrix, trunkEntity, true);
     
     //Right KNEE
-    rightKneeMatrix = rightKneeMatrix.makeScale(Cvec3(3.0, 1.0/1.5, 1.0)) *
+    rightKneeMatrix = rightKneeMatrix.makeScale(Cvec3(1.5, 1.0/1.5, 1.0)) *
                       rightKneeMatrix.makeTranslation(Cvec3(0.001, -3.0, 0.0)) *
                       quatToMatrix(Quat::makeXRotation(45 - calculateTimeAngle(45, timeSinceStart/frameSpeed)))*
-                      rightKneeMatrix.makeScale(Cvec3(1.0/3.0, 1.5, 1.0));
+                      rightKneeMatrix.makeScale(Cvec3(1.0/2.0, 1.5, 1.0));
     
     axisShiftMatrix = axisShiftMatrix.makeTranslation(Cvec3(0.0, 1.0, 0.0));
     
     rightKneeMatrix = axisShiftMatrix * rightKneeMatrix * inv(axisShiftMatrix);
+
+    Entity *rightKneeEntity = drawBodyParts(trunkGeometry, rightKneeMatrix, rightThighEntity, true);
     
-    Entity *rightKneeEntity = new Entity;
+    for(int i=0; i<3; i++) {
+        Matrix4 rightFootFingerMatrix = Matrix4::makeScale(Cvec3(2.0, 1/1.5, 1.0)) *
+                                         Matrix4::makeTranslation(Cvec3(0.4-(0.4*i), -1.8, 0.8)) *
+                                         Matrix4::makeScale(Cvec3(1.0/8.0, 1.0/8.0, 1.0/2.0));
+        drawBodyParts(trunkGeometry, rightFootFingerMatrix, rightKneeEntity, true);
+    }
     
-    rightKneeEntity->parent = rightThighEntity;
-    rightKneeEntity->objectMatrix = rightKneeMatrix;
-    rightKneeEntity->draw(eyeMatrix, modelViewMatrixUniform, normalMatrixUniform);
+    // Right Foot Fingers
+//    Matrix4 rightFootFingerMatrix1 = Matrix4::makeScale(Cvec3(2.0, 1/1.5, 1.0)) *
+//                                     Matrix4::makeTranslation(Cvec3(0.0, -1.8, 0.8)) *
+//                                     Matrix4::makeScale(Cvec3(1.0/8.0, 1.0/8.0, 1.0/2.0));
+//    
+//    Entity *rightFootFingerEntity1 = drawBodyParts(trunkGeometry, rightFootFingerMatrix1, rightKneeEntity, true);
+//    
+//    Matrix4 rightFootFingerMatrix2 = Matrix4::makeScale(Cvec3(2.0, 1/1.5, 1.0)) *
+//    Matrix4::makeTranslation(Cvec3(0.4, -1.8, 0.8)) *
+//    Matrix4::makeScale(Cvec3(1.0/8.0, 1.0/8.0, 1.0/2.0));
+//    
+//    Entity *rightFootFingerEntity2 = drawBodyParts(trunkGeometry, rightFootFingerMatrix2, rightKneeEntity, true);
+//    
+//    Matrix4 rightFootFingerMatrix3 = Matrix4::makeScale(Cvec3(2.0, 1/1.5, 1.0)) *
+//                                     Matrix4::makeTranslation(Cvec3(-0.4, -1.8,  0.8)) *
+//                                     Matrix4::makeScale(Cvec3(1.0/8.0, 1.0/8.0, 1.0/2.0));
+//    
+//    Entity *rightFootFingerEntity3 = drawBodyParts(trunkGeometry, rightFootFingerMatrix3, rightKneeEntity, true);
+    
     
 //    // LEFT ARM AND ELBOW
-    Matrix4 leftArmMatrix, leftElbowMatrix, rightArmMatrix, rightElbowMatrix, leftArmModelViewMatrix, leftElbowModelViewMatrix,
-            rightArmModelViewMatrix, rightElbowModelViewMatrix;
+    Matrix4 leftArmMatrix, leftElbowMatrix, rightArmMatrix, rightElbowMatrix, leftArmModelViewMatrix,
+            leftElbowModelViewMatrix, rightArmModelViewMatrix, rightElbowModelViewMatrix;
     
     leftArmMatrix = leftArmMatrix.makeScale(Cvec3(1.0/2.0, 1.0/3.0, 1.0)) *
-                    leftArmMatrix.makeTranslation(Cvec3(-2.5, 5.0, 0.0)) *
+                    leftArmMatrix.makeTranslation(Cvec3(-2.7, 5.0, 0.0)) *
                     quatToMatrix(Quat::makeXRotation(180.0) *
                                  Quat::makeXRotation(calculateTimeAngle(90, timeSinceStart/frameSpeed)-45)) *
-                    leftArmMatrix.makeScale(Cvec3(1.0/3.0, 1.5, 1.0));
+                    leftArmMatrix.makeScale(Cvec3(1.0/1.8, 1.5, 1.0));
     
     axisShiftMatrix = axisShiftMatrix.makeTranslation(Cvec3(0.0, -1.0, 0.0));
     
     leftArmMatrix = axisShiftMatrix * leftArmMatrix * inv(axisShiftMatrix);
     
-    Entity *leftArmEntity = new Entity;
-    
-    leftArmEntity->parent = trunkEntity;
-    leftArmEntity->objectMatrix = leftArmMatrix;
-    leftArmEntity->draw(eyeMatrix, modelViewMatrixUniform, normalMatrixUniform);
+    Entity *leftArmEntity = drawBodyParts(trunkGeometry, leftArmMatrix, trunkEntity, true);
 
     // Left ELBOW
-    leftElbowMatrix = leftElbowMatrix.makeScale(Cvec3(3.0, 1.0/1.5, 1.0)) *
+    leftElbowMatrix = leftElbowMatrix.makeScale(Cvec3(1.8, 1.0/1.5, 1.0)) *
                       leftElbowMatrix.makeTranslation(Cvec3(0.001, 3.0, 0.0)) *
                       quatToMatrix(Quat::makeXRotation(-45.0)) *
-                      leftElbowMatrix.makeScale(Cvec3(1.0/3.0, 1.5, 1.0));
-    
+                      leftElbowMatrix.makeScale(Cvec3(1.0/2.0, 1.5, 1.0));
     axisShiftMatrix = axisShiftMatrix.makeTranslation(Cvec3(0.0, -1.0, 0.0));
-    
     leftElbowMatrix = axisShiftMatrix * leftElbowMatrix * inv(axisShiftMatrix);
+    Entity *leftElbowEntity = drawBodyParts(trunkGeometry, leftElbowMatrix, leftArmEntity, true);
     
-    Entity *leftElbowEntity = new Entity;
+    // LEFT FINGERS
+    for(int i=0; i<4; i++) {
+        Matrix4 leftFingerMatrix = Matrix4::makeScale(Cvec3(2.0, 1.0/1.5, 1.0)) *
+                                   Matrix4::makeTranslation(Cvec3(0.0, 1.6, 0.7-(0.5*i))) *
+                                   Matrix4::makeScale(Cvec3(1.0/5.0, 1.0/2.0, 1.0/5.0));
+        
+        drawBodyParts(trunkGeometry, leftFingerMatrix, leftElbowEntity, true);
+    }
     
-    leftElbowEntity->parent = leftArmEntity;
-    leftElbowEntity->objectMatrix = leftElbowMatrix;
-    leftElbowEntity->draw(eyeMatrix, modelViewMatrixUniform, normalMatrixUniform);
+//    //Left Fingers
+//    Matrix4 leftFingerMatrix1 = Matrix4::makeScale(Cvec3(2.0, 1.0/1.5, 1.0)) *
+//                                Matrix4::makeTranslation(Cvec3(0.0, 1.6, 0.7)) *
+//                                Matrix4::makeScale(Cvec3(1.0/5.0, 1.0/2.0, 1.0/5.0));
+//    Entity *leftFingerEntity1 = drawBodyParts(trunkGeometry, leftFingerMatrix1, leftElbowEntity, true);
+//    
+//    Matrix4 leftFingerMatrix2 = Matrix4::makeScale(Cvec3(2.0, 1.0/1.5, 1.0)) *
+//                                Matrix4::makeTranslation(Cvec3(0.0, 1.6, 0.2)) *
+//                                Matrix4::makeScale(Cvec3(1.0/5.0, 1.0/2.0, 1.0/5.0));
+//    Entity *leftFingerEntity2 = drawBodyParts(trunkGeometry, leftFingerMatrix2, leftElbowEntity, true);
+//    
+//    Matrix4 leftFingerMatrix3 = Matrix4::makeScale(Cvec3(2.0, 1.0/1.5, 1.0)) *
+//                                Matrix4::makeTranslation(Cvec3(0.0, 1.6, -0.3)) *
+//                                Matrix4::makeScale(Cvec3(1.0/5.0, 1.0/2.0, 1.0/5.0));
+//    Entity *leftFingerEntity3 = drawBodyParts(trunkGeometry, leftFingerMatrix3, leftElbowEntity, true);
+//    
+//    Matrix4 leftFingerMatrix4 = Matrix4::makeScale(Cvec3(2.0, 1.0/1.5, 1.0)) *
+//                                Matrix4::makeTranslation(Cvec3(0.0, 1.6, -0.8)) *
+//                                Matrix4::makeScale(Cvec3(1.0/5.0, 1.0/2.0, 1.0/5.0));
+//    Entity *leftFingerEntity4 = drawBodyParts(trunkGeometry, leftFingerMatrix4, leftElbowEntity, true);
 
     // Right ARM
     rightArmMatrix = rightArmMatrix.makeScale(Cvec3(1.0/2.0, 1.0/3.0, 1.0)) *
-                     rightArmMatrix.makeTranslation(Cvec3(2.5, 5.0, 0.0)) *
+                     rightArmMatrix.makeTranslation(Cvec3(2.7, 5.0, 0.0)) *
                      quatToMatrix(Quat::makeXRotation(180.0) *
                                   Quat::makeXRotation(45 - calculateTimeAngle(90, timeSinceStart/frameSpeed))) *
-                     rightArmMatrix.makeScale(Cvec3(1.0/3.0, 1.5, 1.0));
-    
+                     rightArmMatrix.makeScale(Cvec3(1.0/1.8, 1.5, 1.0));
     axisShiftMatrix = axisShiftMatrix.makeTranslation(Cvec3(0.0, -1.0, 0.0));
-    
     rightArmMatrix = axisShiftMatrix * rightArmMatrix * inv(axisShiftMatrix);
-    
-    Entity *rightArmEntity = new Entity;
-    
-    rightArmEntity->parent = trunkEntity;
-    rightArmEntity->objectMatrix = rightArmMatrix;
-    rightArmEntity->draw(eyeMatrix, modelViewMatrixUniform, normalMatrixUniform);
+    Entity *rightArmEntity = drawBodyParts(trunkGeometry, rightArmMatrix, trunkEntity, true);
 
     // Right ELBOW
-    rightElbowMatrix = rightElbowMatrix.makeScale(Cvec3(3.0, 1.0/1.5, 1.0)) *
+    rightElbowMatrix = rightElbowMatrix.makeScale(Cvec3(1.8, 1.0/1.5, 1.0)) *
                        rightElbowMatrix.makeTranslation(Cvec3(0.001, 3.0, 0.0)) *
                        quatToMatrix(Quat::makeXRotation(-45.0)) *
-                       rightElbowMatrix.makeScale(Cvec3(1.0/3.0, 1.5, 1.0));
-    
+                       rightElbowMatrix.makeScale(Cvec3(1.0/2.0, 1.5, 1.0));
     axisShiftMatrix = axisShiftMatrix.makeTranslation(Cvec3(0.0, -1.0, 0.0));
-    
     rightElbowMatrix = axisShiftMatrix * rightElbowMatrix * inv(axisShiftMatrix);
+    Entity *rightElbowEntity = drawBodyParts(trunkGeometry, rightElbowMatrix, rightArmEntity, true);
     
-    Entity *rightElbowEntity = new Entity;
+    for(int i=0; i<4; i++) {
+        Matrix4 rightFingerMatrix = Matrix4::makeScale(Cvec3(2.0, 1.0/1.5, 1.0)) *
+                                     Matrix4::makeTranslation(Cvec3(0.0, 1.6, 0.7-(0.5*i))) *
+                                     Matrix4::makeScale(Cvec3(1.0/5.0, 1.0/2.0, 1.0/5.0));
+        
+        drawBodyParts(trunkGeometry, rightFingerMatrix, rightElbowEntity, true);
+    }
     
-    rightElbowEntity->parent = rightArmEntity;
-    rightElbowEntity->objectMatrix = rightElbowMatrix;
-    rightElbowEntity->draw(eyeMatrix, modelViewMatrixUniform, normalMatrixUniform);
+//    Matrix4 rightFingerMatrix1 = Matrix4::makeScale(Cvec3(2.0, 1.0/1.5, 1.0)) *
+//                                 Matrix4::makeTranslation(Cvec3(0.0, 1.6, 0.7)) *
+//                                 Matrix4::makeScale(Cvec3(1.0/5.0, 1.0/2.0, 1.0/5.0));
+//    Entity *rightFingerEntity1 = drawBodyParts(trunkGeometry, rightFingerMatrix1, rightElbowEntity, true);
+//    
+//    Matrix4 rightFingerMatrix2 = Matrix4::makeScale(Cvec3(2.0, 1.0/1.5, 1.0)) *
+//                                 Matrix4::makeTranslation(Cvec3(0.0, 1.6, 0.2)) *
+//                                 Matrix4::makeScale(Cvec3(1.0/5.0, 1.0/2.0, 1.0/5.0));
+//    Entity *rightFingerEntity2 = drawBodyParts(trunkGeometry, rightFingerMatrix2, rightElbowEntity, true);
+//    
+//    Matrix4 rightFingerMatrix3 = Matrix4::makeScale(Cvec3(2.0, 1.0/1.5, 1.0)) *
+//                                 Matrix4::makeTranslation(Cvec3(0.0, 1.6, -0.3)) *
+//                                 Matrix4::makeScale(Cvec3(1.0/5.0, 1.0/2.0, 1.0/5.0));
+//    Entity *rightFingerEntity3 = drawBodyParts(trunkGeometry, rightFingerMatrix3, rightElbowEntity, true);
+//    
+//    Matrix4 rightFingerMatrix4 = Matrix4::makeScale(Cvec3(2.0, 1.0/1.5, 1.0)) *
+//                                 Matrix4::makeTranslation(Cvec3(0.0, 1.6, -0.8)) *
+//                                 Matrix4::makeScale(Cvec3(1.0/5.0, 1.0/2.0, 1.0/5.0));
+//    Entity *rightFingerEntity4 = drawBodyParts(trunkGeometry, rightFingerMatrix4, rightElbowEntity, true);
     
     glDisableVertexAttribArray(postionAttribute);
     glDisableVertexAttribArray(colorAttribute);
@@ -355,10 +439,18 @@ void init() {
     
     int ibLen, vbLen;
     
-    getCubeVbIbLen(vbLen, ibLen);
+    getSphereVbIbLen(10, 10, vbLen, ibLen);
     std::vector<VertexPN> vtx(vbLen);
     std::vector<unsigned short> idx(ibLen);
-    makeCube(2, vtx.begin(), idx.begin());
+    makeSphere(1.3, 10, 10, vtx.begin(), idx.begin());
+    
+//    int ibLen, vbLen;
+    
+//    getCubeVbIbLen(vbLen, ibLen);
+//    std::vector<VertexPN> vtx(vbLen);
+//    std::vector<unsigned short> idx(ibLen);
+//    makeCube(2, vtx.begin(), idx.begin());
+
     
     glGenBuffers(1, &vertexPositionVBO);
     glBindBuffer(GL_ARRAY_BUFFER, vertexPositionVBO);
@@ -388,6 +480,110 @@ void init() {
         0.483f,  0.596f,  0.789f, 1.0f,
         0.559f,  0.861f,  0.639f, 1.0f,
         0.195f,  0.548f,  0.859f, 1.0f,
+        0.014f,  0.184f,  0.576f, 1.0f,
+        0.771f,  0.328f,  0.970f, 1.0f,
+        0.406f,  0.615f,  0.116f, 1.0f,
+        0.676f,  0.977f,  0.133f, 1.0f,
+        0.971f,  0.572f,  0.833f, 1.0f,
+        0.140f,  0.616f,  0.489f, 1.0f,
+        0.997f,  0.513f,  0.064f, 1.0f,
+        0.945f,  0.719f,  0.592f, 1.0f,
+        0.543f,  0.021f,  0.978f, 1.0f,
+        0.279f,  0.317f,  0.505f, 1.0f,
+        0.167f,  0.620f,  0.077f, 1.0f,
+        0.347f,  0.857f,  0.137f, 1.0f,
+        0.055f,  0.953f,  0.042f, 1.0f,
+        0.714f,  0.505f,  0.345f, 1.0f,
+        0.783f,  0.290f,  0.734f, 1.0f,
+        0.722f,  0.645f,  0.174f, 1.0f,
+        0.302f,  0.455f,  0.848f, 1.0f,
+        0.225f,  0.587f,  0.040f, 1.0f,
+        0.517f,  0.713f,  0.338f, 1.0f,
+        0.053f,  0.959f,  0.120f, 1.0f,
+        0.393f,  0.621f,  0.362f, 1.0f,
+        0.673f,  0.211f,  0.457f, 1.0f,
+        0.820f,  0.883f,  0.371f, 1.0f,
+        0.982f,  0.099f,  0.879f, 1.0f,
+        0.583f,  0.771f,  0.014f, 1.0f,
+        0.609f,  0.115f,  0.436f, 1.0f,
+        0.014f,  0.184f,  0.576f, 1.0f,
+        0.771f,  0.328f,  0.970f, 1.0f,
+        0.406f,  0.615f,  0.116f, 1.0f,
+        0.676f,  0.977f,  0.133f, 1.0f,
+        0.971f,  0.572f,  0.833f, 1.0f,
+        0.140f,  0.616f,  0.489f, 1.0f,
+        0.997f,  0.513f,  0.064f, 1.0f,
+        0.945f,  0.719f,  0.592f, 1.0f,
+        0.543f,  0.021f,  0.978f, 1.0f,
+        0.279f,  0.317f,  0.505f, 1.0f,
+        0.167f,  0.620f,  0.077f, 1.0f,
+        0.347f,  0.857f,  0.137f, 1.0f,
+        0.055f,  0.953f,  0.042f, 1.0f,
+        0.714f,  0.505f,  0.345f, 1.0f,
+        0.783f,  0.290f,  0.734f, 1.0f,
+        0.722f,  0.645f,  0.174f, 1.0f,
+        0.302f,  0.455f,  0.848f, 1.0f,
+        0.225f,  0.587f,  0.040f, 1.0f,
+        0.517f,  0.713f,  0.338f, 1.0f,
+        0.053f,  0.959f,  0.120f, 1.0f,
+        0.393f,  0.621f,  0.362f, 1.0f,
+        0.673f,  0.211f,  0.457f, 1.0f,
+        0.820f,  0.883f,  0.371f, 1.0f,
+        0.982f,  0.099f,  0.879f, 1.0f,
+        0.583f,  0.771f,  0.014f, 1.0f,
+        0.609f,  0.115f,  0.436f, 1.0f,
+        0.014f,  0.184f,  0.576f, 1.0f,
+        0.771f,  0.328f,  0.970f, 1.0f,
+        0.406f,  0.615f,  0.116f, 1.0f,
+        0.676f,  0.977f,  0.133f, 1.0f,
+        0.971f,  0.572f,  0.833f, 1.0f,
+        0.140f,  0.616f,  0.489f, 1.0f,
+        0.997f,  0.513f,  0.064f, 1.0f,
+        0.945f,  0.719f,  0.592f, 1.0f,
+        0.543f,  0.021f,  0.978f, 1.0f,
+        0.279f,  0.317f,  0.505f, 1.0f,
+        0.167f,  0.620f,  0.077f, 1.0f,
+        0.347f,  0.857f,  0.137f, 1.0f,
+        0.055f,  0.953f,  0.042f, 1.0f,
+        0.714f,  0.505f,  0.345f, 1.0f,
+        0.783f,  0.290f,  0.734f, 1.0f,
+        0.722f,  0.645f,  0.174f, 1.0f,
+        0.302f,  0.455f,  0.848f, 1.0f,
+        0.225f,  0.587f,  0.040f, 1.0f,
+        0.517f,  0.713f,  0.338f, 1.0f,
+        0.053f,  0.959f,  0.120f, 1.0f,
+        0.393f,  0.621f,  0.362f, 1.0f,
+        0.673f,  0.211f,  0.457f, 1.0f,
+        0.820f,  0.883f,  0.371f, 1.0f,
+        0.982f,  0.099f,  0.879f, 1.0f,
+        0.583f,  0.771f,  0.014f, 1.0f,
+        0.609f,  0.115f,  0.436f, 1.0f,
+        0.014f,  0.184f,  0.576f, 1.0f,
+        0.771f,  0.328f,  0.970f, 1.0f,
+        0.406f,  0.615f,  0.116f, 1.0f,
+        0.676f,  0.977f,  0.133f, 1.0f,
+        0.971f,  0.572f,  0.833f, 1.0f,
+        0.140f,  0.616f,  0.489f, 1.0f,
+        0.997f,  0.513f,  0.064f, 1.0f,
+        0.945f,  0.719f,  0.592f, 1.0f,
+        0.543f,  0.021f,  0.978f, 1.0f,
+        0.279f,  0.317f,  0.505f, 1.0f,
+        0.167f,  0.620f,  0.077f, 1.0f,
+        0.347f,  0.857f,  0.137f, 1.0f,
+        0.055f,  0.953f,  0.042f, 1.0f,
+        0.714f,  0.505f,  0.345f, 1.0f,
+        0.783f,  0.290f,  0.734f, 1.0f,
+        0.722f,  0.645f,  0.174f, 1.0f,
+        0.302f,  0.455f,  0.848f, 1.0f,
+        0.225f,  0.587f,  0.040f, 1.0f,
+        0.517f,  0.713f,  0.338f, 1.0f,
+        0.053f,  0.959f,  0.120f, 1.0f,
+        0.393f,  0.621f,  0.362f, 1.0f,
+        0.673f,  0.211f,  0.457f, 1.0f,
+        0.820f,  0.883f,  0.371f, 1.0f,
+        0.982f,  0.099f,  0.879f, 1.0f,
+        0.583f,  0.771f,  0.014f, 1.0f,
+        0.609f,  0.115f,  0.436f, 1.0f,
         0.014f,  0.184f,  0.576f, 1.0f,
         0.771f,  0.328f,  0.970f, 1.0f,
         0.406f,  0.615f,  0.116f, 1.0f,
@@ -475,7 +671,7 @@ int main(int argc, char **argv) {
     glutInit(&argc, argv);
     glutInitDisplayMode(GLUT_DOUBLE | GLUT_RGB | GLUT_DEPTH);
     glutInitWindowSize(1280, 800);
-    glutCreateWindow("Running Bot.");
+    glutCreateWindow("Running Bot");
     
     glutDisplayFunc(display);
     glutReshapeFunc(reshape);
