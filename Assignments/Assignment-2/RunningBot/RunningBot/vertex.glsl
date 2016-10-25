@@ -11,7 +11,7 @@ varying vec4 varyingColor;
 varying vec4 varyingNormal;
 
 void main() {
-//    varyingNormal = normalize(normalMatrix * normal);
+    varyingNormal = normalize(normalMatrix * normal);
     varyingColor = color;
     gl_Position = projectionMatrix * modelViewMatrix * position;
 }
