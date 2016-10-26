@@ -72,9 +72,9 @@ void display(void) {
     modelViewMatrix.writeToColumnMajorMatrix(glmatrix);
     glUniformMatrix4fv(modelViewMatrixUniform, 1, GL_FALSE, glmatrix);
     
-//    Matrix4 normalMatrix = transpose(inv(modelViewMatrix));
-//    normalMatrix.writeToColumnMajorMatrix(glmatrix);
-//    glUniformMatrix4fv(normalMatrixUniform, 1, GL_FALSE, glmatrix);
+    Matrix4 normalMatrix = transpose(inv(modelViewMatrix));
+    normalMatrix.writeToColumnMajorMatrix(glmatrix);
+    glUniformMatrix4fv(normalMatrixUniform, 1, GL_FALSE, glmatrix);
     
     Matrix4 projectionMatrix;
     projectionMatrix = projectionMatrix.makeProjection(45, (1280.0/800.0), -0.5, -1000.0);
@@ -86,8 +86,8 @@ void display(void) {
     glVertexAttribPointer(postionAttribute, 3, GL_FLOAT, GL_FALSE, sizeof(VertexPN), (void*)offsetof(VertexPN, p));
     glEnableVertexAttribArray(postionAttribute);
     
-//    glVertexAttribPointer(normalAttribute, 3, GL_FLOAT, GL_FALSE, sizeof(VertexPN), (void*)offsetof(VertexPN, n));
-//    glEnableVertexAttribArray(normalAttribute);
+    glVertexAttribPointer(normalAttribute, 3, GL_FLOAT, GL_FALSE, sizeof(VertexPN), (void*)offsetof(VertexPN, n));
+    glEnableVertexAttribArray(normalAttribute);
     
     glBindBuffer(GL_ARRAY_BUFFER, colorBufferObject);
     glVertexAttribPointer(colorAttribute, 4, GL_FLOAT, GL_FALSE, 0, 0);
