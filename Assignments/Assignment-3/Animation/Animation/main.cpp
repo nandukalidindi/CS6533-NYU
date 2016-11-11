@@ -19,12 +19,30 @@ GLuint normalBufferObject;
 GLuint postionAttributeFromVertexShader;
 GLuint colorAttributeFromVertexShader;
 GLuint normalAttributeFromVertexShader;
+GLuint textureAttributeFromVertexShader;
+GLuint binormalAttributeFromVertexShader;
+GLuint tangentAttributeFromVertexShader;
+
+GLuint lightPositionUniformFromFragmentShader0;
+GLuint lightPositionUniformFromFragmentShader1;
 
 GLuint uColorUniformFromFragmentShader;
 GLuint lightPositionUniformFromFragmentShader;
+GLuint lightColorUniformFromFragmentShader;
+GLuint specularLightColorUniformFromFragmentShader;
+
 GLuint modelViewMatrixUniformFromVertexShader;
 GLuint normalMatrixUniformFromVertexShader;
 GLuint projectionMatrixUniformFromVertexShader;
+
+
+GLuint diffuseTexture;
+GLuint specularTexture;
+GLuint normalTexture;
+
+GLuint diffuseTextureUniformLocation;
+GLuint specularTextureUniformLocation;
+GLuint normalTextureUniformLocation;
 
 Matrix4 eyeMatrix;
 
@@ -42,12 +60,17 @@ int numIndices, timeSinceStart = 0.0;
 struct VertexPN {
     Cvec3f p;
     Cvec3f n;
+    Cvec2f t;
+    Cvec3f b, tg;
     VertexPN() {}
     VertexPN(float x, float y, float z, float nx, float ny, float nz) : p(x,y,z), n(nx, ny, nz) {}
     
     VertexPN& operator = (const GenericVertex& v) {
         p = v.pos;
         n = v.normal;
+        t = v.tex;
+        b = v.binormal;
+        tg = v.tangent;
         return *this;
     }
 };
@@ -77,7 +100,31 @@ struct BufferBinder {
         glVertexAttribPointer(normalAttributeFromVertexShader, 3, GL_FLOAT, GL_FALSE, sizeof(VertexPN), (void*)offsetof(VertexPN, n));
         glEnableVertexAttribArray(normalAttributeFromVertexShader);
         
+        glEnableVertexAttribArray(textureAttributeFromVertexShader);
+        glVertexAttribPointer(textureAttributeFromVertexShader, 2, GL_FLOAT, GL_FALSE, sizeof(VertexPN), (void*)offsetof(VertexPN, t));
+        glEnableVertexAttribArray(textureAttributeFromVertexShader);
+        
+        glEnableVertexAttribArray(binormalAttributeFromVertexShader);
+        glVertexAttribPointer(binormalAttributeFromVertexShader, 3, GL_FLOAT, GL_FALSE, sizeof(VertexPN), (void*)offsetof(VertexPN, b));
+        glEnableVertexAttribArray(binormalAttributeFromVertexShader);
+        
+        glEnableVertexAttribArray(tangentAttributeFromVertexShader);
+        glVertexAttribPointer(tangentAttributeFromVertexShader, 3, GL_FLOAT, GL_FALSE, sizeof(VertexPN), (void*)offsetof(VertexPN, tg));
+        glEnableVertexAttribArray(tangentAttributeFromVertexShader);
+        
         glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, indexBufferObject);
+        
+        glUniform1i(diffuseTextureUniformLocation, 0);
+        glActiveTexture(GL_TEXTURE0);
+        glBindTexture(GL_TEXTURE_2D, diffuseTexture);
+        
+        glUniform1i(specularTextureUniformLocation, 1);
+        glActiveTexture(GL_TEXTURE1);
+        glBindTexture(GL_TEXTURE_2D, specularTexture);
+        
+        glUniform1i(specularTextureUniformLocation, 2);
+        glActiveTexture(GL_TEXTURE2);
+        glBindTexture(GL_TEXTURE_2D, normalTexture);
     }
 };
 
@@ -96,9 +143,9 @@ struct Entity {
     
     void draw(Matrix4 &eyeMatrix) {
         if(parent == NULL)
-            modelViewMatrix = inv(eyeMatrix) * objectMatrix;
+        modelViewMatrix = inv(eyeMatrix) * objectMatrix;
         else
-            modelViewMatrix = (parent->modelViewMatrix) * (objectMatrix);
+        modelViewMatrix = (parent->modelViewMatrix) * (objectMatrix);
         
         bufferBinder.draw();
         
@@ -106,8 +153,8 @@ struct Entity {
         modelViewMatrix.writeToColumnMajorMatrix(glmatrix);
         glUniformMatrix4fv(modelViewMatrixUniformFromVertexShader, 1, GL_FALSE, glmatrix);
         
-        Matrix4 normalMatrix = transpose(inv(modelViewMatrix));
-        normalMatrix.writeToColumnMajorMatrix(glmatrix);
+        Matrix4 normalizedMatrix = normalMatrix(modelViewMatrix);
+        normalizedMatrix.writeToColumnMajorMatrix(glmatrix);
         glUniformMatrix4fv(normalMatrixUniformFromVertexShader, 1, GL_FALSE, glmatrix);
         
         Matrix4 projectionMatrix;
@@ -151,34 +198,69 @@ float calculateTimeAngle(float anglePerRev, float timeSinceStart) {
     float finalAngle = 0.0;
     int revolution = floor(timeCrunch);
     if(revolution%2 == 0)
-        finalAngle = ((timeCrunch) - floor(timeCrunch))*anglePerRev;
+    finalAngle = ((timeCrunch) - floor(timeCrunch))*anglePerRev;
     else
-        finalAngle = (ceil(timeCrunch) - timeCrunch)*anglePerRev;
+    finalAngle = (ceil(timeCrunch) - timeCrunch)*anglePerRev;
     return finalAngle;
 }
 
-void loadObjFile(const std::string &fileName, std::vector<VertexPN> &outVertices, std::vector<unsigned
-                 short> &outIndices) {
+void calculateFaceTangent(const Cvec3f &v1, const Cvec3f &v2, const Cvec3f &v3, const Cvec2f &texCoord1, const Cvec2f &texCoord2,
+                          const Cvec2f &texCoord3, Cvec3f &tangent, Cvec3f &binormal) {
+    Cvec3f side0 = v1 - v2;
+    Cvec3f side1 = v3 - v1;
+    Cvec3f normal = cross(side1, side0);
+    normalize(normal);
+    float deltaV0 = texCoord1[1] - texCoord2[1];
+    float deltaV1 = texCoord3[1] - texCoord1[1];
+    tangent = side0 * deltaV1 - side1 * deltaV0;
+    normalize(tangent);
+    float deltaU0 = texCoord1[0] - texCoord2[0];
+    float deltaU1 = texCoord3[0] - texCoord1[0];
+    binormal = side0 * deltaU1 - side1 * deltaU0;
+    normalize(binormal);
+    Cvec3f tangentCross = cross(tangent, binormal);
+    if (dot(tangentCross, normal) < 0.0f) {
+        tangent = tangent * -1;
+    }
+}
+
+void loadObjFile(const std::string &fileName, std::vector<VertexPN> &outVertices, std::vector<unsigned short> &outIndices) {
     tinyobj::attrib_t attrib;
     std::vector<tinyobj::shape_t> shapes;
     std::vector<tinyobj::material_t> materials;
     std::string err;
     bool ret = tinyobj::LoadObj(&attrib, &shapes, &materials, &err, fileName.c_str(), NULL, true);
     if(ret) {
-        for(int i=0; i < attrib.vertices.size(); i+=3) {
-            VertexPN v;
-            v.p[0] = attrib.vertices[i];
-            v.p[1] = attrib.vertices[i+1];
-            v.p[2] = attrib.vertices[i+2];
-            v.n[0] = attrib.normals[i];
-            v.n[1] = attrib.normals[i+1];
-            v.n[2] = attrib.normals[i+2];
-            outVertices.push_back(v);
-        }
         for(int i=0; i < shapes.size(); i++) {
             for(int j=0; j < shapes[i].mesh.indices.size(); j++) {
-                outIndices.push_back(shapes[i].mesh.indices[j].vertex_index);
+                unsigned int vertexOffset = shapes[i].mesh.indices[j].vertex_index * 3;
+                unsigned int normalOffset = shapes[i].mesh.indices[j].normal_index * 3;
+                unsigned int texOffset = shapes[i].mesh.indices[j].texcoord_index * 2;
+                VertexPN v;
+                v.p[0] = attrib.vertices[vertexOffset];
+                v.p[1] = attrib.vertices[vertexOffset+1];
+                v.p[2] = attrib.vertices[vertexOffset+2];
+                v.n[0] = attrib.normals[normalOffset];
+                v.n[1] = attrib.normals[normalOffset+1];
+                v.n[2] = attrib.normals[normalOffset+2];
+                v.t[0] = attrib.texcoords[texOffset];
+                v.t[1] = 1.0-attrib.texcoords[texOffset+1];
+                outVertices.push_back(v);
+                outIndices.push_back(outVertices.size()-1);
             }
+        }
+        
+        for(int i=0; i < outVertices.size(); i += 3) {
+            Cvec3f tangent;
+            Cvec3f binormal;
+            calculateFaceTangent(outVertices[i].p, outVertices[i+1].p, outVertices[i+2].p,
+                                 outVertices[i].t, outVertices[i+1].t, outVertices[i+2].t, tangent, binormal);
+            outVertices[i].tg = tangent;
+            outVertices[i+1].tg = tangent;
+            outVertices[i+2].tg = tangent;
+            outVertices[i].b = binormal;
+            outVertices[i+1].b = binormal;
+            outVertices[i+2].b = binormal;
         }
     } else {
         std::cout << err << std::endl;
@@ -195,8 +277,17 @@ void display(void) {
     glUseProgram(program);
     
     timeSinceStart = glutGet(GLUT_ELAPSED_TIME);
-    glUniform3f(lightPositionUniformFromFragmentShader, lightXOffset, lightYOffset, lightZOffset);
+    //    glUniform3f(lightPositionUniformFromFragmentShader, lightXOffset, lightYOffset, lightZOffset);
     glUniform3f(uColorUniformFromFragmentShader, redOffset, greenOffset, blueOffset);
+    //    glUniform3f(lightColorUniformFromFragmentShader, 1.0, 0.0, 0.0);
+    //    glUniform3f(specularLightColorUniformFromFragmentShader, 1.0, 0.0, 0.0);
+    
+//    glUniform3f(lightPositionUniformFromFragmentShader0, 3.0*sin(timeSinceStart/1000.0f), 3.0*cos(timeSinceStart/1000.0f), 0.0);
+//    glUniform3f(lightPositionUniformFromFragmentShader1, 3.0*sin(timeSinceStart/1000.0f), 3.0*cos(timeSinceStart/1000.0f), 0.0);
+    
+    glUniform3f(lightPositionUniformFromFragmentShader0, 1.5, 1.5, 0.5);
+    glUniform3f(lightPositionUniformFromFragmentShader1, -1.5, 1.5, 0.5);
+
     
     // ------------------------------- EYE -------------------------------
     //    eyeMatrix = quatToMatrix(Quat::makeYRotation(40.0)) *
@@ -204,6 +295,7 @@ void display(void) {
     //                quatToMatrix(Quat::makeXRotation(botXDegree)) *
     //                quatToMatrix(Quat::makeZRotation(botZDegree));
     eyeMatrix = quatToMatrix(Quat::makeKRotation(kVector, finalAngle)) *
+    //    quatToMatrix(Quat::makeYRotation(timeSinceStart/50.0)) *
     Matrix4::makeTranslation(Cvec3(0.0, 0.0, 30.0));
     // ------------------------------- EYE -------------------------------
     
@@ -223,11 +315,12 @@ void display(void) {
     Quat quat1 = Quat::makeYRotation(45.0);
     Quat quat2 = Quat::makeYRotation(180.0);
     
-    Matrix4 invShiftMatrix = Matrix4::makeTranslation(Cvec3(0.0, 7.5/80.0, 0.0));
+    Matrix4 invShiftMatrix = Matrix4::makeTranslation(Cvec3(0.0, 20.0, 0.0));
     
     Matrix4 trunkMatrix =  /*Matrix4::makeTranslation(Cvec3(5*sin(timeSinceStart/1000.0f), 10 * sin(timeSinceStart/1000.0f), 0.0)) */
     //                          quatToMatrix(slerp(quat1, quat2, sin(timeSinceStart/1000.0f))) *
-    Matrix4::makeScale(Cvec3(80.0, 80.0, 80.0));
+    Matrix4::makeScale(Cvec3(1.5, 1.5, 1.5));
+    //    Matrix4::makeScale(Cvec3(80.0, 80.0, 80.0));
     
     trunkMatrix = invShiftMatrix * trunkMatrix * inv(invShiftMatrix);
     
@@ -238,6 +331,9 @@ void display(void) {
     glDisableVertexAttribArray(postionAttributeFromVertexShader);
     glDisableVertexAttribArray(colorAttributeFromVertexShader);
     glDisableVertexAttribArray(normalAttributeFromVertexShader);
+    glDisableVertexAttribArray(textureAttributeFromVertexShader);
+    glDisableVertexAttribArray(binormalAttributeFromVertexShader);
+    glDisableVertexAttribArray(tangentAttributeFromVertexShader);
     glutSwapBuffers();
 }
 
@@ -258,10 +354,27 @@ void init() {
     postionAttributeFromVertexShader = glGetAttribLocation(program, "position");
     colorAttributeFromVertexShader = glGetAttribLocation(program, "color");
     normalAttributeFromVertexShader = glGetAttribLocation(program, "normal");
+    textureAttributeFromVertexShader = glGetAttribLocation(program, "texCoord");
+    binormalAttributeFromVertexShader = glGetAttribLocation(program, "binormal");
+    tangentAttributeFromVertexShader = glGetAttribLocation(program, "tangent");
     
     // Normal Uniforms
     uColorUniformFromFragmentShader = glGetUniformLocation(program, "uColor");
-    lightPositionUniformFromFragmentShader = glGetUniformLocation(program, "lightPosition");
+    //    lightPositionUniformFromFragmentShader = glGetUniformLocation(program, "lightPosition");
+    //    lightColorUniformFromFragmentShader = glGetUniformLocation(program, "lightColor");
+    //    specularLightColorUniformFromFragmentShader = glGetUniformLocation(program, "specularLightColor");
+    
+    diffuseTexture = loadGLTexture("/Users/kaybus/Documents/nandukalidindi-github/CS6533-NYU/Assignments/Assignment-3/Animation/Animation/monk_texture.tga");
+    diffuseTextureUniformLocation = glGetUniformLocation(program, "diffuseTexture");
+    
+    specularTexture = loadGLTexture("/Users/kaybus/Documents/nandukalidindi-github/CS6533-NYU/Assignments/Assignment-3/Animation/Animation/monk_specular1.tga");
+    specularTextureUniformLocation = glGetUniformLocation(program, "specularTexture");
+    
+    normalTexture = loadGLTexture("/Users/kaybus/Documents/nandukalidindi-github/CS6533-NYU/Assignments/Assignment-3/Animation/Animation/monk_normal.tga");
+    normalTextureUniformLocation = glGetUniformLocation(program, "normalTexture");
+    
+    lightPositionUniformFromFragmentShader0 = glGetUniformLocation(program, "lights[0].lightPosition");
+    lightPositionUniformFromFragmentShader1 = glGetUniformLocation(program, "lights[1].lightPosition");
     
     //Matrix Uniforms
     modelViewMatrixUniformFromVertexShader = glGetUniformLocation(program, "modelViewMatrix");
@@ -279,8 +392,7 @@ void init() {
     
     std::vector<VertexPN> vtx;
     std::vector<unsigned short> idx;
-    loadObjFile("/Users/kaybus/Documents/nandukalidindi-github/CS6533-NYU/Assignments/Assignment-3/Animation/Animation/lucy.obj", vtx, idx);
-    
+    loadObjFile("/Users/kaybus/Documents/nandukalidindi-github/CS6533-NYU/Assignments/Assignment-3/Animation/Animation/monk.obj", vtx, idx);
     numIndices = idx.size();
     
     // Bind the respective vertex, color and index buffers
@@ -303,113 +415,113 @@ void idle(void) {
 
 void keyboard(unsigned char key, int x, int y) {
     switch(key) {
-            // ------------------------------- BOT MOVEMENT -------------------------------
+        // ------------------------------- BOT MOVEMENT -------------------------------
         case 'w':
-            botZ += 0.75;
-            break;
+        botZ += 0.75;
+        break;
         case 'a':
-            botX -= 0.75;
-            break;
+        botX -= 0.75;
+        break;
         case 'd':
-            botX += 0.75;
-            break;
+        botX += 0.75;
+        break;
         case 's':
-            botZ -= 0.75;
-            break;
+        botZ -= 0.75;
+        break;
         case 'x':
-            botXDegree += 5.0;
-            break;
+        botXDegree += 5.0;
+        break;
         case 'X':
-            botXDegree -= 5.0;
-            break;
+        botXDegree -= 5.0;
+        break;
         case 'y':
-            botYDegree += 5.0;
-            break;
+        botYDegree += 5.0;
+        break;
         case 'Y':
-            botYDegree -= 5.0;
-            break;
+        botYDegree -= 5.0;
+        break;
         case 'z':
-            botZDegree += 5.0;
-            break;
+        botZDegree += 5.0;
+        break;
         case 'Z':
-            botZDegree -= 5.0;
-            break;
+        botZDegree -= 5.0;
+        break;
         case 'v':
-            botX = botY = botZ = botXDegree = botYDegree = botZDegree = 0.0;
-            break;
-            // ------------------------------- BOT MOVEMENT -------------------------------
-            
-            // ------------------------------- COLOR SHADING -------------------------------
+        botX = botY = botZ = botXDegree = botYDegree = botZDegree = 0.0;
+        break;
+        // ------------------------------- BOT MOVEMENT -------------------------------
+        
+        // ------------------------------- COLOR SHADING -------------------------------
         case 'r':
-            if (redOffset <= 1.0)
-                redOffset += 0.02;
-            break;
+        if (redOffset <= 1.0)
+        redOffset += 0.02;
+        break;
         case 'R':
-            if (redOffset >= 0.02)
-                redOffset -= 0.02;
-            break;
+        if (redOffset >= 0.02)
+        redOffset -= 0.02;
+        break;
         case 'g':
-            if (greenOffset <= 1.0)
-                greenOffset += 0.02;
-            break;
+        if (greenOffset <= 1.0)
+        greenOffset += 0.02;
+        break;
         case 'G':
-            if (greenOffset >= 0.02)
-                greenOffset -= 0.02;
-            break;
+        if (greenOffset >= 0.02)
+        greenOffset -= 0.02;
+        break;
         case 'b':
-            if (blueOffset <= 1.0)
-                blueOffset += 0.02;
-            break;
+        if (blueOffset <= 1.0)
+        blueOffset += 0.02;
+        break;
         case 'B':
-            if (blueOffset >= 0.02)
-                blueOffset -= 0.02;
-            break;
-            // ------------------------------- COLOR SHADING -------------------------------
-            
+        if (blueOffset >= 0.02)
+        blueOffset -= 0.02;
+        break;
+        // ------------------------------- COLOR SHADING -------------------------------
+        
         case 'c':
-            redOffset = 0.0;
-            blueOffset = 0.0;
-            greenOffset = 0.0;
-            lightXOffset = -0.5773;
-            lightYOffset = 0.5773;
-            lightZOffset = 10.0;
-            break;
+        redOffset = 0.0;
+        blueOffset = 0.0;
+        greenOffset = 0.0;
+        lightXOffset = -0.5773;
+        lightYOffset = 0.5773;
+        lightZOffset = 10.0;
+        break;
         case 'C':
-            redOffset = 1.0;
-            blueOffset = 1.0;
-            greenOffset = 1.0;
-            break;
-            
-            // ------------------------------- FRAME SPEED -------------------------------
+        redOffset = 1.0;
+        blueOffset = 1.0;
+        greenOffset = 1.0;
+        break;
+        
+        // ------------------------------- FRAME SPEED -------------------------------
         case 'f':
-            frameSpeed += 5.0;
-            break;
+        frameSpeed += 5.0;
+        break;
         case 'F':
-            if(frameSpeed > 5.0)
-                frameSpeed -= 5.0;
-            break;
-            // ------------------------------- FRAME SPEED -------------------------------
-            
-            // ------------------------------- LIGHT LOCATION -------------------------------
+        if(frameSpeed > 5.0)
+        frameSpeed -= 5.0;
+        break;
+        // ------------------------------- FRAME SPEED -------------------------------
+        
+        // ------------------------------- LIGHT LOCATION -------------------------------
         case 'k':
-            lightZOffset += 2.0;
-            break;
+        lightZOffset += 2.0;
+        break;
         case 'K':
-            lightZOffset -= 2.0;
-            break;
+        lightZOffset -= 2.0;
+        break;
         case 'l':
-            lightXOffset += 2.0;
-            break;
+        lightXOffset += 2.0;
+        break;
         case 'L':
-            lightXOffset -= 2.0;
-            break;
+        lightXOffset -= 2.0;
+        break;
         case 'i':
-            lightYOffset += 2.0;
-            break;
+        lightYOffset += 2.0;
+        break;
         case 'I':
-            lightYOffset -= 2.0;
-            break;
-            // ------------------------------- LIGHT LOCATION -------------------------------
+        lightYOffset -= 2.0;
+        break;
+        // ------------------------------- LIGHT LOCATION -------------------------------
     }
 }
 
