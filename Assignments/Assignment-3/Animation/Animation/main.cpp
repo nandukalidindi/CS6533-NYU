@@ -33,7 +33,7 @@ Cvec3 kVector;
 float finalAngle;
 
 float frameSpeed = 10.0f;
-float lightXOffset = -0.5773, lightYOffset = 0.5773, lightZOffset = 10.0;
+float lightXOffset = -0.5773, lightYOffset = 0.5773, lightZOffset = 0.5773;
 float redOffset = 1.0, blueOffset = 1.0, greenOffset = 1.0;
 float botX = 0.0, botY = 0.0, botZ = 0.0;
 float botXDegree = 0.0, botYDegree = 0.0, botZDegree = 0.0;
@@ -195,8 +195,8 @@ void display(void) {
     glUseProgram(program);
     
     timeSinceStart = glutGet(GLUT_ELAPSED_TIME);
-    glUniform4f(lightPositionUniformFromFragmentShader, lightXOffset, lightYOffset, lightZOffset, 0.0);
-    glUniform4f(uColorUniformFromFragmentShader, redOffset, greenOffset, blueOffset, 1.0);
+    glUniform3f(lightPositionUniformFromFragmentShader, lightXOffset, lightYOffset, lightZOffset);
+    glUniform3f(uColorUniformFromFragmentShader, redOffset, greenOffset, blueOffset);
     
     // ------------------------------- EYE -------------------------------
     //    eyeMatrix = quatToMatrix(Quat::makeYRotation(40.0)) *
