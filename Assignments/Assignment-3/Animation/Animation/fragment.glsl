@@ -15,7 +15,7 @@ struct Light {
     vec3 specularLightColor;
 };
 
-uniform Light lights[2];
+uniform Light lights[3];
 
 
 void main() {
@@ -23,14 +23,14 @@ void main() {
     textureNormal = normalize(varyingTBNMatrix * textureNormal);
     vec3 diffuseColor = vec3(0.0, 0.0, 0.0);
     vec3 specularColor = vec3(0.0, 0.0, 0.0);
-    for(int i=0; i<2; i++) {
+    for(int i=0; i<3; i++) {
         float diffuse = max(0.0, dot(varyingNormal, lights[i].lightPosition));
-        diffuseColor += (vec3(1.0, float(i), 0.0) * diffuse);
+        diffuseColor += (vec3(1.0, 1.0, 1.0) * diffuse);
         
         vec3 v = normalize(-varyingPosition);
         vec3 h = normalize(v + lights[i].lightPosition);
         float specular = pow(max(0.0, dot(h, varyingNormal)), 64.0);
-        specularColor += vec3(1.0, float(i), 1.0) * specular;
+        specularColor += vec3(1.0, 1.0, 1.0) * specular;
     }
     vec3 intensity = (texture2D(diffuseTexture, varyingTexCoord).xyz * diffuseColor) +
                      (specularColor * texture2D(specularTexture, varyingTexCoord).x);
