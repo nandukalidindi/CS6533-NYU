@@ -316,9 +316,9 @@ void display(void) {
     timeSinceStart = glutGet(GLUT_ELAPSED_TIME);
     
     glUniform3f(uColorUniformFromFragmentShader, redOffset, greenOffset, blueOffset);
-    glUniform3f(lightPositionUniformFromFragmentShader0, 0.0, 0.0, 0.0);
-//    glUniform3f(lightPositionUniformFromFragmentShader1, -0.5\0, 1.5, 0.5);
-//    glUniform3f(lightPositionUniformFromFragmentShader2, 0.0, -1.5, 0.5);
+    glUniform3f(lightPositionUniformFromFragmentShader0, 0.0, 5.0, -15.0);
+    glUniform3f(lightPositionUniformFromFragmentShader1, -0.5, 1.5, -30.0);
+    glUniform3f(lightPositionUniformFromFragmentShader2, 0.0, -1.5, -15.0);
 
     
     // ------------------------------- EYE -------------------------------
@@ -345,69 +345,85 @@ void display(void) {
     genericBufferBinder.specularTextureUniform = specularTextureUniformLocation;
     genericBufferBinder.normalTextureUniform = normalTextureUniformLocation;
     
-    // ------------------------------- TRUNK -------------------------------
-    
+    // ------------------------------- SUN -------------------------------
     genericBufferBinder.texBinder = sunTexBinder;
     Matrix4 sunMatrix =  quatToMatrix(Quat::makeYRotation(timeSinceStart/10.0)) *
                          Matrix4::makeScale(Cvec3(1.5, 1.5, 1.5));
-    
     drawBodyParts(genericBufferBinder, sunMatrix, NULL);
+    // ------------------------------- SUN -------------------------------
     
+    // ------------------------------- MERCURY -------------------------------
     genericBufferBinder.texBinder = mercuryTexBinder;
     Matrix4 mercuryMatrix = quatToMatrix(Quat::makeYRotation(timeSinceStart * 47.89/500.0)) *
                             Matrix4::makeTranslation(Cvec3(3.0, 0.0, 0.0)) *
                             Matrix4::makeScale(Cvec3(0.2, 0.2, 0.2));
     drawBodyParts(genericBufferBinder, mercuryMatrix, NULL);
+    // ------------------------------- MERCURY -------------------------------
     
+    // ------------------------------- VENUS -------------------------------
     genericBufferBinder.texBinder = venusTexBinder;
     Matrix4 venusMatrix = quatToMatrix(Quat::makeYRotation((timeSinceStart * 35.03)/500.0)) *
                           Matrix4::makeTranslation(Cvec3(4.5, 0.0, 0.0)) *
                           Matrix4::makeScale(Cvec3(0.3, 0.3, 0.3));
     drawBodyParts(genericBufferBinder, venusMatrix, NULL);
+    // ------------------------------- VENUS -------------------------------
     
+    // ------------------------------- EARTH -------------------------------
     genericBufferBinder.texBinder = earthTexBinder;
     Matrix4 earthMatrix = quatToMatrix(Quat::makeYRotation((timeSinceStart * 29.79)/500.0)) *
-                          Matrix4::makeTranslation(Cvec3(6.0, 0.0, 0.0)) *
-                          Matrix4::makeScale(Cvec3(0.5, 0.5, 0.5)) *
-                          quatToMatrix(Quat::makeYRotation(timeSinceStart/10.0));
+    Matrix4::makeTranslation(Cvec3(6.0, 0.0, 0.0)) *
+    Matrix4::makeScale(Cvec3(0.5, 0.5, 0.5)) *
+    quatToMatrix(Quat::makeYRotation(timeSinceStart/10.0));
     drawBodyParts(genericBufferBinder, earthMatrix, NULL);
+    // ------------------------------- EARTH -------------------------------
     
+    // ------------------------------- MARS -------------------------------
     genericBufferBinder.texBinder = marsTexBinder;
     Matrix4 marsMatrix = quatToMatrix(Quat::makeYRotation((timeSinceStart * 24.13)/500.0)) *
                          Matrix4::makeTranslation(Cvec3(8.0, 0.0, 0.0)) *
                          Matrix4::makeScale(Cvec3(0.4, 0.4, 0.4));
     drawBodyParts(genericBufferBinder, marsMatrix, NULL);
+    // ------------------------------- MARS -------------------------------
     
+    // ------------------------------- JUPITER -------------------------------
     genericBufferBinder.texBinder = jupiterTexBinder;
     Matrix4 jupiterMatrix = quatToMatrix(Quat::makeYRotation((timeSinceStart * 13.06)/500.0)) *
                             Matrix4::makeTranslation(Cvec3(11.0, 0.0, 0.0)) *
                             Matrix4::makeScale(Cvec3(1.0, 1.0, 1.0));
     drawBodyParts(genericBufferBinder, jupiterMatrix, NULL);
+    // ------------------------------- JUPITER -------------------------------
     
+    // ------------------------------- SATURN -------------------------------
     genericBufferBinder.texBinder = saturnTexBinder;
     Matrix4 saturnMatrix = quatToMatrix(Quat::makeYRotation((timeSinceStart * 9.64)/500.0)) *
                            Matrix4::makeTranslation(Cvec3(14.5, 0.0, 0.0)) *
                            Matrix4::makeScale(Cvec3(0.8, 0.8, 0.8));
     drawBodyParts(genericBufferBinder, saturnMatrix, NULL);
+    // ------------------------------- SATURN -------------------------------
     
+    // ------------------------------- URANUS -------------------------------
     genericBufferBinder.texBinder = uranusTexBinder;
     Matrix4 uranusMatrix = quatToMatrix(Quat::makeYRotation((timeSinceStart * 6.81)/500.0)) *
                            Matrix4::makeTranslation(Cvec3(17.0, 0.0, 0.0)) *
                            Matrix4::makeScale(Cvec3(0.3, 0.3, 0.3));
     drawBodyParts(genericBufferBinder, uranusMatrix, NULL);
+    // ------------------------------- URANUS -------------------------------
     
+    // ------------------------------- NEPTUNE -------------------------------
     genericBufferBinder.texBinder = neptuneTexBinder;
     Matrix4 neptuneMatrix = quatToMatrix(Quat::makeYRotation((timeSinceStart * 5.43)/500.0)) *
                             Matrix4::makeTranslation(Cvec3(18.50, 0.0, 0.0)) *
                             Matrix4::makeScale(Cvec3(0.25, 0.25, 0.25));
     drawBodyParts(genericBufferBinder, neptuneMatrix, NULL);
+    // ------------------------------- NEPTUNE -------------------------------
     
+    // ------------------------------- PLUTO -------------------------------
     genericBufferBinder.texBinder = plutoTexBinder;
     Matrix4 plutoMatrix = quatToMatrix(Quat::makeYRotation((timeSinceStart * 4.0)/500.0)) *
                           Matrix4::makeTranslation(Cvec3(19.50, 0.0, 0.0)) *
                           Matrix4::makeScale(Cvec3(0.15, 0.15, 0.15));
     drawBodyParts(genericBufferBinder, plutoMatrix, NULL);
-    
+    // ------------------------------- PLUTO -------------------------------
     
     glBindBuffer(GL_ARRAY_BUFFER, lineBufferObject);
     glVertexAttribPointer(postionAttributeFromVertexShader, 2, GL_FLOAT, GL_FALSE, 0, 0);
@@ -482,65 +498,93 @@ void init() {
     projectionMatrixUniformFromVertexShader = glGetUniformLocation(program, "projectionMatrix");
     
     
-    sunTexBinder.diffuseTexture = loadGLTexture("/Users/kaybus/Documents/nandukalidindi-github/CS6533-NYU/Assignments/Assignment-3/3D\ models/Planets/Sun/2k_sun.jpg");
+    // ------------------------------- SUN -------------------------------
+    sunTexBinder.diffuseTexture = loadGLTexture("/Users/kaybus/Documents/nandukalidindi-github/CS6533-NYU/Assignments/Assignment-3/3D\ models/Planets/Sun/sun.jpg");
     
-//    sunTexBinder.specularTexture = loadGLTexture("/Users/kaybus/Documents/nandukalidindi-github/CS6533-NYU/Assignments/Assignment-3/3D\ models/Planets/Earth/earthspec1k.jpg");
-//    
-//    sunTexBinder.normalTexture = loadGLTexture("/Users/kaybus/Documents/nandukalidindi-github/CS6533-NYU/Assignments/Assignment-3/3D\ models/Planets/Earth/2k4k8k.EarthNormal/textures/hires/EarthNormal.png");
+    sunTexBinder.specularTexture = loadGLTexture("/Users/kaybus/Documents/nandukalidindi-github/CS6533-NYU/Assignments/Assignment-3/3D\ models/Planets/Sun/sun_SPEC.png");
     
-    mercuryTexBinder.diffuseTexture = loadGLTexture("/Users/kaybus/Documents/nandukalidindi-github/CS6533-NYU/Assignments/Assignment-3/3D\ models/Planets/Mercury/mercurymap.jpg");
+    sunTexBinder.normalTexture = loadGLTexture("/Users/kaybus/Documents/nandukalidindi-github/CS6533-NYU/Assignments/Assignment-3/3D\ models/Planets/Sun/sun_NRM.png");
+    // ------------------------------- SUN -------------------------------
     
-//    mercuryTexBinder.specularTexture = loadGLTexture("/Users/kaybus/Documents/nandukalidindi-github/CS6533-NYU/Assignments/Assignment-3/3D\ models/Planets/Earth/earthspec1k.jpg");
-//    
-//    mercuryTexBinder.normalTexture = loadGLTexture("/Users/kaybus/Documents/nandukalidindi-github/CS6533-NYU/Assignments/Assignment-3/3D\ models/Planets/Earth/2k4k8k.EarthNormal/textures/hires/EarthNormal.png");
     
-    venusTexBinder.diffuseTexture = loadGLTexture("/Users/kaybus/Documents/nandukalidindi-github/CS6533-NYU/Assignments/Assignment-3/3D\ models/Planets/Venus/venusmap.jpg");
+    // ------------------------------- MERCURY -------------------------------
+    mercuryTexBinder.diffuseTexture = loadGLTexture("/Users/kaybus/Documents/nandukalidindi-github/CS6533-NYU/Assignments/Assignment-3/3D\ models/Planets/Mercury/mercury.jpg");
     
-//    venusTexBinder.specularTexture = loadGLTexture("/Users/kaybus/Documents/nandukalidindi-github/CS6533-NYU/Assignments/Assignment-3/3D\ models/Planets/Earth/earthspec1k.jpg");
-//    
-//    venusTexBinder.normalTexture = loadGLTexture("/Users/kaybus/Documents/nandukalidindi-github/CS6533-NYU/Assignments/Assignment-3/3D\ models/Planets/Earth/2k4k8k.EarthNormal/textures/hires/EarthNormal.png");
+    mercuryTexBinder.specularTexture = loadGLTexture("/Users/kaybus/Documents/nandukalidindi-github/CS6533-NYU/Assignments/Assignment-3/3D\ models/Planets/Mercury/mercury_SPEC.png");
+
+    mercuryTexBinder.normalTexture = loadGLTexture("/Users/kaybus/Documents/nandukalidindi-github/CS6533-NYU/Assignments/Assignment-3/3D\ models/Planets/Mercury/mercury_NRM.png");
+    // ------------------------------- MERCURY -------------------------------
     
+    
+    // ------------------------------- VENUS -------------------------------
+    venusTexBinder.diffuseTexture = loadGLTexture("/Users/kaybus/Documents/nandukalidindi-github/CS6533-NYU/Assignments/Assignment-3/3D\ models/Planets/Venus/venus.jpg");
+    
+    venusTexBinder.specularTexture = loadGLTexture("/Users/kaybus/Documents/nandukalidindi-github/CS6533-NYU/Assignments/Assignment-3/3D\ models/Planets/Venus/venus_SPEC.png");
+
+    venusTexBinder.normalTexture = loadGLTexture("/Users/kaybus/Documents/nandukalidindi-github/CS6533-NYU/Assignments/Assignment-3/3D\ models/Planets/Venus/venus_NRM.png");
+    // ------------------------------- VENUS -------------------------------
+    
+    
+    // ------------------------------- EARTH -------------------------------
     earthTexBinder.diffuseTexture = loadGLTexture("/Users/kaybus/Documents/nandukalidindi-github/CS6533-NYU/Assignments/Assignment-3/3D\ models/Planets/Earth/earthmap1k.jpg");
     
-    earthTexBinder.specularTexture = loadGLTexture("/Users/kaybus/Documents/nandukalidindi-github/CS6533-NYU/Assignments/Assignment-3/3D\ models/Planets/Earth/earthspec1k.jpg");
+    earthTexBinder.specularTexture = loadGLTexture("/Users/kaybus/Documents/nandukalidindi-github/CS6533-NYU/Assignments/Assignment-3/3D\ models/Planets/Earth/earthmap1k_SPEC.png");
     
-    earthTexBinder.normalTexture = loadGLTexture("/Users/kaybus/Documents/nandukalidindi-github/CS6533-NYU/Assignments/Assignment-3/3D\ models/Planets/Earth/2k4k8k.EarthNormal/textures/hires/EarthNormal.png");
+    earthTexBinder.normalTexture = loadGLTexture("/Users/kaybus/Documents/nandukalidindi-github/CS6533-NYU/Assignments/Assignment-3/3D\ models/Planets/Earth/earthmap1k_NRM.png");
+    // ------------------------------- EARTH -------------------------------
+    
 
-    marsTexBinder.diffuseTexture = loadGLTexture("/Users/kaybus/Documents/nandukalidindi-github/CS6533-NYU/Assignments/Assignment-3/3D\ models/Planets/Mars/mars_1k_color.jpg");
+    // ------------------------------- MARS -------------------------------
+    marsTexBinder.diffuseTexture = loadGLTexture("/Users/kaybus/Documents/nandukalidindi-github/CS6533-NYU/Assignments/Assignment-3/3D\ models/Planets/Mars/mars.jpg");
     
-    marsTexBinder.specularTexture = loadGLTexture("/Users/kaybus/Documents/nandukalidindi-github/CS6533-NYU/Assignments/Assignment-3/3D\ models/Planets/Mars/mars_1k_topo.jpg");
+    marsTexBinder.specularTexture = loadGLTexture("/Users/kaybus/Documents/nandukalidindi-github/CS6533-NYU/Assignments/Assignment-3/3D\ models/Planets/Mars/mars_SPEC.png");
     
-    marsTexBinder.normalTexture = loadGLTexture("/Users/kaybus/Documents/nandukalidindi-github/CS6533-NYU/Assignments/Assignment-3/3D\ models/Planets/Mars/mars_1k_normal.jpg");
+    marsTexBinder.normalTexture = loadGLTexture("/Users/kaybus/Documents/nandukalidindi-github/CS6533-NYU/Assignments/Assignment-3/3D\ models/Planets/Mars/mars_NRM.png");
+    // ------------------------------- MARS -------------------------------
     
-    jupiterTexBinder.diffuseTexture = loadGLTexture("/Users/kaybus/Documents/nandukalidindi-github/CS6533-NYU/Assignments/Assignment-3/3D\ models/Planets/Jupiter/jupiter2_1k.jpg");
     
-//    jupiterTexBinder.specularTexture = loadGLTexture("/Users/kaybus/Documents/nandukalidindi-github/CS6533-NYU/Assignments/Assignment-3/3D\ models/Planets/Mars/mars_1k_topo.jpg");
-//    
-//    jupiterTexBinder.normalTexture = loadGLTexture("/Users/kaybus/Documents/nandukalidindi-github/CS6533-NYU/Assignments/Assignment-3/3D\ models/Planets/Mars/mars_1k_normal.jpg");
+    // ------------------------------- JUPITER -------------------------------
+    jupiterTexBinder.diffuseTexture = loadGLTexture("/Users/kaybus/Documents/nandukalidindi-github/CS6533-NYU/Assignments/Assignment-3/3D\ models/Planets/Jupiter/jupiter.jpg");
     
-    saturnTexBinder.diffuseTexture = loadGLTexture("/Users/kaybus/Documents/nandukalidindi-github/CS6533-NYU/Assignments/Assignment-3/3D\ models/Planets/Saturn/saturnmap.jpg");
+    jupiterTexBinder.specularTexture = loadGLTexture("/Users/kaybus/Documents/nandukalidindi-github/CS6533-NYU/Assignments/Assignment-3/3D\ models/Planets/Jupiter/jupiter_SPEC.png");
     
-//    saturnTexBinder.specularTexture = loadGLTexture("/Users/kaybus/Documents/nandukalidindi-github/CS6533-NYU/Assignments/Assignment-3/3D\ models/Planets/Mars/mars_1k_topo.jpg");
-//    
-//    saturnTexBinder.normalTexture = loadGLTexture("/Users/kaybus/Documents/nandukalidindi-github/CS6533-NYU/Assignments/Assignment-3/3D\ models/Planets/Mars/mars_1k_normal.jpg");
+    jupiterTexBinder.normalTexture = loadGLTexture("/Users/kaybus/Documents/nandukalidindi-github/CS6533-NYU/Assignments/Assignment-3/3D\ models/Planets/Jupiter/jupiter_NRM.png");
+    // ------------------------------- JUPITER -------------------------------
     
-    uranusTexBinder.diffuseTexture = loadGLTexture("/Users/kaybus/Documents/nandukalidindi-github/CS6533-NYU/Assignments/Assignment-3/3D\ models/Planets/Uranus/uranusmap.jpg");
     
-//    uranusTexBinder.specularTexture = loadGLTexture("/Users/kaybus/Documents/nandukalidindi-github/CS6533-NYU/Assignments/Assignment-3/3D\ models/Planets/Mars/mars_1k_topo.jpg");
-//    
-//    uranusTexBinder.normalTexture = loadGLTexture("/Users/kaybus/Documents/nandukalidindi-github/CS6533-NYU/Assignments/Assignment-3/3D\ models/Planets/Mars/mars_1k_normal.jpg");
+    // ------------------------------- SATURN -------------------------------
+    saturnTexBinder.diffuseTexture = loadGLTexture("/Users/kaybus/Documents/nandukalidindi-github/CS6533-NYU/Assignments/Assignment-3/3D\ models/Planets/Saturn/saturn.jpg");
     
-    neptuneTexBinder.diffuseTexture = loadGLTexture("/Users/kaybus/Documents/nandukalidindi-github/CS6533-NYU/Assignments/Assignment-3/3D\ models/Planets/Neptune/neptunemap.jpg");
+    saturnTexBinder.specularTexture = loadGLTexture("/Users/kaybus/Documents/nandukalidindi-github/CS6533-NYU/Assignments/Assignment-3/3D\ models/Planets/Saturn/saturn_SPEC.png");
     
-//    neptuneTexBinder.specularTexture = loadGLTexture("/Users/kaybus/Documents/nandukalidindi-github/CS6533-NYU/Assignments/Assignment-3/3D\ models/Planets/Mars/mars_1k_topo.jpg");
-//    
-//    neptuneTexBinder.normalTexture = loadGLTexture("/Users/kaybus/Documents/nandukalidindi-github/CS6533-NYU/Assignments/Assignment-3/3D\ models/Planets/Mars/mars_1k_normal.jpg");
+    saturnTexBinder.normalTexture = loadGLTexture("/Users/kaybus/Documents/nandukalidindi-github/CS6533-NYU/Assignments/Assignment-3/3D\ models/Planets/Saturn/saturn_NRM.png");
+    // ------------------------------- SATURN -------------------------------
     
-    plutoTexBinder.diffuseTexture = loadGLTexture("/Users/kaybus/Documents/nandukalidindi-github/CS6533-NYU/Assignments/Assignment-3/3D\ models/Planets/Pluto/plutomap1k.jpg");
     
-//    plutoTexBinder.specularTexture = loadGLTexture("/Users/kaybus/Documents/nandukalidindi-github/CS6533-NYU/Assignments/Assignment-3/3D\ models/Planets/Mars/mars_1k_topo.jpg");
-//    
-//    plutoTexBinder.normalTexture = loadGLTexture("/Users/kaybus/Documents/nandukalidindi-github/CS6533-NYU/Assignments/Assignment-3/3D\ models/Planets/Mars/mars_1k_normal.jpg");
+    // ------------------------------- URANUS -------------------------------
+    uranusTexBinder.diffuseTexture = loadGLTexture("/Users/kaybus/Documents/nandukalidindi-github/CS6533-NYU/Assignments/Assignment-3/3D\ models/Planets/Uranus/uranus.jpg");
+    
+    uranusTexBinder.specularTexture = loadGLTexture("/Users/kaybus/Documents/nandukalidindi-github/CS6533-NYU/Assignments/Assignment-3/3D\ models/Planets/Uranus/uranus_SPEC.png");
+    
+    uranusTexBinder.normalTexture = loadGLTexture("/Users/kaybus/Documents/nandukalidindi-github/CS6533-NYU/Assignments/Assignment-3/3D\ models/Planets/Uranus/uranus_NRM.png");
+    // ------------------------------- URANUS -------------------------------
+    
+    
+    // ------------------------------- NEPTUNE -------------------------------
+    neptuneTexBinder.diffuseTexture = loadGLTexture("/Users/kaybus/Documents/nandukalidindi-github/CS6533-NYU/Assignments/Assignment-3/3D\ models/Planets/Neptune/neptune.jpg");
+    
+    neptuneTexBinder.specularTexture = loadGLTexture("/Users/kaybus/Documents/nandukalidindi-github/CS6533-NYU/Assignments/Assignment-3/3D\ models/Planets/Neptune/neptune_SPEC.png");
+    
+    neptuneTexBinder.normalTexture = loadGLTexture("/Users/kaybus/Documents/nandukalidindi-github/CS6533-NYU/Assignments/Assignment-3/3D\ models/Planets/Neptune/neptune_NRM.png");
+    // ------------------------------- NEPTUNE -------------------------------
+    
+    // ------------------------------- PLUTO -------------------------------
+    plutoTexBinder.diffuseTexture = loadGLTexture("/Users/kaybus/Documents/nandukalidindi-github/CS6533-NYU/Assignments/Assignment-3/3D\ models/Planets/Pluto/pluto.jpg");
+    
+    plutoTexBinder.specularTexture = loadGLTexture("/Users/kaybus/Documents/nandukalidindi-github/CS6533-NYU/Assignments/Assignment-3/3D\ models/Planets/Pluto/pluto_SPEC.png");
+    
+    plutoTexBinder.normalTexture = loadGLTexture("/Users/kaybus/Documents/nandukalidindi-github/CS6533-NYU/Assignments/Assignment-3/3D\ models/Planets/Pluto/pluto_NRM.png");
+    // ------------------------------- NEPTUNE -------------------------------
     
     
 
