@@ -134,7 +134,7 @@ void makeSphere(float radius, int slices, int stacks, VtxOutIter vtxIter, IdxOut
   const double radPerSlice = 2 * CS175_PI / slices;
   const double radPerStack = CS175_PI / stacks;
 
-    vector<double> longSin(slices+1), longCos(slices+1);
+  vector<double> longSin(slices+1), longCos(slices+1);
   vector<double> latSin(stacks+1), latCos(stacks+1);
     
   for (int i = 0; i < slices + 1; ++i) {

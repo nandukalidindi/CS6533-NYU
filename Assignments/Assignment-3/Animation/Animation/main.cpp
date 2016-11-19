@@ -14,6 +14,7 @@ GLuint program;
 float wHeight = 1280.0, wWidth = 720.0;
 
 GLuint vertexPositionVBO;
+GLuint lineBufferObject;
 GLuint indexBO;
 GLuint colorBufferObject;
 GLuint normalBufferObject;
@@ -228,6 +229,19 @@ float calculateTimeAngle(float anglePerRev, float timeSinceStart) {
     return finalAngle;
 }
 
+GLfloat *ringVertices(float radius) {
+    float radianConversion = 57.2958;
+    float *array = new float[2880*2];
+    int arrayCount = 0;
+    for(float i=0; i<360; i+=0.25) {
+        array[arrayCount++] = radius * cos(i/radianConversion);
+        array[arrayCount++] = radius * sin(i/radianConversion);
+//        array[arrayCount++] = (radius-0.090) * cos(i/radianConversion);
+//        array[arrayCount++] = (radius-0.090) * sin(i/radianConversion);
+    }
+    return array;
+}
+
 void calculateFaceTangent(const Cvec3f &v1, const Cvec3f &v2, const Cvec3f &v3, const Cvec2f &texCoord1, const Cvec2f &texCoord2, const Cvec2f &texCoord3, Cvec3f &tangent, Cvec3f &binormal) {
     Cvec3f side0 = v1 - v2;
     Cvec3f side1 = v3 - v1;
@@ -295,32 +309,22 @@ void display(void) {
     glClear(GL_COLOR_BUFFER_BIT|GL_DEPTH_BUFFER_BIT);
     glEnable(GL_BLEND);
     glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-    glClearColor(0.0, 0.0, 0.0, 1.0);
+    glClearColor(0.0, 0.0, 0.0, 0.0);
     
     glUseProgram(program);
     
     timeSinceStart = glutGet(GLUT_ELAPSED_TIME);
-    //    glUniform3f(lightPositionUniformFromFragmentShader, lightXOffset, lightYOffset, lightZOffset);
+    
     glUniform3f(uColorUniformFromFragmentShader, redOffset, greenOffset, blueOffset);
-    //    glUniform3f(lightColorUniformFromFragmentShader, 1.0, 0.0, 0.0);
-    //    glUniform3f(specularLightColorUniformFromFragmentShader, 1.0, 0.0, 0.0);
-    
-//    glUniform3f(lightPositionUniformFromFragmentShader0, 3.0*sin(timeSinceStart/1000.0f), 3.0*cos(timeSinceStart/1000.0f), 0.0);
-//    glUniform3f(lightPositionUniformFromFragmentShader1, 3.0*sin(timeSinceStart/1000.0f), 3.0*cos(timeSinceStart/1000.0f), 0.0);
-    
-    glUniform3f(lightPositionUniformFromFragmentShader0, 1.5, 1.5, 0.5);
-    glUniform3f(lightPositionUniformFromFragmentShader1, -1.5, 1.5, 0.5);
-    glUniform3f(lightPositionUniformFromFragmentShader2, 0.0, -1.5, 0.5);
+    glUniform3f(lightPositionUniformFromFragmentShader0, 0.0, 0.0, 0.0);
+//    glUniform3f(lightPositionUniformFromFragmentShader1, -0.5\0, 1.5, 0.5);
+//    glUniform3f(lightPositionUniformFromFragmentShader2, 0.0, -1.5, 0.5);
 
     
     // ------------------------------- EYE -------------------------------
-    //    eyeMatrix = quatToMatrix(Quat::makeYRotation(40.0)) *
-    //                quatToMatrix(Quat::makeYRotation(botYDegree)) *
-    //                quatToMatrix(Quat::makeXRotation(botXDegree)) *
-    //                quatToMatrix(Quat::makeZRotation(botZDegree));
     eyeMatrix = quatToMatrix(Quat::makeKRotation(kVector, finalAngle)) *
     //    quatToMatrix(Quat::makeYRotation(timeSinceStart/50.0)) *
-    Matrix4::makeTranslation(Cvec3(0.0, 0.0, 30.0));
+                Matrix4::makeTranslation(Cvec3(0.0, 0.0, 30.0));
     // ------------------------------- EYE -------------------------------
     
     // Initialising a Genric bufferBinder object as the same buffers are used to
@@ -360,8 +364,6 @@ void display(void) {
                           Matrix4::makeTranslation(Cvec3(4.5, 0.0, 0.0)) *
                           Matrix4::makeScale(Cvec3(0.3, 0.3, 0.3));
     drawBodyParts(genericBufferBinder, venusMatrix, NULL);
-    
-//    quatToMatrix(interpolateCatmullRom(Quat::makeYRotation(0.0), Quat::makeYRotation(360.0), Quat::makeYRotation(120.0), Quat::makeYRotation(240.0), sin(timeSinceStart/1000.0f)));
     
     genericBufferBinder.texBinder = earthTexBinder;
     Matrix4 earthMatrix = quatToMatrix(Quat::makeYRotation((timeSinceStart * 29.79)/500.0)) *
@@ -405,6 +407,32 @@ void display(void) {
                           Matrix4::makeTranslation(Cvec3(19.50, 0.0, 0.0)) *
                           Matrix4::makeScale(Cvec3(0.15, 0.15, 0.15));
     drawBodyParts(genericBufferBinder, plutoMatrix, NULL);
+    
+    
+    glBindBuffer(GL_ARRAY_BUFFER, lineBufferObject);
+    glVertexAttribPointer(postionAttributeFromVertexShader, 2, GL_FLOAT, GL_FALSE, 0, 0);
+    glEnableVertexAttribArray(postionAttributeFromVertexShader);
+    
+    glVertexAttribPointer(normalAttributeFromVertexShader, 2, GL_FLOAT, GL_FALSE, 0, 0);
+    glEnableVertexAttribArray(normalAttributeFromVertexShader);
+    
+//    Matrix4 lineViewMatrix = inv(eyeMatrix) * Matrix4::makeScale(Cvec3(10.0 * 720.0/1280.0, 10.0, 10.0)) * Matrix4::makeXRotation(90.0);
+//    
+//    GLfloat glMatrix[16];
+//    lineViewMatrix.writeToColumnMajorMatrix(glMatrix);
+//    glUniformMatrix4fv(modelViewMatrixUniformFromVertexShader, 1, false, glMatrix);
+//    
+//    Matrix4 normalizedMatrix = normalMatrix(lineViewMatrix);
+//    normalizedMatrix.writeToColumnMajorMatrix(glMatrix);
+//    glUniformMatrix4fv(normalMatrixUniformFromVertexShader, 1, GL_FALSE, glMatrix);
+//
+//    Matrix4 projectionMatrix;
+//    projectionMatrix = projectionMatrix.makeProjection(45.0, 1.0, -0.1, -100.0);
+//    GLfloat glmatrixProjection[16];
+//    projectionMatrix.writeToColumnMajorMatrix(glmatrixProjection);
+//    glUniformMatrix4fv(projectionMatrixUniformFromVertexShader, 1, false, glmatrixProjection);
+//    
+//    glDrawArrays(GL_LINE_LOOP, 0, 1440);
     
     // Disabled all vertex attributes
     glDisableVertexAttribArray(postionAttributeFromVertexShader);
@@ -532,6 +560,11 @@ void init() {
     glGenBuffers(1, &indexBO);
     glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, indexBO);
     glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(unsigned short) * idx.size(), idx.data(), GL_STATIC_DRAW);
+    
+//    glGenBuffers(1, &lineBufferObject);
+//    glBindBuffer(GL_ARRAY_BUFFER, lineBufferObject);
+//    GLfloat *sqVerts = ringVertices(0.5);
+//    glBufferData(GL_ARRAY_BUFFER, 2880*sizeof(sqVerts), sqVerts, GL_STATIC_DRAW);
 }
 
 void reshape(int w, int h) {
@@ -543,115 +576,7 @@ void idle(void) {
 }
 
 void keyboard(unsigned char key, int x, int y) {
-    switch(key) {
-        // ------------------------------- BOT MOVEMENT -------------------------------
-        case 'w':
-        botZ += 0.75;
-        break;
-        case 'a':
-        botX -= 0.75;
-        break;
-        case 'd':
-        botX += 0.75;
-        break;
-        case 's':
-        botZ -= 0.75;
-        break;
-        case 'x':
-        botXDegree += 5.0;
-        break;
-        case 'X':
-        botXDegree -= 5.0;
-        break;
-        case 'y':
-        botYDegree += 5.0;
-        break;
-        case 'Y':
-        botYDegree -= 5.0;
-        break;
-        case 'z':
-        botZDegree += 5.0;
-        break;
-        case 'Z':
-        botZDegree -= 5.0;
-        break;
-        case 'v':
-        botX = botY = botZ = botXDegree = botYDegree = botZDegree = 0.0;
-        break;
-        // ------------------------------- BOT MOVEMENT -------------------------------
-        
-        // ------------------------------- COLOR SHADING -------------------------------
-        case 'r':
-        if (redOffset <= 1.0)
-        redOffset += 0.02;
-        break;
-        case 'R':
-        if (redOffset >= 0.02)
-        redOffset -= 0.02;
-        break;
-        case 'g':
-        if (greenOffset <= 1.0)
-        greenOffset += 0.02;
-        break;
-        case 'G':
-        if (greenOffset >= 0.02)
-        greenOffset -= 0.02;
-        break;
-        case 'b':
-        if (blueOffset <= 1.0)
-        blueOffset += 0.02;
-        break;
-        case 'B':
-        if (blueOffset >= 0.02)
-        blueOffset -= 0.02;
-        break;
-        // ------------------------------- COLOR SHADING -------------------------------
-        
-        case 'c':
-        redOffset = 0.0;
-        blueOffset = 0.0;
-        greenOffset = 0.0;
-        lightXOffset = -0.5773;
-        lightYOffset = 0.5773;
-        lightZOffset = 10.0;
-        break;
-        case 'C':
-        redOffset = 1.0;
-        blueOffset = 1.0;
-        greenOffset = 1.0;
-        break;
-        
-        // ------------------------------- FRAME SPEED -------------------------------
-        case 'f':
-        frameSpeed += 5.0;
-        break;
-        case 'F':
-        if(frameSpeed > 5.0)
-        frameSpeed -= 5.0;
-        break;
-        // ------------------------------- FRAME SPEED -------------------------------
-        
-        // ------------------------------- LIGHT LOCATION -------------------------------
-        case 'k':
-        lightZOffset += 2.0;
-        break;
-        case 'K':
-        lightZOffset -= 2.0;
-        break;
-        case 'l':
-        lightXOffset += 2.0;
-        break;
-        case 'L':
-        lightXOffset -= 2.0;
-        break;
-        case 'i':
-        lightYOffset += 2.0;
-        break;
-        case 'I':
-        lightYOffset -= 2.0;
-        break;
-        // ------------------------------- LIGHT LOCATION -------------------------------
-    }
+
 }
 
 void shiftFrame(int &x, int &y) {

@@ -56,13 +56,61 @@
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "Animation/fragment.glsl"
-            timestampString = "500550654.396202"
+            timestampString = "501115945.257255"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "56"
-            endingLineNumber = "56"
+            startingLineNumber = "65"
+            endingLineNumber = "65"
             landmarkName = "main()"
             landmarkType = "7">
+         </BreakpointContent>
+      </BreakpointProxy>
+      <BreakpointProxy
+         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
+         <BreakpointContent
+            shouldBeEnabled = "No"
+            ignoreCount = "0"
+            continueAfterRunningActions = "No"
+            filePath = "Animation/cvec.h"
+            timestampString = "501118302.586485"
+            startingColumnNumber = "9223372036854775807"
+            endingColumnNumber = "9223372036854775807"
+            startingLineNumber = "140"
+            endingLineNumber = "140"
+            landmarkName = "dot(const Cvec&lt;T,n&gt;&amp; a, const Cvec&lt;T,n&gt;&amp; b)"
+            landmarkType = "7">
+            <Locations>
+               <Location
+                  shouldBeEnabled = "No"
+                  ignoreCount = "0"
+                  continueAfterRunningActions = "No"
+                  symbolName = "float dot&lt;float, 3&gt;(Cvec&lt;float, 3&gt; const&amp;, Cvec&lt;float, 3&gt; const&amp;)"
+                  moduleName = "Animation"
+                  usesParentBreakpointCondition = "Yes"
+                  urlString = "file:///Users/kaybus/Documents/nandukalidindi-github/CS6533-NYU/Assignments/Assignment-3/Animation/Animation/cvec.h"
+                  timestampString = "501118302.590074"
+                  startingColumnNumber = "9223372036854775807"
+                  endingColumnNumber = "9223372036854775807"
+                  startingLineNumber = "140"
+                  endingLineNumber = "140"
+                  offsetFromSymbolStart = "107">
+               </Location>
+               <Location
+                  shouldBeEnabled = "No"
+                  ignoreCount = "0"
+                  continueAfterRunningActions = "No"
+                  symbolName = "double dot&lt;double, 3&gt;(Cvec&lt;double, 3&gt; const&amp;, Cvec&lt;double, 3&gt; const&amp;)"
+                  moduleName = "Animation"
+                  usesParentBreakpointCondition = "Yes"
+                  urlString = "file:///Users/kaybus/Documents/nandukalidindi-github/CS6533-NYU/Assignments/Assignment-3/Animation/Animation/cvec.h"
+                  timestampString = "501118302.592567"
+                  startingColumnNumber = "9223372036854775807"
+                  endingColumnNumber = "9223372036854775807"
+                  startingLineNumber = "140"
+                  endingLineNumber = "140"
+                  offsetFromSymbolStart = "107">
+               </Location>
+            </Locations>
          </BreakpointContent>
       </BreakpointProxy>
    </Breakpoints>
