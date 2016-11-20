@@ -125,6 +125,125 @@ inline void getSphereVbIbLen(int slices, int stacks, int& vbLen, int& ibLen) {
   ibLen = slices * stacks * 6;
 }
 
+//void calculateFaceTangent(const Cvec3f &v1, const Cvec3f &v2, const Cvec3f &v3, const Cvec2f &texCoord1, const Cvec2f &texCoord2, const Cvec2f &texCoord3, Cvec3f &tangent, Cvec3f &binormal) {
+//    Cvec3f side0 = v1 - v2;
+//    Cvec3f side1 = v3 - v1;
+//    Cvec3f normal = cross(side1, side0);
+//    if (normal[0] != 0 && normal[1] != 0 && normal[2] != 0)
+//        normalize(normal);
+//    float deltaV0 = texCoord1[1] - texCoord2[1];
+//    float deltaV1 = texCoord3[1] - texCoord1[1];
+//    tangent = side0 * deltaV1 - side1 * deltaV0;
+//    if (tangent[0] != 0 && tangent[1] != 0 && tangent[2] != 0)
+//        normalize(tangent);
+//    float deltaU0 = texCoord1[0] - texCoord2[0];
+//    float deltaU1 = texCoord3[0] - texCoord1[0];
+//    binormal = side0 * deltaU1 - side1 * deltaU0;
+//    if (binormal[0] != 0 && binormal[1] != 0 && binormal[2] != 0)
+//        normalize(binormal);
+//    Cvec3f tangentCross = cross(tangent, binormal);
+//    if (dot(tangentCross, normal) < 0.0f) {
+//        tangent = tangent * -1;
+//    }
+//}
+
+inline void getTorus(int segmentsW, int segmentsH, int& vbLen, int& ibLen) {
+    assert(segmentsW > 1);
+    assert(segmentsH >= 2);
+    vbLen = (segmentsW + 1) * (segmentsH + 1);
+    ibLen = segmentsW * segmentsH * 6;
+}
+
+//template<typename VtxOutIter, typename IdxOutIter>
+//void makeTorus(float radius, float tubeRadius, int segmentsW, int segmentsH, float tiltingValue, VtxOutIter vtxIter, IdxOutIter idxIter) {
+//    vector<Cvec3f> coordinates;
+//    vector<Cvec2f> texCoordinates;
+//    vector<Cvec3f> normals;
+//    vector<Cvec3f> tangents;
+//    vector<Cvec3f> binormals;
+//    segmentsW++;
+//    segmentsH++;
+//    
+//    float tDelta = 360.f/(segmentsW-1);
+//    float pDelta = 360.f/(segmentsH-1);
+//    
+//    float phi = -90;
+//    float theta = 0;
+//    
+//    for(int i=0; i<segmentsH; i++) {
+//        for(int j=0; j<segmentsW; j++) {
+//            float x = (radius + tubeRadius*cos(phi*0.0174532925))*cos(theta*0.0174532925);
+//            float y = tubeRadius*sin(phi*0.0174532925);
+//            float z = (radius + tubeRadius*cos(phi*0.0174532925))*sin(theta*0.0174532925);
+//            
+//            coordinates.push_back(Cvec3f(x, y, z));
+//            
+//            float u = (-theta / (360.f))*tiltingValue;
+//            float v = ((phi / (360.f)) + 0.5)*tiltingValue;
+//            
+//            texCoordinates.push_back(Cvec2f(u, v));
+//            
+//            theta += tDelta;
+//            
+//
+//        }
+//        phi += pDelta;
+//        theta = 0;
+//    }
+//    
+//    for (int i = 0; i < segmentsW + 1; ++i) {
+//        for (int j = 0; j < segmentsH + 1; ++j) {
+//            if (i < segmentsW && j < segmentsH ) {
+//                *idxIter = (segmentsH+1) * i + j;
+//                *++idxIter = (segmentsH+1) * i + j + 1;
+//                *++idxIter = (segmentsH+1) * (i + 1) + j + 1;
+//                
+//                *++idxIter = (segmentsH+1) * i + j;
+//                *++idxIter = (segmentsH+1) * (i + 1) + j + 1;
+//                *++idxIter = (segmentsH+1) * (i + 1) + j;
+//                ++idxIter;
+//            }
+//
+//        }
+//    }
+//    
+//    for(int i=0; i<coordinates.size(); i+=3) {
+//        Cvec3f e1 = coordinates[i] - coordinates[i+1];
+//        Cvec3f e2 = coordinates[i+2] - coordinates[i+1];
+//        Cvec3f normal = (cross(e1, e2));
+//        
+//        normals.push_back(normal);
+//        normals.push_back(normal);
+//        normals.push_back(normal);
+//    }
+//    
+//    for(int i=0; i<coordinates.size(); i += 3) {
+//        Cvec3f tangent;
+//        Cvec3f binormal;
+//        calculateFaceTangent(coordinates[i], coordinates[i+1], coordinates[i+2], texCoordinates[i], texCoordinates[i+1], texCoordinates[i+2], tangent, binormal);
+//        
+//        tangents.push_back(tangent);
+//        tangents.push_back(tangent);
+//        tangents.push_back(tangent);
+//        
+//        binormals.push_back(binormal);
+//        binormals.push_back(binormal);
+//        binormals.push_back(binormal);
+//    }
+//    
+//    for(int i=0; i<coordinates.size(); i++) {
+//        *vtxIter = GenericVertex(
+//                                 coordinates[i][0], coordinates[i][1], coordinates[i][2],
+//                                 normals[i][0], normals[i][1], normals[i][2],
+//                                 texCoordinates[i][0], texCoordinates[i][1],
+//                                 tangents[i][0], tangents[i][1], tangents[i][2],
+//                                 binormals[i][0], binormals[i][1], binormals[i][2]);
+//        ++vtxIter;
+//    }
+//    
+//    
+//}
+
 template<typename VtxOutIter, typename IdxOutIter>
 void makeSphere(float radius, int slices, int stacks, VtxOutIter vtxIter, IdxOutIter idxIter) {
   using namespace std;

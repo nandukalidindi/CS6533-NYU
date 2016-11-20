@@ -14,8 +14,12 @@ GLuint program;
 float wHeight = 1280.0, wWidth = 720.0;
 
 GLuint vertexPositionVBO;
-GLuint lineBufferObject;
+GLuint orbitPositionBO;
+GLuint ringPositionBO;
+
+GLuint oribitIndexBO;
 GLuint indexBO;
+GLuint ringIndexBO;
 GLuint colorBufferObject;
 GLuint normalBufferObject;
 
@@ -29,6 +33,7 @@ GLuint tangentAttributeFromVertexShader;
 GLuint lightPositionUniformFromFragmentShader0;
 GLuint lightPositionUniformFromFragmentShader1;
 GLuint lightPositionUniformFromFragmentShader2;
+GLuint lightPositionUniformFromFragmentShader3;
 
 GLuint uColorUniformFromFragmentShader;
 GLuint lightPositionUniformFromFragmentShader;
@@ -54,7 +59,7 @@ float lightXOffset = -0.5773, lightYOffset = 0.5773, lightZOffset = 0.5773;
 float redOffset = 1.0, blueOffset = 1.0, greenOffset = 1.0;
 float botX = 0.0, botY = 0.0, botZ = 0.0;
 float botXDegree = 0.0, botYDegree = 0.0, botZDegree = 0.0;
-int numIndices, timeSinceStart = 0.0;
+int numIndices, oribitNumIndices, ringNumIndices, timeSinceStart = 0.0;
 
 struct VertexPN {
     Cvec3f p;
@@ -88,9 +93,12 @@ TextureBinder earthTexBinder;
 TextureBinder marsTexBinder;
 TextureBinder jupiterTexBinder;
 TextureBinder saturnTexBinder;
+TextureBinder saturnRingTexBinder;
 TextureBinder uranusTexBinder;
+TextureBinder uranusRingTexBinder;
 TextureBinder neptuneTexBinder;
 TextureBinder plutoTexBinder;
+TextureBinder orbitTexBinder;
 
 /**
  * Structure to hold all the attribute, uniform, buffer object locations and bind
@@ -309,22 +317,26 @@ void display(void) {
     glClear(GL_COLOR_BUFFER_BIT|GL_DEPTH_BUFFER_BIT);
     glEnable(GL_BLEND);
     glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+//    glClearColor(0.0, 0.0, 0.0, 0.0);
     glClearColor(0.0, 0.0, 0.0, 0.0);
+
     
-    glUseProgram(program);
+//    glUseProgram(program);
     
     timeSinceStart = glutGet(GLUT_ELAPSED_TIME);
     
     glUniform3f(uColorUniformFromFragmentShader, redOffset, greenOffset, blueOffset);
-    glUniform3f(lightPositionUniformFromFragmentShader0, 0.0, 5.0, -15.0);
-    glUniform3f(lightPositionUniformFromFragmentShader1, -0.5, 1.5, -30.0);
-    glUniform3f(lightPositionUniformFromFragmentShader2, 0.0, -1.5, -15.0);
+//    glUniform3f(lightPositionUniformFromFragmentShader0, 1.5, 0.5, -30.0);
+    glUniform3f(lightPositionUniformFromFragmentShader0, 0.0, 0.0, 0.0);
+    glUniform3f(lightPositionUniformFromFragmentShader1, -1.5, 0.5, -30.0);
+    glUniform3f(lightPositionUniformFromFragmentShader2, 1.5, -0.5, -40.0);
+    glUniform3f(lightPositionUniformFromFragmentShader3, -1.5, -0.5, -40.0);
 
     
     // ------------------------------- EYE -------------------------------
-    eyeMatrix = quatToMatrix(Quat::makeKRotation(kVector, finalAngle)) *
-    //    quatToMatrix(Quat::makeYRotation(timeSinceStart/50.0)) *
-                Matrix4::makeTranslation(Cvec3(0.0, 0.0, 30.0));
+    eyeMatrix = /*quatToMatrix(Quat::makeXRotation(-75.0)) */
+                quatToMatrix(Quat::makeKRotation(kVector, finalAngle)) *
+                Matrix4::makeTranslation(Cvec3(0.0, 0.0, 35.0));
     // ------------------------------- EYE -------------------------------
     
     // Initialising a Genric bufferBinder object as the same buffers are used to
@@ -397,8 +409,10 @@ void display(void) {
     genericBufferBinder.texBinder = saturnTexBinder;
     Matrix4 saturnMatrix = quatToMatrix(Quat::makeYRotation((timeSinceStart * 9.64)/500.0)) *
                            Matrix4::makeTranslation(Cvec3(14.5, 0.0, 0.0)) *
-                           Matrix4::makeScale(Cvec3(0.8, 0.8, 0.8));
-    drawBodyParts(genericBufferBinder, saturnMatrix, NULL);
+                           Matrix4::makeScale(Cvec3(0.8, 0.8, 0.8)) *
+                           quatToMatrix(Quat::makeXRotation(-45.0)) *
+                           quatToMatrix(Quat::makeZRotation(timeSinceStart/10.0));
+    Entity *saturnEntity = drawBodyParts(genericBufferBinder, saturnMatrix, NULL);
     // ------------------------------- SATURN -------------------------------
     
     // ------------------------------- URANUS -------------------------------
@@ -406,13 +420,13 @@ void display(void) {
     Matrix4 uranusMatrix = quatToMatrix(Quat::makeYRotation((timeSinceStart * 6.81)/500.0)) *
                            Matrix4::makeTranslation(Cvec3(17.0, 0.0, 0.0)) *
                            Matrix4::makeScale(Cvec3(0.3, 0.3, 0.3));
-    drawBodyParts(genericBufferBinder, uranusMatrix, NULL);
+    Entity *uranusEntity = drawBodyParts(genericBufferBinder, uranusMatrix, NULL);
     // ------------------------------- URANUS -------------------------------
     
     // ------------------------------- NEPTUNE -------------------------------
     genericBufferBinder.texBinder = neptuneTexBinder;
     Matrix4 neptuneMatrix = quatToMatrix(Quat::makeYRotation((timeSinceStart * 5.43)/500.0)) *
-                            Matrix4::makeTranslation(Cvec3(18.50, 0.0, 0.0)) *
+                            Matrix4::makeTranslation(Cvec3(18.00, 0.0, 0.0)) *
                             Matrix4::makeScale(Cvec3(0.25, 0.25, 0.25));
     drawBodyParts(genericBufferBinder, neptuneMatrix, NULL);
     // ------------------------------- NEPTUNE -------------------------------
@@ -420,35 +434,56 @@ void display(void) {
     // ------------------------------- PLUTO -------------------------------
     genericBufferBinder.texBinder = plutoTexBinder;
     Matrix4 plutoMatrix = quatToMatrix(Quat::makeYRotation((timeSinceStart * 4.0)/500.0)) *
-                          Matrix4::makeTranslation(Cvec3(19.50, 0.0, 0.0)) *
+                          Matrix4::makeTranslation(Cvec3(19.00, 0.0, 0.0)) *
                           Matrix4::makeScale(Cvec3(0.15, 0.15, 0.15));
     drawBodyParts(genericBufferBinder, plutoMatrix, NULL);
     // ------------------------------- PLUTO -------------------------------
     
-    glBindBuffer(GL_ARRAY_BUFFER, lineBufferObject);
-    glVertexAttribPointer(postionAttributeFromVertexShader, 2, GL_FLOAT, GL_FALSE, 0, 0);
-    glEnableVertexAttribArray(postionAttributeFromVertexShader);
+    genericBufferBinder.vertexBufferObject = orbitPositionBO;
+    genericBufferBinder.indexBufferObject = oribitIndexBO;
+    genericBufferBinder.numIndices = oribitNumIndices;
     
-    glVertexAttribPointer(normalAttributeFromVertexShader, 2, GL_FLOAT, GL_FALSE, 0, 0);
-    glEnableVertexAttribArray(normalAttributeFromVertexShader);
+    genericBufferBinder.texBinder = orbitTexBinder;
+    Matrix4 mercuryOrbit = Matrix4::makeScale(Cvec3(1.0/2.0, 1.0/2.0, 1.0/2.0));
+    drawBodyParts(genericBufferBinder, mercuryOrbit, NULL);
     
-//    Matrix4 lineViewMatrix = inv(eyeMatrix) * Matrix4::makeScale(Cvec3(10.0 * 720.0/1280.0, 10.0, 10.0)) * Matrix4::makeXRotation(90.0);
-//    
-//    GLfloat glMatrix[16];
-//    lineViewMatrix.writeToColumnMajorMatrix(glMatrix);
-//    glUniformMatrix4fv(modelViewMatrixUniformFromVertexShader, 1, false, glMatrix);
-//    
-//    Matrix4 normalizedMatrix = normalMatrix(lineViewMatrix);
-//    normalizedMatrix.writeToColumnMajorMatrix(glMatrix);
-//    glUniformMatrix4fv(normalMatrixUniformFromVertexShader, 1, GL_FALSE, glMatrix);
-//
-//    Matrix4 projectionMatrix;
-//    projectionMatrix = projectionMatrix.makeProjection(45.0, 1.0, -0.1, -100.0);
-//    GLfloat glmatrixProjection[16];
-//    projectionMatrix.writeToColumnMajorMatrix(glmatrixProjection);
-//    glUniformMatrix4fv(projectionMatrixUniformFromVertexShader, 1, false, glmatrixProjection);
-//    
-//    glDrawArrays(GL_LINE_LOOP, 0, 1440);
+    Matrix4 venusOrbit = Matrix4::makeScale(Cvec3(1.0/1.35, 1.0/1.35, 1.0/1.35));
+    drawBodyParts(genericBufferBinder, venusOrbit, NULL);
+    
+    Matrix4 earthOrbit = Matrix4::makeScale(Cvec3(1.0, 1.0, 1.0));
+    drawBodyParts(genericBufferBinder, earthOrbit, NULL);
+    
+    Matrix4 marsOrbit = Matrix4::makeScale(Cvec3(1.35, 1.0, 1.35));
+    drawBodyParts(genericBufferBinder, marsOrbit, NULL);
+    
+    Matrix4 jupiterOrbit = Matrix4::makeScale(Cvec3(1.85, 1.0, 1.85));
+    drawBodyParts(genericBufferBinder, jupiterOrbit, NULL);
+    
+    Matrix4 saturnOrbit = Matrix4::makeScale(Cvec3(2.40, 1.0, 2.40));
+    drawBodyParts(genericBufferBinder, saturnOrbit, NULL);
+    
+    Matrix4 uranusOrbit = Matrix4::makeScale(Cvec3(2.825, 1.0, 2.825));
+    drawBodyParts(genericBufferBinder, uranusOrbit, NULL);
+    
+    Matrix4 neptuneOrbit = Matrix4::makeScale(Cvec3(3.0, 1.0, 3.0));
+    drawBodyParts(genericBufferBinder, neptuneOrbit, NULL);
+    
+    Matrix4 plutoOrbit = Matrix4::makeScale(Cvec3(3.165, 1.0, 3.165));
+    drawBodyParts(genericBufferBinder, plutoOrbit, NULL);
+    
+    genericBufferBinder.vertexBufferObject = ringPositionBO;
+    genericBufferBinder.indexBufferObject = ringIndexBO;
+    genericBufferBinder.numIndices = ringNumIndices;
+    
+    genericBufferBinder.texBinder = saturnRingTexBinder;
+    Matrix4 saturnRing = Matrix4::makeScale(Cvec3(2.0, 2.0, 2.0)) *
+                         quatToMatrix(Quat::makeXRotation(90.0));
+    drawBodyParts(genericBufferBinder, saturnRing, saturnEntity);
+    
+    genericBufferBinder.texBinder = uranusRingTexBinder;
+    Matrix4 uranusRing = Matrix4::makeScale(Cvec3(2.0, 2.0, 2.0)) *
+    quatToMatrix(Quat::makeXRotation(90.0));
+    drawBodyParts(genericBufferBinder, uranusRing, uranusEntity);
     
     // Disabled all vertex attributes
     glDisableVertexAttribArray(postionAttributeFromVertexShader);
@@ -491,6 +526,7 @@ void init() {
     lightPositionUniformFromFragmentShader0 = glGetUniformLocation(program, "lights[0].lightPosition");
     lightPositionUniformFromFragmentShader1 = glGetUniformLocation(program, "lights[1].lightPosition");
     lightPositionUniformFromFragmentShader2 = glGetUniformLocation(program, "lights[2].lightPosition");
+    lightPositionUniformFromFragmentShader3 = glGetUniformLocation(program, "lights[3].lightPosition");
     
     //Matrix Uniforms
     modelViewMatrixUniformFromVertexShader = glGetUniformLocation(program, "modelViewMatrix");
@@ -558,6 +594,12 @@ void init() {
     saturnTexBinder.specularTexture = loadGLTexture("/Users/kaybus/Documents/nandukalidindi-github/CS6533-NYU/Assignments/Assignment-3/3D\ models/Planets/Saturn/saturn_SPEC.png");
     
     saturnTexBinder.normalTexture = loadGLTexture("/Users/kaybus/Documents/nandukalidindi-github/CS6533-NYU/Assignments/Assignment-3/3D\ models/Planets/Saturn/saturn_NRM.png");
+    
+    saturnRingTexBinder.diffuseTexture = loadGLTexture("/Users/kaybus/Documents/nandukalidindi-github/CS6533-NYU/Assignments/Assignment-3/3D\ models/Planets/Saturn/saturnring.jpg");
+    
+//    saturnTexBinder.specularTexture = loadGLTexture("/Users/kaybus/Documents/nandukalidindi-github/CS6533-NYU/Assignments/Assignment-3/3D\ models/Planets/Saturn/saturn_SPEC.png");
+//    
+//    saturnTexBinder.normalTexture = loadGLTexture("/Users/kaybus/Documents/nandukalidindi-github/CS6533-NYU/Assignments/Assignment-3/3D\ models/Planets/Saturn/saturn_NRM.png");
     // ------------------------------- SATURN -------------------------------
     
     
@@ -567,6 +609,12 @@ void init() {
     uranusTexBinder.specularTexture = loadGLTexture("/Users/kaybus/Documents/nandukalidindi-github/CS6533-NYU/Assignments/Assignment-3/3D\ models/Planets/Uranus/uranus_SPEC.png");
     
     uranusTexBinder.normalTexture = loadGLTexture("/Users/kaybus/Documents/nandukalidindi-github/CS6533-NYU/Assignments/Assignment-3/3D\ models/Planets/Uranus/uranus_NRM.png");
+    
+    uranusRingTexBinder.diffuseTexture = loadGLTexture("/Users/kaybus/Documents/nandukalidindi-github/CS6533-NYU/Assignments/Assignment-3/3D\ models/Planets/Uranus/uranusringcolour.jpg");
+    
+//    uranusTexBinder.specularTexture = loadGLTexture("/Users/kaybus/Documents/nandukalidindi-github/CS6533-NYU/Assignments/Assignment-3/3D\ models/Planets/Uranus/uranus_SPEC.png");
+//    
+//    uranusTexBinder.normalTexture = loadGLTexture("/Users/kaybus/Documents/nandukalidindi-github/CS6533-NYU/Assignments/Assignment-3/3D\ models/Planets/Uranus/uranus_NRM.png");
     // ------------------------------- URANUS -------------------------------
     
     
@@ -586,6 +634,8 @@ void init() {
     plutoTexBinder.normalTexture = loadGLTexture("/Users/kaybus/Documents/nandukalidindi-github/CS6533-NYU/Assignments/Assignment-3/3D\ models/Planets/Pluto/pluto_NRM.png");
     // ------------------------------- NEPTUNE -------------------------------
     
+    orbitTexBinder.diffuseTexture = loadGLTexture("/Users/kaybus/Documents/nandukalidindi-github/CS6533-NYU/Assignments/Assignment-3/3D\ models/Planets/orbit_texture.jpg");
+    
     
 
     
@@ -604,6 +654,49 @@ void init() {
     glGenBuffers(1, &indexBO);
     glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, indexBO);
     glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(unsigned short) * idx.size(), idx.data(), GL_STATIC_DRAW);
+    
+//    getCubeVbIbLen(vbLen, ibLen);
+//    std::vector<VertexPN> vtx1(vbLen);
+//    std::vector<unsigned short> idx1(ibLen);
+//    makeCube(2.0, vtx1.begin(), idx1.begin());
+//    
+//    glGenBuffers(1, &orbitPositionBO);
+//    glBindBuffer(GL_ARRAY_BUFFER, orbitPositionBO);
+//    glBufferData(GL_ARRAY_BUFFER, sizeof(VertexPN) * vtx1.size(), vtx1.data(), GL_STATIC_DRAW);
+//
+//    glGenBuffers(1, &oribitIndexBO);
+//    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, oribitIndexBO);
+//    glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(unsigned short) * idx1.size(), idx1.data(), GL_STATIC_DRAW);
+//    oribitNumIndices = ibLen;
+
+//    getTorus(4, 4, vbLen, ibLen);
+//    makeTorus(5.0, 2.0, 4, 4, 1.0, vtx1.begin(), idx1.begin());
+    
+    std::vector<VertexPN> vtx1;
+    std::vector<unsigned short> idx1;
+    loadObjFile("/Users/kaybus/Documents/nandukalidindi-github/CS6533-NYU/Assignments/Assignment-3/3D\ models/torus_final.obj", vtx1, idx1);
+    
+    glGenBuffers(1, &orbitPositionBO);
+    glBindBuffer(GL_ARRAY_BUFFER, orbitPositionBO);
+    glBufferData(GL_ARRAY_BUFFER, sizeof(VertexPN) * vtx1.size(), vtx1.data(), GL_STATIC_DRAW);
+    
+    glGenBuffers(1, &oribitIndexBO);
+    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, oribitIndexBO);
+    glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(unsigned short) * idx1.size(), idx1.data(), GL_STATIC_DRAW);
+    oribitNumIndices = idx1.size();
+    
+    std::vector<VertexPN> vtx2;
+    std::vector<unsigned short> idx2;
+    loadObjFile("/Users/kaybus/Documents/nandukalidindi-github/CS6533-NYU/Assignments/Assignment-3/3D\ models/planet_ring.obj", vtx2, idx2);
+    
+    glGenBuffers(1, &ringPositionBO);
+    glBindBuffer(GL_ARRAY_BUFFER, ringPositionBO);
+    glBufferData(GL_ARRAY_BUFFER, sizeof(VertexPN) * vtx2.size(), vtx2.data(), GL_STATIC_DRAW);
+    
+    glGenBuffers(1, &ringIndexBO);
+    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ringIndexBO);
+    glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(unsigned short) * idx2.size(), idx2.data(), GL_STATIC_DRAW);
+    ringNumIndices = idx2.size();
     
 //    glGenBuffers(1, &lineBufferObject);
 //    glBindBuffer(GL_ARRAY_BUFFER, lineBufferObject);
@@ -652,7 +745,9 @@ void mouseMove(int x, int y) {
     Cvec3 finalVector = normalize(Cvec3(x, y, 30.0));
     finalAngle = -1 * acos(dot(initialVector, finalVector)) * 57.2958;
     
-    kVector = normalize(cross(initialVector, finalVector));
+    Cvec3 crossProduct = cross(initialVector, finalVector);
+    if (crossProduct[0] != 0 && crossProduct[1] != 0 && crossProduct[2] != 0)
+        kVector = normalize(crossProduct);
 }
 
 int main(int argc, char **argv) {
