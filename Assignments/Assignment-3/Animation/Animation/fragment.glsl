@@ -32,13 +32,13 @@ void main() {
         
         float diffuse = max(0.0, dot(textureNormal, lightDirection));
         float attenuation = attenuate(distance(varyingPosition, lightDirection) / 5.0, 2.7, 5.0);
-        diffuseColor += (vec3(1.0, 1.0, 1.0) * diffuse);
+        diffuseColor += (lights[0].lightColor * diffuse);
         
         
         vec3 v = normalize(-varyingPosition);
         vec3 h = normalize(v + lightDirection);
         float specular = pow(max(0.0, dot(h, textureNormal)), 64.0);
-        specularColor += vec3(1.0, 1.0, 1.0) * specular;
+        specularColor += (lights[0].specularLightColor) * specular;
     }
     vec3 intensity = (texture2D(diffuseTexture, varyingTexCoord).xyz * diffuseColor) +
                      (texture2D(specularTexture, varyingTexCoord).x * specularColor);

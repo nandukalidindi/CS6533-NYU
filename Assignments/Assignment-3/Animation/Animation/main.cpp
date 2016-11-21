@@ -13,53 +13,46 @@ GLuint program;
 
 float wHeight = 1280.0, wWidth = 720.0;
 
-GLuint vertexPositionVBO;
-GLuint orbitPositionBO;
-GLuint ringPositionBO;
+GLuint vertexPositionBO,
+       orbitPositionBO,
+       ringPositionBO,
+       oribitIndexBO,
+       indexBO,
+       ringIndexBO;
 
-GLuint oribitIndexBO;
-GLuint indexBO;
-GLuint ringIndexBO;
-GLuint colorBufferObject;
-GLuint normalBufferObject;
+GLuint postionAttributeFromVertexShader,
+       colorAttributeFromVertexShader,
+       normalAttributeFromVertexShader,
+       textureAttributeFromVertexShader,
+       binormalAttributeFromVertexShader,
+       tangentAttributeFromVertexShader;
 
-GLuint postionAttributeFromVertexShader;
-GLuint colorAttributeFromVertexShader;
-GLuint normalAttributeFromVertexShader;
-GLuint textureAttributeFromVertexShader;
-GLuint binormalAttributeFromVertexShader;
-GLuint tangentAttributeFromVertexShader;
+GLuint lightPositionUniformFromFragmentShader0,
+       lightPositionUniformFromFragmentShader1,
+       lightPositionUniformFromFragmentShader2,
+       lightPositionUniformFromFragmentShader3,
+       lightColorUniformFromFragmentShader0,
+       specularLightColorUniformFromFragmentShader0;
 
-GLuint lightPositionUniformFromFragmentShader0;
-GLuint lightPositionUniformFromFragmentShader1;
-GLuint lightPositionUniformFromFragmentShader2;
-GLuint lightPositionUniformFromFragmentShader3;
+GLuint modelViewMatrixUniformFromVertexShader,
+       normalMatrixUniformFromVertexShader,
+       projectionMatrixUniformFromVertexShader;
 
-GLuint uColorUniformFromFragmentShader;
-GLuint lightPositionUniformFromFragmentShader;
-GLuint lightColorUniformFromFragmentShader;
-GLuint specularLightColorUniformFromFragmentShader;
-
-GLuint modelViewMatrixUniformFromVertexShader;
-GLuint normalMatrixUniformFromVertexShader;
-GLuint projectionMatrixUniformFromVertexShader;
-
-GLuint diffuseTextureUniformLocation;
-GLuint specularTextureUniformLocation;
-GLuint normalTextureUniformLocation;
+GLuint diffuseTextureUniformLocation,
+       specularTextureUniformLocation,
+       normalTextureUniformLocation;
 
 Matrix4 eyeMatrix;
 
-Cvec3 initialVector;
-Cvec3 kVector;
+Cvec3 initialVector,
+      kVector;
+
 float finalAngle;
 
-float frameSpeed = 10.0f;
-float lightXOffset = -0.5773, lightYOffset = 0.5773, lightZOffset = 0.5773;
-float redOffset = 1.0, blueOffset = 1.0, greenOffset = 1.0;
-float botX = 0.0, botY = 0.0, botZ = 0.0;
-float botXDegree = 0.0, botYDegree = 0.0, botZDegree = 0.0;
-int numIndices, oribitNumIndices, ringNumIndices, timeSinceStart = 0.0;
+int numIndices,
+    oribitNumIndices,
+    ringNumIndices,
+    timeSinceStart = 0.0;
 
 struct VertexPN {
     Cvec3f p;
@@ -86,20 +79,21 @@ struct TextureBinder {
     GLuint normalTexture;
 };
 
-TextureBinder sunTexBinder;
-TextureBinder mercuryTexBinder;
-TextureBinder venusTexBinder;
-TextureBinder earthTexBinder;
-TextureBinder marsTexBinder;
-TextureBinder jupiterTexBinder;
-TextureBinder saturnTexBinder;
-TextureBinder saturnRingTexBinder;
-TextureBinder uranusTexBinder;
-TextureBinder uranusRingTexBinder;
-TextureBinder neptuneTexBinder;
-TextureBinder plutoTexBinder;
-TextureBinder orbitTexBinder;
+TextureBinder sunTexBinder,
+              mercuryTexBinder,
+              venusTexBinder,
+              earthTexBinder,
+              marsTexBinder,
+              jupiterTexBinder,
+              saturnTexBinder,
+              uranusTexBinder,
+              neptuneTexBinder,
+              plutoTexBinder;
 
+TextureBinder uranusRingTexBinder,
+              saturnRingTexBinder;
+
+TextureBinder orbitTexBinder;
 /**
  * Structure to hold all the attribute, uniform, buffer object locations and bind
  * them to the buffers accordingly
@@ -317,20 +311,18 @@ void display(void) {
     glClear(GL_COLOR_BUFFER_BIT|GL_DEPTH_BUFFER_BIT);
     glEnable(GL_BLEND);
     glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-//    glClearColor(0.0, 0.0, 0.0, 0.0);
     glClearColor(0.0, 0.0, 0.0, 0.0);
-
-    
-//    glUseProgram(program);
     
     timeSinceStart = glutGet(GLUT_ELAPSED_TIME);
     
-    glUniform3f(uColorUniformFromFragmentShader, redOffset, greenOffset, blueOffset);
 //    glUniform3f(lightPositionUniformFromFragmentShader0, 1.5, 0.5, -30.0);
     glUniform3f(lightPositionUniformFromFragmentShader0, 0.0, 0.0, 0.0);
     glUniform3f(lightPositionUniformFromFragmentShader1, -1.5, 0.5, -30.0);
     glUniform3f(lightPositionUniformFromFragmentShader2, 1.5, -0.5, -40.0);
     glUniform3f(lightPositionUniformFromFragmentShader3, -1.5, -0.5, -40.0);
+    
+    glUniform3f(lightColorUniformFromFragmentShader0, 1.0, 1.0, 1.0);
+    glUniform3f(specularLightColorUniformFromFragmentShader0, 1.0, 1.0, 1.0);
 
     
     // ------------------------------- EYE -------------------------------
@@ -342,8 +334,7 @@ void display(void) {
     // Initialising a Genric bufferBinder object as the same buffers are used to
     // render all the objects in hierarchy
     BufferBinder genericBufferBinder;
-    genericBufferBinder.vertexBufferObject = vertexPositionVBO;
-    genericBufferBinder.colorBufferObject = colorBufferObject;
+    genericBufferBinder.vertexBufferObject = vertexPositionBO;
     genericBufferBinder.indexBufferObject = indexBO;
     genericBufferBinder.numIndices = numIndices;
     genericBufferBinder.positionAttribute = postionAttributeFromVertexShader;
@@ -516,9 +507,6 @@ void init() {
     binormalAttributeFromVertexShader = glGetAttribLocation(program, "binormal");
     tangentAttributeFromVertexShader = glGetAttribLocation(program, "tangent");
     
-    // Normal Uniforms
-    uColorUniformFromFragmentShader = glGetUniformLocation(program, "uColor");
-    
     diffuseTextureUniformLocation = glGetUniformLocation(program, "diffuseTexture");
     specularTextureUniformLocation = glGetUniformLocation(program, "specularTexture");
     normalTextureUniformLocation = glGetUniformLocation(program, "normalTexture");
@@ -527,6 +515,9 @@ void init() {
     lightPositionUniformFromFragmentShader1 = glGetUniformLocation(program, "lights[1].lightPosition");
     lightPositionUniformFromFragmentShader2 = glGetUniformLocation(program, "lights[2].lightPosition");
     lightPositionUniformFromFragmentShader3 = glGetUniformLocation(program, "lights[3].lightPosition");
+    
+    lightColorUniformFromFragmentShader0 = glGetUniformLocation(program, "lights[0].lightColor");
+    specularLightColorUniformFromFragmentShader0 = glGetUniformLocation(program, "lights[0].specularLightColor");
     
     //Matrix Uniforms
     modelViewMatrixUniformFromVertexShader = glGetUniformLocation(program, "modelViewMatrix");
@@ -647,30 +638,13 @@ void init() {
     numIndices = ibLen;
     
     // Bind the respective vertex, color and index buffers
-    glGenBuffers(1, &vertexPositionVBO);
-    glBindBuffer(GL_ARRAY_BUFFER, vertexPositionVBO);
+    glGenBuffers(1, &vertexPositionBO);
+    glBindBuffer(GL_ARRAY_BUFFER, vertexPositionBO);
     glBufferData(GL_ARRAY_BUFFER, sizeof(VertexPN) * vtx.size(), vtx.data(), GL_STATIC_DRAW);
     
     glGenBuffers(1, &indexBO);
     glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, indexBO);
     glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(unsigned short) * idx.size(), idx.data(), GL_STATIC_DRAW);
-    
-//    getCubeVbIbLen(vbLen, ibLen);
-//    std::vector<VertexPN> vtx1(vbLen);
-//    std::vector<unsigned short> idx1(ibLen);
-//    makeCube(2.0, vtx1.begin(), idx1.begin());
-//    
-//    glGenBuffers(1, &orbitPositionBO);
-//    glBindBuffer(GL_ARRAY_BUFFER, orbitPositionBO);
-//    glBufferData(GL_ARRAY_BUFFER, sizeof(VertexPN) * vtx1.size(), vtx1.data(), GL_STATIC_DRAW);
-//
-//    glGenBuffers(1, &oribitIndexBO);
-//    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, oribitIndexBO);
-//    glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(unsigned short) * idx1.size(), idx1.data(), GL_STATIC_DRAW);
-//    oribitNumIndices = ibLen;
-
-//    getTorus(4, 4, vbLen, ibLen);
-//    makeTorus(5.0, 2.0, 4, 4, 1.0, vtx1.begin(), idx1.begin());
     
     std::vector<VertexPN> vtx1;
     std::vector<unsigned short> idx1;
@@ -712,11 +686,8 @@ void idle(void) {
     glutPostRedisplay();
 }
 
-void keyboard(unsigned char key, int x, int y) {
-
-}
-
 void shiftFrame(int &x, int &y) {
+    cout << "X IS " << x << " AND Y IS " << y << endl;
     float xShiftHalf = wHeight/2.0, yShiftHalf = wWidth/2.0;
     if(x >=0 && x <=xShiftHalf && y >=0 && y<=yShiftHalf) {
         x = -abs(xShiftHalf-x);
@@ -760,7 +731,6 @@ int main(int argc, char **argv) {
     glutReshapeFunc(reshape);
     glutIdleFunc(idle);
     
-    glutKeyboardFunc(keyboard);
     glutMouseFunc(mouse);
     glutMotionFunc(mouseMove);
     
