@@ -31,7 +31,7 @@ void main() {
         vec3 lightDirection = -normalize(varyingPosition-lights[i].lightPosition);
         
         float diffuse = max(0.0, dot(textureNormal, lightDirection));
-        float attenuation = attenuate(distance(varyingPosition, lightDirection) / 5.0, 2.7, 5.0);
+        float attenuation = attenuate(distance(varyingPosition, lightDirection) / 50.0, 50.7, 50.0);
         diffuseColor += (lights[0].lightColor * diffuse);
         
         

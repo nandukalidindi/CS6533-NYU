@@ -47,7 +47,7 @@ Matrix4 eyeMatrix;
 Cvec3 initialVector,
       kVector;
 
-float finalAngle;
+float finalAngle, initialAngle, previousAngle = 0.0;
 
 int numIndices,
     oribitNumIndices,
@@ -89,6 +89,8 @@ TextureBinder sunTexBinder,
               uranusTexBinder,
               neptuneTexBinder,
               plutoTexBinder;
+
+TextureBinder moonTexBinder;
 
 TextureBinder uranusRingTexBinder,
               saturnRingTexBinder;
@@ -315,20 +317,20 @@ void display(void) {
     
     timeSinceStart = glutGet(GLUT_ELAPSED_TIME);
     
-//    glUniform3f(lightPositionUniformFromFragmentShader0, 1.5, 0.5, -30.0);
-    glUniform3f(lightPositionUniformFromFragmentShader0, 0.0, 0.0, 0.0);
-    glUniform3f(lightPositionUniformFromFragmentShader1, -1.5, 0.5, -30.0);
-    glUniform3f(lightPositionUniformFromFragmentShader2, 1.5, -0.5, -40.0);
-    glUniform3f(lightPositionUniformFromFragmentShader3, -1.5, -0.5, -40.0);
+    glUniform3f(lightPositionUniformFromFragmentShader0, 0.0, 0.0, -60.0);
+    glUniform3f(lightPositionUniformFromFragmentShader1, 0.0, 0.0, -30.0);
+    glUniform3f(lightPositionUniformFromFragmentShader2, 5.0, 0.0, -40.0);
+    glUniform3f(lightPositionUniformFromFragmentShader3, 0.0, 0.0, 0.0);
     
     glUniform3f(lightColorUniformFromFragmentShader0, 1.0, 1.0, 1.0);
     glUniform3f(specularLightColorUniformFromFragmentShader0, 1.0, 1.0, 1.0);
 
     
     // ------------------------------- EYE -------------------------------
-    eyeMatrix = /*quatToMatrix(Quat::makeXRotation(-75.0)) */
+    eyeMatrix = quatToMatrix(Quat::makeXRotation(-20.0)) *
                 quatToMatrix(Quat::makeKRotation(kVector, finalAngle)) *
-                Matrix4::makeTranslation(Cvec3(0.0, 0.0, 35.0));
+                Matrix4::makeTranslation(Cvec3(0.0, 0.0, 30.0)) *
+                Matrix4::makeZRotation(-25.0);
     // ------------------------------- EYE -------------------------------
     
     // Initialising a Genric bufferBinder object as the same buffers are used to
@@ -338,7 +340,6 @@ void display(void) {
     genericBufferBinder.indexBufferObject = indexBO;
     genericBufferBinder.numIndices = numIndices;
     genericBufferBinder.positionAttribute = postionAttributeFromVertexShader;
-    genericBufferBinder.colorAttribute = colorAttributeFromVertexShader;
     genericBufferBinder.normalAttribute = normalAttributeFromVertexShader;
     genericBufferBinder.textureAttribute = textureAttributeFromVertexShader;
     genericBufferBinder.binormalAttribute = binormalAttributeFromVertexShader;
@@ -351,7 +352,8 @@ void display(void) {
     // ------------------------------- SUN -------------------------------
     genericBufferBinder.texBinder = sunTexBinder;
     Matrix4 sunMatrix =  quatToMatrix(Quat::makeYRotation(timeSinceStart/10.0)) *
-                         Matrix4::makeScale(Cvec3(1.5, 1.5, 1.5));
+                         Matrix4::makeScale(Cvec3(1.8, 1.8, 1.8)) *
+                         quatToMatrix(Quat::makeYRotation(timeSinceStart/10.0f));
     drawBodyParts(genericBufferBinder, sunMatrix, NULL);
     // ------------------------------- SUN -------------------------------
     
@@ -359,7 +361,9 @@ void display(void) {
     genericBufferBinder.texBinder = mercuryTexBinder;
     Matrix4 mercuryMatrix = quatToMatrix(Quat::makeYRotation(timeSinceStart * 47.89/500.0)) *
                             Matrix4::makeTranslation(Cvec3(3.0, 0.0, 0.0)) *
-                            Matrix4::makeScale(Cvec3(0.2, 0.2, 0.2));
+                            Matrix4::makeScale(Cvec3(0.2, 0.2, 0.2)) *
+                            quatToMatrix(Quat::makeXRotation(-80.0)) *
+                            quatToMatrix(Quat::makeYRotation(timeSinceStart/10.0));
     drawBodyParts(genericBufferBinder, mercuryMatrix, NULL);
     // ------------------------------- MERCURY -------------------------------
     
@@ -367,24 +371,36 @@ void display(void) {
     genericBufferBinder.texBinder = venusTexBinder;
     Matrix4 venusMatrix = quatToMatrix(Quat::makeYRotation((timeSinceStart * 35.03)/500.0)) *
                           Matrix4::makeTranslation(Cvec3(4.5, 0.0, 0.0)) *
-                          Matrix4::makeScale(Cvec3(0.3, 0.3, 0.3));
+                          Matrix4::makeScale(Cvec3(0.3, 0.3, 0.3)) *
+                          quatToMatrix(Quat::makeXRotation(-70.0)) *
+                          quatToMatrix(Quat::makeYRotation(timeSinceStart/10.0));
     drawBodyParts(genericBufferBinder, venusMatrix, NULL);
     // ------------------------------- VENUS -------------------------------
     
     // ------------------------------- EARTH -------------------------------
     genericBufferBinder.texBinder = earthTexBinder;
     Matrix4 earthMatrix = quatToMatrix(Quat::makeYRotation((timeSinceStart * 29.79)/500.0)) *
-    Matrix4::makeTranslation(Cvec3(6.0, 0.0, 0.0)) *
-    Matrix4::makeScale(Cvec3(0.5, 0.5, 0.5)) *
-    quatToMatrix(Quat::makeYRotation(timeSinceStart/10.0));
-    drawBodyParts(genericBufferBinder, earthMatrix, NULL);
+                          Matrix4::makeTranslation(Cvec3(6.0, 0.0, 0.0)) *
+                          Matrix4::makeScale(Cvec3(0.5, 0.5, 0.5)) *
+                          quatToMatrix(Quat::makeZRotation(45.0));
+    Entity *earthEntity = drawBodyParts(genericBufferBinder, earthMatrix, NULL);
     // ------------------------------- EARTH -------------------------------
+    
+    genericBufferBinder.texBinder = moonTexBinder;
+    Matrix4 moonMatrix = quatToMatrix(Quat::makeYRotation(timeSinceStart/10.0f)) *
+    Matrix4::makeTranslation(Cvec3(2.0, 0.0, 0.0)) *
+    Matrix4::makeScale(Cvec3(0.4, 0.4, 0.4)) *
+    quatToMatrix(Quat::makeYRotation(timeSinceStart/10.0f));
+    
+    drawBodyParts(genericBufferBinder, moonMatrix, earthEntity);
     
     // ------------------------------- MARS -------------------------------
     genericBufferBinder.texBinder = marsTexBinder;
     Matrix4 marsMatrix = quatToMatrix(Quat::makeYRotation((timeSinceStart * 24.13)/500.0)) *
                          Matrix4::makeTranslation(Cvec3(8.0, 0.0, 0.0)) *
-                         Matrix4::makeScale(Cvec3(0.4, 0.4, 0.4));
+                         Matrix4::makeScale(Cvec3(0.4, 0.4, 0.4)) *
+    quatToMatrix(Quat::makeXRotation(-30.0)) *
+    quatToMatrix(Quat::makeYRotation(timeSinceStart/10.0));
     drawBodyParts(genericBufferBinder, marsMatrix, NULL);
     // ------------------------------- MARS -------------------------------
     
@@ -392,7 +408,9 @@ void display(void) {
     genericBufferBinder.texBinder = jupiterTexBinder;
     Matrix4 jupiterMatrix = quatToMatrix(Quat::makeYRotation((timeSinceStart * 13.06)/500.0)) *
                             Matrix4::makeTranslation(Cvec3(11.0, 0.0, 0.0)) *
-                            Matrix4::makeScale(Cvec3(1.0, 1.0, 1.0));
+                            Matrix4::makeScale(Cvec3(1.0, 1.0, 1.0)) *
+                            quatToMatrix(Quat::makeXRotation(-40.0)) *
+                            quatToMatrix(Quat::makeYRotation(timeSinceStart/10.0));
     drawBodyParts(genericBufferBinder, jupiterMatrix, NULL);
     // ------------------------------- JUPITER -------------------------------
     
@@ -402,7 +420,7 @@ void display(void) {
                            Matrix4::makeTranslation(Cvec3(14.5, 0.0, 0.0)) *
                            Matrix4::makeScale(Cvec3(0.8, 0.8, 0.8)) *
                            quatToMatrix(Quat::makeXRotation(-45.0)) *
-                           quatToMatrix(Quat::makeZRotation(timeSinceStart/10.0));
+                           quatToMatrix(Quat::makeYRotation(timeSinceStart/10.0));
     Entity *saturnEntity = drawBodyParts(genericBufferBinder, saturnMatrix, NULL);
     // ------------------------------- SATURN -------------------------------
     
@@ -410,7 +428,9 @@ void display(void) {
     genericBufferBinder.texBinder = uranusTexBinder;
     Matrix4 uranusMatrix = quatToMatrix(Quat::makeYRotation((timeSinceStart * 6.81)/500.0)) *
                            Matrix4::makeTranslation(Cvec3(17.0, 0.0, 0.0)) *
-                           Matrix4::makeScale(Cvec3(0.3, 0.3, 0.3));
+                           Matrix4::makeScale(Cvec3(0.3, 0.3, 0.3)) *
+                           quatToMatrix(Quat::makeXRotation(45.0)) *
+                           quatToMatrix(Quat::makeYRotation(timeSinceStart/10.0));
     Entity *uranusEntity = drawBodyParts(genericBufferBinder, uranusMatrix, NULL);
     // ------------------------------- URANUS -------------------------------
     
@@ -418,7 +438,9 @@ void display(void) {
     genericBufferBinder.texBinder = neptuneTexBinder;
     Matrix4 neptuneMatrix = quatToMatrix(Quat::makeYRotation((timeSinceStart * 5.43)/500.0)) *
                             Matrix4::makeTranslation(Cvec3(18.00, 0.0, 0.0)) *
-                            Matrix4::makeScale(Cvec3(0.25, 0.25, 0.25));
+                            Matrix4::makeScale(Cvec3(0.25, 0.25, 0.25)) *
+                            quatToMatrix(Quat::makeXRotation(60.0)) *
+                            quatToMatrix(Quat::makeYRotation(timeSinceStart/10.0));
     drawBodyParts(genericBufferBinder, neptuneMatrix, NULL);
     // ------------------------------- NEPTUNE -------------------------------
     
@@ -426,7 +448,9 @@ void display(void) {
     genericBufferBinder.texBinder = plutoTexBinder;
     Matrix4 plutoMatrix = quatToMatrix(Quat::makeYRotation((timeSinceStart * 4.0)/500.0)) *
                           Matrix4::makeTranslation(Cvec3(19.00, 0.0, 0.0)) *
-                          Matrix4::makeScale(Cvec3(0.15, 0.15, 0.15));
+                          Matrix4::makeScale(Cvec3(0.15, 0.15, 0.15)) *
+                          quatToMatrix(Quat::makeXRotation(70.0)) *
+                          quatToMatrix(Quat::makeYRotation(timeSinceStart/10.0));
     drawBodyParts(genericBufferBinder, plutoMatrix, NULL);
     // ------------------------------- PLUTO -------------------------------
     
@@ -467,13 +491,11 @@ void display(void) {
     genericBufferBinder.numIndices = ringNumIndices;
     
     genericBufferBinder.texBinder = saturnRingTexBinder;
-    Matrix4 saturnRing = Matrix4::makeScale(Cvec3(2.0, 2.0, 2.0)) *
-                         quatToMatrix(Quat::makeXRotation(90.0));
+    Matrix4 saturnRing = Matrix4::makeScale(Cvec3(2.0, 2.0, 2.0));
     drawBodyParts(genericBufferBinder, saturnRing, saturnEntity);
     
     genericBufferBinder.texBinder = uranusRingTexBinder;
-    Matrix4 uranusRing = Matrix4::makeScale(Cvec3(2.0, 2.0, 2.0)) *
-    quatToMatrix(Quat::makeXRotation(90.0));
+    Matrix4 uranusRing = Matrix4::makeScale(Cvec3(2.0, 2.0, 2.0));
     drawBodyParts(genericBufferBinder, uranusRing, uranusEntity);
     
     // Disabled all vertex attributes
@@ -558,6 +580,12 @@ void init() {
     earthTexBinder.specularTexture = loadGLTexture("/Users/kaybus/Documents/nandukalidindi-github/CS6533-NYU/Assignments/Assignment-3/3D\ models/Planets/Earth/earthmap1k_SPEC.png");
     
     earthTexBinder.normalTexture = loadGLTexture("/Users/kaybus/Documents/nandukalidindi-github/CS6533-NYU/Assignments/Assignment-3/3D\ models/Planets/Earth/earthmap1k_NRM.png");
+    
+    moonTexBinder.diffuseTexture = loadGLTexture("/Users/kaybus/Documents/nandukalidindi-github/CS6533-NYU/Assignments/Assignment-3/3D\ models/Planets/Moon/moon.jpg");
+    
+//    moonTexBinder.specularTexture = loadGLTexture("/Users/kaybus/Documents/nandukalidindi-github/CS6533-NYU/Assignments/Assignment-3/3D\ models/Planets/Earth/earthmap1k_SPEC.png");
+//    
+//    moonTexBinder.normalTexture = loadGLTexture("/Users/kaybus/Documents/nandukalidindi-github/CS6533-NYU/Assignments/Assignment-3/3D\ models/Planets/Earth/earthmap1k_NRM.png");
     // ------------------------------- EARTH -------------------------------
     
 
@@ -687,7 +715,6 @@ void idle(void) {
 }
 
 void shiftFrame(int &x, int &y) {
-    cout << "X IS " << x << " AND Y IS " << y << endl;
     float xShiftHalf = wHeight/2.0, yShiftHalf = wWidth/2.0;
     if(x >=0 && x <=xShiftHalf && y >=0 && y<=yShiftHalf) {
         x = -abs(xShiftHalf-x);
@@ -709,12 +736,16 @@ void mouse(int button, int state, int x, int y) {
         shiftFrame(x, y);
         initialVector = normalize(Cvec3(x, y, 30.0));
     }
+    if(state == 1) {
+        previousAngle = finalAngle;
+    }
+    
 }
 
 void mouseMove(int x, int y) {
     shiftFrame(x, y);
     Cvec3 finalVector = normalize(Cvec3(x, y, 30.0));
-    finalAngle = -1 * acos(dot(initialVector, finalVector)) * 57.2958;
+    finalAngle = -1 * acos(dot(initialVector, finalVector)) * 57.2958 + previousAngle;
     
     Cvec3 crossProduct = cross(initialVector, finalVector);
     if (crossProduct[0] != 0 && crossProduct[1] != 0 && crossProduct[2] != 0)
