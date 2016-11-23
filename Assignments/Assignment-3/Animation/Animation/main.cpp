@@ -398,7 +398,7 @@ void display(void) {
     }
     
     genericBufferBinder.texBinder = moonTexBinder;
-    Matrix4 moonMatrix = quatToMatrix(Quat::makeYRotation(timeSinceStart/10.0f)) *
+    Matrix4 moonMatrix = quatToMatrix(Quat::makeYRotation((timeSinceStart * 25.00)/500.0f)) *
                          Matrix4::makeTranslation(Cvec3(2.0, 0.0, 0.0)) *
                          Matrix4::makeScale(Cvec3(0.4, 0.4, 0.4)) *
                          quatToMatrix(Quat::makeYRotation(timeSinceStart/10.0f));
@@ -583,7 +583,7 @@ int main(int argc, char **argv) {
     glutInit(&argc, argv);
     glutInitDisplayMode(GLUT_DOUBLE | GLUT_RGB | GLUT_DEPTH);
     glutInitWindowSize(wHeight, wWidth);
-    glutCreateWindow("Running Bot");
+    glutCreateWindow("Solar System");
     
     glutDisplayFunc(display);
     glutReshapeFunc(reshape);
