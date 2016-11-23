@@ -80,31 +80,31 @@ saturnRingTexBinder;
 TextureBinder orbitTexBinder;
 
 struct CelestialBodyTexture {
-    string diffuse;
-    string specular;
-    string normal;
+    char *diffuse;
+    char *specular;
+    char *normal;
 };
 
 CelestialBodyTexture celestialBodyTextures[] = {
-    { "sun.jpg", "sun_SPEC.png", "sun_NRM.png" },
+    { "/Users/kaybus/Documents/nandukalidindi-github/CS6533-NYU/Assignments/Assignment-3/3D\ models/Planets/Sun/sun.jpg", "/Users/kaybus/Documents/nandukalidindi-github/CS6533-NYU/Assignments/Assignment-3/3D\ models/Planets/Sun/sun_SPEC.png", "/Users/kaybus/Documents/nandukalidindi-github/CS6533-NYU/Assignments/Assignment-3/3D\ models/Planets/Sun/sun_NRM.png" },
     
-    { "mercury.jpg", "mercury_SPEC.png", "mercury_NRM.png" },
+    { "/Users/kaybus/Documents/nandukalidindi-github/CS6533-NYU/Assignments/Assignment-3/3D\ models/Planets/Mercury/mercury.jpg", "/Users/kaybus/Documents/nandukalidindi-github/CS6533-NYU/Assignments/Assignment-3/3D\ models/Planets/Mercury/mercury_SPEC.png", "/Users/kaybus/Documents/nandukalidindi-github/CS6533-NYU/Assignments/Assignment-3/3D\ models/Planets/Mercury/mercury_NRM.png" },
     
-    { "venus.jpg", "venus_SPEC.png", "venus_NRM.png" },
+    { "/Users/kaybus/Documents/nandukalidindi-github/CS6533-NYU/Assignments/Assignment-3/3D\ models/Planets/Venus/venus.jpg", "/Users/kaybus/Documents/nandukalidindi-github/CS6533-NYU/Assignments/Assignment-3/3D\ models/Planets/Venus/venus_SPEC.png", "/Users/kaybus/Documents/nandukalidindi-github/CS6533-NYU/Assignments/Assignment-3/3D\ models/Planets/Venus/venus_NRM.png" },
     
-    { "earth.jpg", "earth_SPEC.png", "earth_NRM.png" },
+    { "/Users/kaybus/Documents/nandukalidindi-github/CS6533-NYU/Assignments/Assignment-3/3D\ models/Planets/Earth/earthmap1k.jpg", "/Users/kaybus/Documents/nandukalidindi-github/CS6533-NYU/Assignments/Assignment-3/3D\ models/Planets/Earth/earthmap1k_SPEC.png", "/Users/kaybus/Documents/nandukalidindi-github/CS6533-NYU/Assignments/Assignment-3/3D\ models/Planets/Earth/earthmap1k_NRM.png" },
     
-    { "mars.jpg", "mars_SPEC.png", "mars_NRM.png" },
+    { "/Users/kaybus/Documents/nandukalidindi-github/CS6533-NYU/Assignments/Assignment-3/3D\ models/Planets/Mars/mars.jpg", "/Users/kaybus/Documents/nandukalidindi-github/CS6533-NYU/Assignments/Assignment-3/3D\ models/Planets/Mars/mars_SPEC.png", "/Users/kaybus/Documents/nandukalidindi-github/CS6533-NYU/Assignments/Assignment-3/3D\ models/Planets/Mars/mars_NRM.png" },
     
-    { "jupiter.jpg", "jupiter_SPEC.png", "jupiter_NRM.png" },
+    { "/Users/kaybus/Documents/nandukalidindi-github/CS6533-NYU/Assignments/Assignment-3/3D\ models/Planets/Jupiter/jupiter.jpg", "/Users/kaybus/Documents/nandukalidindi-github/CS6533-NYU/Assignments/Assignment-3/3D\ models/Planets/Jupiter/jupiter_SPEC.png", "/Users/kaybus/Documents/nandukalidindi-github/CS6533-NYU/Assignments/Assignment-3/3D\ models/Planets/Jupiter/jupiter_NRM.png" },
     
-    { "saturn.jpg", "saturn_SPEC.png", "saturn_NRM.png" },
+    { "/Users/kaybus/Documents/nandukalidindi-github/CS6533-NYU/Assignments/Assignment-3/3D\ models/Planets/Saturn/saturn.jpg", "/Users/kaybus/Documents/nandukalidindi-github/CS6533-NYU/Assignments/Assignment-3/3D\ models/Planets/Saturn/saturn_SPEC.png", "/Users/kaybus/Documents/nandukalidindi-github/CS6533-NYU/Assignments/Assignment-3/3D\ models/Planets/Saturn/saturn_NRM.png" },
     
-    { "uranus.jpg", "uranus_SPEC.png", "uranus_NRM.png" },
+    { "/Users/kaybus/Documents/nandukalidindi-github/CS6533-NYU/Assignments/Assignment-3/3D\ models/Planets/Uranus/uranus.jpg", "/Users/kaybus/Documents/nandukalidindi-github/CS6533-NYU/Assignments/Assignment-3/3D\ models/Planets/Uranus/uranus_SPEC.png", "/Users/kaybus/Documents/nandukalidindi-github/CS6533-NYU/Assignments/Assignment-3/3D\ models/Planets/Uranus/uranus_NRM.png" },
     
-    { "neptune.jpg", "neptune_SPEC.png", "neptune_NRM.png" },
+    { "/Users/kaybus/Documents/nandukalidindi-github/CS6533-NYU/Assignments/Assignment-3/3D\ models/Planets/Neptune/neptune.jpg", "/Users/kaybus/Documents/nandukalidindi-github/CS6533-NYU/Assignments/Assignment-3/3D\ models/Planets/Neptune/neptune_SPEC.png", "/Users/kaybus/Documents/nandukalidindi-github/CS6533-NYU/Assignments/Assignment-3/3D\ models/Planets/Neptune/neptune_NRM.png" },
     
-    { "pluto.jpg", "pluto_SPEC.png", "pluto_NRM.png" }
+    { "/Users/kaybus/Documents/nandukalidindi-github/CS6533-NYU/Assignments/Assignment-3/3D\ models/Planets/Pluto/pluto.jpg", "/Users/kaybus/Documents/nandukalidindi-github/CS6533-NYU/Assignments/Assignment-3/3D\ models/Planets/Pluto/pluto_SPEC.png", "/Users/kaybus/Documents/nandukalidindi-github/CS6533-NYU/Assignments/Assignment-3/3D\ models/Planets/Pluto/pluto_NRM.png" }
 };
 
 struct VertexPN {
@@ -476,19 +476,19 @@ void init() {
     normalMatrixUniformFromVertexShader = glGetUniformLocation(program, "normalMatrix");
     projectionMatrixUniformFromVertexShader = glGetUniformLocation(program, "projectionMatrix");
     
-    for(int i=0; i<=9; i++) {
-        planetProperties[i].texture.diffuseTexture = loadGLTexture(planetProperties[i].images.diffuse.c_str());
-        planetProperties[i].texture.specularTexture = loadGLTexture(planetProperties[i].images.specular.c_str());
-        planetProperties[i].texture.normalTexture = loadGLTexture(planetProperties[i].images.normal.c_str());
+    for(int i=0; i<10; i++) {
+        planetProperties[i].texture.diffuseTexture = loadGLTexture(planetProperties[i].images.diffuse);
+        planetProperties[i].texture.specularTexture = loadGLTexture(planetProperties[i].images.specular);
+        planetProperties[i].texture.normalTexture = loadGLTexture(planetProperties[i].images.normal);
     }
     
-    saturnRingTexBinder.diffuseTexture = loadGLTexture("saturnring.jpg");
+    saturnRingTexBinder.diffuseTexture = loadGLTexture("/Users/kaybus/Documents/nandukalidindi-github/CS6533-NYU/Assignments/Assignment-3/3D\ models/Planets/Saturn/saturnring.jpg");
     
-    uranusRingTexBinder.diffuseTexture = loadGLTexture("uranusringcolour.jpg");
+    uranusRingTexBinder.diffuseTexture = loadGLTexture("/Users/kaybus/Documents/nandukalidindi-github/CS6533-NYU/Assignments/Assignment-3/3D\ models/Planets/Uranus/uranusringcolour.jpg");
     
-    moonTexBinder.diffuseTexture = loadGLTexture("moon.jpg");
+    moonTexBinder.diffuseTexture = loadGLTexture("/Users/kaybus/Documents/nandukalidindi-github/CS6533-NYU/Assignments/Assignment-3/3D\ models/Planets/Moon/moon.jpg");
     
-    orbitTexBinder.diffuseTexture = loadGLTexture("orbit_texture.jpg");
+    orbitTexBinder.diffuseTexture = loadGLTexture("/Users/kaybus/Documents/nandukalidindi-github/CS6533-NYU/Assignments/Assignment-3/3D\ models/Planets/orbit_texture.jpg");
     
     int ibLen, vbLen;
     getSphereVbIbLen(20, 20, vbLen, ibLen);
@@ -508,7 +508,7 @@ void init() {
     
     std::vector<VertexPN> vtx1;
     std::vector<unsigned short> idx1;
-    loadObjFile("torus_final.obj", vtx1, idx1);
+    loadObjFile("/Users/kaybus/Documents/nandukalidindi-github/CS6533-NYU/Assignments/Assignment-3/3D\ models/torus_final.obj", vtx1, idx1);
     
     glGenBuffers(1, &orbitPositionBO);
     glBindBuffer(GL_ARRAY_BUFFER, orbitPositionBO);
@@ -517,11 +517,11 @@ void init() {
     glGenBuffers(1, &oribitIndexBO);
     glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, oribitIndexBO);
     glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(unsigned short) * idx1.size(), idx1.data(), GL_STATIC_DRAW);
-    oribitNumIndices = (int)idx1.size();
+    oribitNumIndices = idx1.size();
     
     std::vector<VertexPN> vtx2;
     std::vector<unsigned short> idx2;
-    loadObjFile("planet_ring.obj", vtx2, idx2);
+    loadObjFile("/Users/kaybus/Documents/nandukalidindi-github/CS6533-NYU/Assignments/Assignment-3/3D\ models/planet_ring.obj", vtx2, idx2);
     
     glGenBuffers(1, &ringPositionBO);
     glBindBuffer(GL_ARRAY_BUFFER, ringPositionBO);
@@ -530,7 +530,7 @@ void init() {
     glGenBuffers(1, &ringIndexBO);
     glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ringIndexBO);
     glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(unsigned short) * idx2.size(), idx2.data(), GL_STATIC_DRAW);
-    ringNumIndices = (int)idx2.size();
+    ringNumIndices = idx2.size();
 }
 
 void reshape(int w, int h) {
