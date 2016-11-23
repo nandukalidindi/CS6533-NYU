@@ -14,7 +14,7 @@ struct Light {
     vec3 specularLightColor;
 };
 
-uniform Light lights[4];
+uniform Light lights[5];
 
 float attenuate(float dist, float a, float b) {
     return 1.0 / (1.0 + a*dist + b*dist*dist);
@@ -27,18 +27,18 @@ void main() {
     
     vec3 diffuseColor = vec3(0.0, 0.0, 0.0);
     vec3 specularColor = vec3(0.0, 0.0, 0.0);
-    for(int i=0; i<4; i++) {
+    for(int i=0; i<5; i++) {
         vec3 lightDirection = -normalize(varyingPosition-lights[i].lightPosition);
         
         float diffuse = max(0.0, dot(textureNormal, lightDirection));
-        float attenuation = attenuate(distance(varyingPosition, lightDirection) / 50.0, 50.7, 50.0);
-        diffuseColor += (lights[0].lightColor * diffuse);
+        float attenuation = attenuate(distance(varyingPosition, lightDirection) / 250.0, 2.5, 5.0);
+        diffuseColor += (lights[0].lightColor * diffuse) * attenuation;
         
         
         vec3 v = normalize(-varyingPosition);
         vec3 h = normalize(v + lightDirection);
         float specular = pow(max(0.0, dot(h, textureNormal)), 64.0);
-        specularColor += (lights[0].specularLightColor) * specular;
+        specularColor += (lights[0].specularLightColor) * specular * attenuation;
     }
     vec3 intensity = (texture2D(diffuseTexture, varyingTexCoord).xyz * diffuseColor) +
                      (texture2D(specularTexture, varyingTexCoord).x * specularColor);

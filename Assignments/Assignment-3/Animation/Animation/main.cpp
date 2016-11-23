@@ -31,6 +31,7 @@ GLuint lightPositionUniformFromFragmentShader0,
        lightPositionUniformFromFragmentShader1,
        lightPositionUniformFromFragmentShader2,
        lightPositionUniformFromFragmentShader3,
+       lightPositionUniformFromFragmentShader4,
        lightColorUniformFromFragmentShader0,
        specularLightColorUniformFromFragmentShader0;
 
@@ -346,10 +347,17 @@ void display(void) {
     
     timeSinceStart = glutGet(GLUT_ELAPSED_TIME);
     
-    glUniform3f(lightPositionUniformFromFragmentShader0, 0.0, 0.0, -60.0);
-    glUniform3f(lightPositionUniformFromFragmentShader1, 0.0, 0.0, -30.0);
-    glUniform3f(lightPositionUniformFromFragmentShader2, 5.0, 0.0, -40.0);
-    glUniform3f(lightPositionUniformFromFragmentShader3, 0.0, 0.0, 0.0);
+    Cvec4 lightPosition0 = inv(eyeMatrix) * Cvec4(-8.0, 0.0, 8.0, 1.0),
+          lightPosition1 = inv(eyeMatrix) * Cvec4(8.0, 0.0, 8.0, 1.0),
+          lightPosition2 = inv(eyeMatrix) * Cvec4(8.0, 0.0, -8.0, 1.0),
+          lightPosition3 = inv(eyeMatrix) * Cvec4(-8.0, 0.0, -8.0, 1.0),
+          lightPosition4 = inv(eyeMatrix) * Cvec4(0.0, 8.0, 0.0, 1.0);
+    
+    glUniform3f(lightPositionUniformFromFragmentShader0, lightPosition0[0], lightPosition0[1], lightPosition0[2]);
+    glUniform3f(lightPositionUniformFromFragmentShader1, lightPosition1[0], lightPosition1[1], lightPosition1[2]);
+    glUniform3f(lightPositionUniformFromFragmentShader2, lightPosition2[0], lightPosition2[1], lightPosition2[2]);
+    glUniform3f(lightPositionUniformFromFragmentShader3, lightPosition3[0], lightPosition3[1], lightPosition3[2]);
+    glUniform3f(lightPositionUniformFromFragmentShader4, lightPosition4[0], lightPosition4[1], lightPosition4[2]);
     
     glUniform3f(lightColorUniformFromFragmentShader0, 1.0, 1.0, 1.0);
     glUniform3f(specularLightColorUniformFromFragmentShader0, 1.0, 1.0, 1.0);
@@ -458,6 +466,7 @@ void init() {
     lightPositionUniformFromFragmentShader1 = glGetUniformLocation(program, "lights[1].lightPosition");
     lightPositionUniformFromFragmentShader2 = glGetUniformLocation(program, "lights[2].lightPosition");
     lightPositionUniformFromFragmentShader3 = glGetUniformLocation(program, "lights[3].lightPosition");
+    lightPositionUniformFromFragmentShader4 = glGetUniformLocation(program, "lights[4].lightPosition");
     
     lightColorUniformFromFragmentShader0 = glGetUniformLocation(program, "lights[0].lightColor");
     specularLightColorUniformFromFragmentShader0 = glGetUniformLocation(program, "lights[0].specularLightColor");
