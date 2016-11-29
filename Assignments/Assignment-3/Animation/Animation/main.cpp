@@ -446,7 +446,7 @@ void init() {
     glReadBuffer(GL_BACK);
     
     program = glCreateProgram();
-    readAndCompileShader(program, "/Users/kaybus/Documents/nandukalidindi-github/CS6533-NYU/Assignments/Assignment-3/Animation/Animation/vertex.glsl", "/Users/kaybus/Documents/nandukalidindi-github/CS6533-NYU/Assignments/Assignment-3/Animation/Animation/fragment.glsl");
+    readAndCompileShader(program, "vertex.glsl", "fragment.glsl");
     
     glUseProgram(program);
     
