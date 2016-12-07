@@ -26,11 +26,13 @@
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
+		5B61A1BF1DF7D56E00EA7146 /* skybox_v.glsl */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = skybox_v.glsl; sourceTree = "<group>"; };
+		5B61A1C01DF7D57A00EA7146 /* skybox_f.glsl */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = skybox_f.glsl; sourceTree = "<group>"; };
 		5B69BA491DD2DA6800EA8A7B /* tiny_obj_loader.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = tiny_obj_loader.h; sourceTree = "<group>"; };
 		5B7764761DA90237008AF42E /* vertex.glsl */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = vertex.glsl; sourceTree = "<group>"; };
 		5B7764771DA90246008AF42E /* fragment.glsl */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = fragment.glsl; sourceTree = "<group>"; };
 		5BDA3BFC1DBBDE8A009DCDA0 /* quat.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = quat.h; sourceTree = "<group>"; };
-		6D5ABB251D7E261400E93B80 /* SolarSystem */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = SolarSystem; sourceTree = BUILT_PRODUCTS_DIR; };
+		6D5ABB251D7E261400E93B80 /* SolarSystemExtend */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = SolarSystemExtend; sourceTree = BUILT_PRODUCTS_DIR; };
 		6D5ABB281D7E261400E93B80 /* main.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = main.cpp; sourceTree = "<group>"; };
 		6D5ABB2F1D7E273300E93B80 /* GLUT.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = GLUT.framework; path = System/Library/Frameworks/GLUT.framework; sourceTree = SDKROOT; };
 		6D5ABB311D7E274900E93B80 /* OpenGL.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = OpenGL.framework; path = System/Library/Frameworks/OpenGL.framework; sourceTree = SDKROOT; };
@@ -58,7 +60,7 @@
 			children = (
 				6D5ABB311D7E274900E93B80 /* OpenGL.framework */,
 				6D5ABB2F1D7E273300E93B80 /* GLUT.framework */,
-				6D5ABB271D7E261400E93B80 /* SolarSystem */,
+				6D5ABB271D7E261400E93B80 /* SolarSystemExtend */,
 				6D5ABB261D7E261400E93B80 /* Products */,
 			);
 			sourceTree = "<group>";
@@ -66,12 +68,12 @@
 		6D5ABB261D7E261400E93B80 /* Products */ = {
 			isa = PBXGroup;
 			children = (
-				6D5ABB251D7E261400E93B80 /* SolarSystem */,
+				6D5ABB251D7E261400E93B80 /* SolarSystemExtend */,
 			);
 			name = Products;
 			sourceTree = "<group>";
 		};
-		6D5ABB271D7E261400E93B80 /* SolarSystem */ = {
+		6D5ABB271D7E261400E93B80 /* SolarSystemExtend */ = {
 			isa = PBXGroup;
 			children = (
 				5BDA3BFC1DBBDE8A009DCDA0 /* quat.h */,
@@ -83,17 +85,19 @@
 				5B7764761DA90237008AF42E /* vertex.glsl */,
 				5B7764771DA90246008AF42E /* fragment.glsl */,
 				5B69BA491DD2DA6800EA8A7B /* tiny_obj_loader.h */,
+				5B61A1BF1DF7D56E00EA7146 /* skybox_v.glsl */,
+				5B61A1C01DF7D57A00EA7146 /* skybox_f.glsl */,
 			);
-			name = SolarSystem;
-			path = "/Users/kaybus/Documents/nandukalidindi-github/CS6533-NYU/Assignments/Assignment-3/SolarSystem/SolarSystem";
+			name = SolarSystemExtend;
+			path = "/Users/kaybus/Documents/nandukalidindi-github/CS6533-NYU/Assignments/Assignment-4/SolarSystemExtend/SolarSystemExtend";
 			sourceTree = "<absolute>";
 		};
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
-		6D5ABB241D7E261400E93B80 /* SolarSystem */ = {
+		6D5ABB241D7E261400E93B80 /* SolarSystemExtend */ = {
 			isa = PBXNativeTarget;
-			buildConfigurationList = 6D5ABB2C1D7E261400E93B80 /* Build configuration list for PBXNativeTarget "SolarSystem" */;
+			buildConfigurationList = 6D5ABB2C1D7E261400E93B80 /* Build configuration list for PBXNativeTarget "SolarSystemExtend" */;
 			buildPhases = (
 				6D5ABB211D7E261400E93B80 /* Sources */,
 				6D5ABB221D7E261400E93B80 /* Frameworks */,
@@ -103,9 +107,9 @@
 			);
 			dependencies = (
 			);
-			name = SolarSystem;
+			name = SolarSystemExtend;
 			productName = TemplateProject;
-			productReference = 6D5ABB251D7E261400E93B80 /* SolarSystem */;
+			productReference = 6D5ABB251D7E261400E93B80 /* SolarSystemExtend */;
 			productType = "com.apple.product-type.tool";
 		};
 /* End PBXNativeTarget section */
@@ -122,7 +126,7 @@
 					};
 				};
 			};
-			buildConfigurationList = 6D5ABB201D7E261400E93B80 /* Build configuration list for PBXProject "SolarSystem" */;
+			buildConfigurationList = 6D5ABB201D7E261400E93B80 /* Build configuration list for PBXProject "SolarSystemExtend" */;
 			compatibilityVersion = "Xcode 3.2";
 			developmentRegion = English;
 			hasScannedForEncodings = 0;
@@ -134,7 +138,7 @@
 			projectDirPath = "";
 			projectRoot = "";
 			targets = (
-				6D5ABB241D7E261400E93B80 /* SolarSystem */,
+				6D5ABB241D7E261400E93B80 /* SolarSystemExtend */,
 			);
 		};
 /* End PBXProject section */
@@ -238,7 +242,7 @@
 			buildSettings = {
 				GCC_WARN_ABOUT_DEPRECATED_FUNCTIONS = NO;
 				HEADER_SEARCH_PATHS = /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.11.sdk/System/Library/Frameworks/GLUT.framework/Versions/A/Headers;
-				PRODUCT_NAME = SolarSystem;
+				PRODUCT_NAME = SolarSystemExtend;
 			};
 			name = Debug;
 		};
@@ -247,14 +251,14 @@
 			buildSettings = {
 				GCC_WARN_ABOUT_DEPRECATED_FUNCTIONS = NO;
 				HEADER_SEARCH_PATHS = /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.11.sdk/System/Library/Frameworks/GLUT.framework/Versions/A/Headers;
-				PRODUCT_NAME = SolarSystem;
+				PRODUCT_NAME = SolarSystemExtend;
 			};
 			name = Release;
 		};
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
-		6D5ABB201D7E261400E93B80 /* Build configuration list for PBXProject "SolarSystem" */ = {
+		6D5ABB201D7E261400E93B80 /* Build configuration list for PBXProject "SolarSystemExtend" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				6D5ABB2A1D7E261400E93B80 /* Debug */,
@@ -263,7 +267,7 @@
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
 		};
-		6D5ABB2C1D7E261400E93B80 /* Build configuration list for PBXNativeTarget "SolarSystem" */ = {
+		6D5ABB2C1D7E261400E93B80 /* Build configuration list for PBXNativeTarget "SolarSystemExtend" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				6D5ABB2D1D7E261400E93B80 /* Debug */,
