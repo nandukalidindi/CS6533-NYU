@@ -9,10 +9,24 @@
 #include "tiny_obj_loader.h"
 
 GLuint program;
+
+GLuint screenTrianglesProgram,
+       screenFramebufferUniform,
+       screenTrianglesPositionBuffer,
+       screenTrianglesPositionAttribute,
+       screenTrianglesUVBuffer,
+       screenTrianglesTexCoordAttribute;
+
 GLuint environmentMapProgram;
 GLuint cubeMap;
 
 float wHeight = 1280.0, wWidth = 720.0;
+
+GLuint frameBuffer;
+
+GLuint frameBufferTexture;
+
+GLuint depthBufferTexture;
 
 GLuint vertexPositionBO,
        orbitPositionBO,
@@ -197,10 +211,6 @@ struct BufferBinder {
         glUniform1i(normalTextureUniform, 2);
         glActiveTexture(GL_TEXTURE2);
         glBindTexture(GL_TEXTURE_2D, texBinder.normalTexture);
-        
-        glUniform1i(environmentMapUniformLocation, 3);
-        glActiveTexture(GL_TEXTURE3);
-        glBindTexture(GL_TEXTURE_CUBE_MAP, texBinder.environmentMap);
     }
 };
 
@@ -358,7 +368,10 @@ void loadObjFile(const std::string &fileName, std::vector<VertexPN> &outVertices
 }
 
 void display(void) {
+    glBindFramebuffer(GL_FRAMEBUFFER, frameBuffer);
+    glViewport(0, 0, 1280, 720);
     glClear(GL_COLOR_BUFFER_BIT|GL_DEPTH_BUFFER_BIT);
+    
     glEnable(GL_BLEND);
     glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
     glClearColor(0.0, 0.0, 0.0, 0.0);
@@ -456,7 +469,7 @@ void display(void) {
     
     glUseProgram(environmentMapProgram);
     
-    glDisable(GL_CULL_FACE);
+//    glDisable(GL_CULL_FACE);
     
     glBindBuffer(GL_ARRAY_BUFFER, cubePositionBO);
     glVertexAttribPointer(postionAttributeFromVertexShaderE, 3, GL_FLOAT, GL_FALSE, sizeof(VertexPN), (void*)offsetof(VertexPN, p));
@@ -472,10 +485,11 @@ void display(void) {
     glActiveTexture(GL_TEXTURE3);
     glBindTexture(GL_TEXTURE_CUBE_MAP, cubeMap);
     
-    Matrix4 environmentMatrix = Matrix4::makeScale(Cvec3(100.0, 100.0, 100.0)) *
-                                quatToMatrix(Quat::makeXRotation(timeSinceStart/10.0f)) *
-                                quatToMatrix(Quat::makeYRotation(timeSinceStart/10.0f)) *
-                                quatToMatrix(Quat::makeZRotation(timeSinceStart/10.0f)) ;
+    
+    Matrix4 environmentMatrix = Matrix4::makeScale(Cvec3(100.0, 100.0, 100.0));
+//                                quatToMatrix(Quat::makeXRotation(timeSinceStart/10.0f)) *
+//                                quatToMatrix(Quat::makeYRotation(timeSinceStart/10.0f)) *
+//                                quatToMatrix(Quat::makeZRotation(timeSinceStart/10.0f)) ;
     
     Matrix4 modelViewMatrix = inv(eyeMatrix) * environmentMatrix;
     
@@ -497,13 +511,37 @@ void display(void) {
     
     glDisableVertexAttribArray(postionAttributeFromVertexShaderE);
     glDisableVertexAttribArray(normalAttributeFromVertexShaderE);
+    
+    glBindFramebuffer(GL_FRAMEBUFFER, 0);
+    glViewport(0, 0, 1280, 720);
+    glClear(GL_COLOR_BUFFER_BIT|GL_DEPTH_BUFFER_BIT);
+    
+    glUseProgram(screenTrianglesProgram);
+    
+    glUniform1i(screenFramebufferUniform, 0);
+    glActiveTexture(GL_TEXTURE0);
+    glBindTexture(GL_TEXTURE_2D, frameBufferTexture);
+    
+    glBindBuffer(GL_ARRAY_BUFFER, screenTrianglesPositionBuffer);
+    glVertexAttribPointer(screenTrianglesPositionAttribute, 2, GL_FLOAT, GL_FALSE, 0, 0);
+    glEnableVertexAttribArray(screenTrianglesPositionAttribute);
+    
+    glBindBuffer(GL_ARRAY_BUFFER, screenTrianglesUVBuffer);
+    glVertexAttribPointer(screenTrianglesTexCoordAttribute, 2, GL_FLOAT, GL_FALSE, 0, 0);
+    glEnableVertexAttribArray(screenTrianglesTexCoordAttribute);
+    
+    glDrawArrays(GL_TRIANGLES, 0, 6);
+    
+    glDisableVertexAttribArray(screenTrianglesPositionAttribute);
+    glDisableVertexAttribArray(screenTrianglesTexCoordAttribute);
+    
     glutSwapBuffers();
 }
 
 void init() {
     glClearDepth(0.0f);
     glCullFace(GL_BACK);
-    glEnable(GL_CULL_FACE);
+//    glEnable(GL_CULL_FACE);
     glEnable(GL_DEPTH_TEST);
     glDepthFunc(GL_GREATER);
     glReadBuffer(GL_BACK);
@@ -631,6 +669,72 @@ void init() {
     
     
     environmentTexBinder.environmentMap = cubeMap;
+    
+    screenTrianglesProgram = glCreateProgram();
+    
+    readAndCompileShader(screenTrianglesProgram, "/Users/kaybus/Documents/nandukalidindi-github/CS6533-NYU/Assignments/Assignment-4/SolarSystemExtend/SolarSystemExtend/screen_v.glsl", "/Users/kaybus/Documents/nandukalidindi-github/CS6533-NYU/Assignments/Assignment-4/SolarSystemExtend/SolarSystemExtend/screen_f.glsl");
+    
+    glGenFramebuffers(1, &frameBuffer);
+    glBindFramebuffer(GL_FRAMEBUFFER, frameBuffer);
+    
+    glGenTextures(1, &frameBufferTexture);
+    glBindTexture(GL_TEXTURE_2D, frameBufferTexture);
+    glTexImage2D(GL_TEXTURE_2D, 0,GL_RGB, 1280, 720, 0, GL_RGB,
+                 GL_UNSIGNED_BYTE, NULL);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+    
+    
+    glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0,
+                           GL_TEXTURE_2D, frameBufferTexture, 0);
+    
+    
+    glGenTextures(1, &depthBufferTexture);
+    glBindTexture(GL_TEXTURE_2D, depthBufferTexture);
+    glTexImage2D(GL_TEXTURE_2D, 0,GL_DEPTH_COMPONENT, 1280, 720, 0,GL_DEPTH_COMPONENT,
+                 GL_UNSIGNED_BYTE, NULL);
+    
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+    
+    glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH_COMPONENT24, 1280, 720);
+    glFramebufferTexture2D(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_TEXTURE_2D,
+                           depthBufferTexture, 0);
+    
+    glBindFramebuffer(GL_FRAMEBUFFER, 0);
+    
+    screenTrianglesPositionAttribute = glGetAttribLocation(screenTrianglesProgram, "position");
+    screenTrianglesTexCoordAttribute = glGetAttribLocation(screenTrianglesProgram, "texCoord");
+    
+    glGenBuffers(1, &screenTrianglesUVBuffer);
+    glBindBuffer(GL_ARRAY_BUFFER, screenTrianglesUVBuffer);
+    GLfloat screenTriangleUVs[] = {
+        1.0f, 1.0f,
+        1.0f, 0.0f,
+        0.0f, 0.0,
+        0.0f, 0.0f,
+        0.0f, 1.0f,
+        1.0f, 1.0f
+    };
+    glBufferData(GL_ARRAY_BUFFER, sizeof(screenTriangleUVs), screenTriangleUVs, GL_STATIC_DRAW);
+    
+    glGenBuffers(1, &screenTrianglesPositionBuffer);
+    glBindBuffer(GL_ARRAY_BUFFER, screenTrianglesPositionBuffer);
+    GLfloat screenTrianglePositions[] = {
+        1.0f, 1.0f,
+        1.0f, -1.0f,
+        -1.0f, -1.0f,
+        -1.0f, -1.0f,
+        -1.0f, 1.0f,
+        1.0f, 1.0f
+//        0.5f, 0.5f,
+//        0.5f, -0.5f,
+//        -0.5f, -0.5f,
+//        -0.5f, -0.5f,
+//        -0.5f, 0.5f,
+//        0.5f, 0.5f
+    };
+    glBufferData(GL_ARRAY_BUFFER, sizeof(screenTrianglePositions), screenTrianglePositions, GL_STATIC_DRAW);
 }
 
 void reshape(int w, int h) {

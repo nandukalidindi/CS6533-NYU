@@ -26,6 +26,8 @@
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
+		5B565AA01DFBFD78002483AD /* screen_v.glsl */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = screen_v.glsl; sourceTree = "<group>"; };
+		5B565AA11DFBFD83002483AD /* screen_f.glsl */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = screen_f.glsl; sourceTree = "<group>"; };
 		5B61A1BF1DF7D56E00EA7146 /* skybox_v.glsl */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = skybox_v.glsl; sourceTree = "<group>"; };
 		5B61A1C01DF7D57A00EA7146 /* skybox_f.glsl */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = skybox_f.glsl; sourceTree = "<group>"; };
 		5B69BA491DD2DA6800EA8A7B /* tiny_obj_loader.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = tiny_obj_loader.h; sourceTree = "<group>"; };
@@ -87,6 +89,8 @@
 				5B69BA491DD2DA6800EA8A7B /* tiny_obj_loader.h */,
 				5B61A1BF1DF7D56E00EA7146 /* skybox_v.glsl */,
 				5B61A1C01DF7D57A00EA7146 /* skybox_f.glsl */,
+				5B565AA01DFBFD78002483AD /* screen_v.glsl */,
+				5B565AA11DFBFD83002483AD /* screen_f.glsl */,
 			);
 			name = SolarSystemExtend;
 			path = "/Users/kaybus/Documents/nandukalidindi-github/CS6533-NYU/Assignments/Assignment-4/SolarSystemExtend/SolarSystemExtend";
