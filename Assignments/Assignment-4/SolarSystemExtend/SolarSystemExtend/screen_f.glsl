@@ -4,11 +4,11 @@
 //    gl_FragColor = texture2D( screenFramebuffer, texCoordVar);
 //}
 
-uniform sampler2D texture;
+uniform sampler2D screenFramebuffer;
 varying vec2 texCoordVar;
 void main()
 {
-    gl_FragColor = vec4(1.0-texture2D(texture, texCoordVar).xyz, 1.0);
+    gl_FragColor = vec4(1.0-texture2D(screenFramebuffer, texCoordVar).xyz, 1.0);
 }
 
 //uniform sampler2D texture;
