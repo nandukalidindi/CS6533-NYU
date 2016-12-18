@@ -386,45 +386,45 @@ void display(void) {
     genericBufferBinder.specularTextureUniform = specularTextureUniformLocation;
     genericBufferBinder.normalTextureUniform = normalTextureUniformLocation;
     
-    Matrix4 planetMatrix;
-    for(int i=0; i<=9; i++) {
-        genericBufferBinder.texBinder = planetProperties[i].texture;
-        planetMatrix = quatToMatrix(Quat::makeYRotation(timeSinceStart * planetProperties[i].revolutionRate/500.0)) *
-                       Matrix4::makeTranslation(planetProperties[i].radius) *
-                       Matrix4::makeScale(planetProperties[i].size) *
-                       quatToMatrix(Quat::makeXRotation(planetProperties[i].intialAngle)) *
-                       quatToMatrix(Quat::makeYRotation(timeSinceStart/10.0));
-        planetProperties[i].planetEntity = drawBodyParts(genericBufferBinder, planetMatrix, NULL);
-    }
+//    Matrix4 planetMatrix;
+//    for(int i=0; i<=9; i++) {
+//        genericBufferBinder.texBinder = planetProperties[i].texture;
+//        planetMatrix = quatToMatrix(Quat::makeYRotation(timeSinceStart * planetProperties[i].revolutionRate/500.0)) *
+//                       Matrix4::makeTranslation(planetProperties[i].radius) *
+//                       Matrix4::makeScale(planetProperties[i].size) *
+//                       quatToMatrix(Quat::makeXRotation(planetProperties[i].intialAngle)) *
+//                       quatToMatrix(Quat::makeYRotation(timeSinceStart/10.0));
+//        planetProperties[i].planetEntity = drawBodyParts(genericBufferBinder, planetMatrix, NULL);
+//    }
     
-    genericBufferBinder.texBinder = moonTexBinder;
-    Matrix4 moonMatrix = quatToMatrix(Quat::makeYRotation((timeSinceStart * 25.00)/500.0f)) *
-                         Matrix4::makeTranslation(Cvec3(2.0, 0.0, 0.0)) *
-                         Matrix4::makeScale(Cvec3(0.4, 0.4, 0.4)) *
-                         quatToMatrix(Quat::makeYRotation(timeSinceStart/10.0f));
+//    genericBufferBinder.texBinder = moonTexBinder;
+//    Matrix4 moonMatrix = quatToMatrix(Quat::makeYRotation((timeSinceStart * 25.00)/500.0f)) *
+//                         Matrix4::makeTranslation(Cvec3(2.0, 0.0, 0.0)) *
+//                         Matrix4::makeScale(Cvec3(0.4, 0.4, 0.4)) *
+//                         quatToMatrix(Quat::makeYRotation(timeSinceStart/10.0f));
+//    
+//    drawBodyParts(genericBufferBinder, moonMatrix, planetProperties[3].planetEntity);
     
-    drawBodyParts(genericBufferBinder, moonMatrix, planetProperties[3].planetEntity);
-    
-    genericBufferBinder.vertexBufferObject = orbitPositionBO;
-    genericBufferBinder.indexBufferObject = oribitIndexBO;
-    genericBufferBinder.numIndices = oribitNumIndices;
-    
-    genericBufferBinder.texBinder = orbitTexBinder;
-    for(int i=1; i<=9; i++) {
-        Matrix4 planetOrbit = Matrix4::makeScale(planetProperties[i].orbit);
-        drawBodyParts(genericBufferBinder, planetOrbit, NULL);
-    }
-    
+//    genericBufferBinder.vertexBufferObject = orbitPositionBO;
+//    genericBufferBinder.indexBufferObject = oribitIndexBO;
+//    genericBufferBinder.numIndices = oribitNumIndices;
+//    
+//    genericBufferBinder.texBinder = orbitTexBinder;
+//    for(int i=1; i<=9; i++) {
+//        Matrix4 planetOrbit = Matrix4::makeScale(planetProperties[i].orbit);
+//        drawBodyParts(genericBufferBinder, planetOrbit, NULL);
+//    }
+//    
     genericBufferBinder.vertexBufferObject = ringPositionBO;
     genericBufferBinder.indexBufferObject = ringIndexBO;
     genericBufferBinder.numIndices = ringNumIndices;
-    
-    genericBufferBinder.texBinder = saturnRingTexBinder;
-    Matrix4 saturnRing = Matrix4::makeScale(Cvec3(2.0, 2.0, 2.0));
-    drawBodyParts(genericBufferBinder, saturnRing, planetProperties[6].planetEntity);
+//
+//    genericBufferBinder.texBinder = saturnRingTexBinder;
+//    Matrix4 saturnRing = Matrix4::makeScale(Cvec3(2.0, 2.0, 2.0));
+//    drawBodyParts(genericBufferBinder, saturnRing, planetProperties[6].planetEntity);
     
     genericBufferBinder.texBinder = uranusRingTexBinder;
-    Matrix4 uranusRing = Matrix4::makeScale(Cvec3(2.0, 2.0, 2.0));
+    Matrix4 uranusRing = Matrix4::makeScale(Cvec3(1.0, 1.0, 1.0));
     drawBodyParts(genericBufferBinder, uranusRing, planetProperties[7].planetEntity);
     
     // Disabled all vertex attributes
@@ -476,19 +476,19 @@ void init() {
     normalMatrixUniformFromVertexShader = glGetUniformLocation(program, "normalMatrix");
     projectionMatrixUniformFromVertexShader = glGetUniformLocation(program, "projectionMatrix");
     
-    for(int i=0; i<10; i++) {
-        planetProperties[i].texture.diffuseTexture = loadGLTexture(planetProperties[i].images.diffuse.c_str());
-        planetProperties[i].texture.specularTexture = loadGLTexture(planetProperties[i].images.specular.c_str());
-        planetProperties[i].texture.normalTexture = loadGLTexture(planetProperties[i].images.normal.c_str());
-    }
+//    for(int i=0; i<10; i++) {
+//        planetProperties[i].texture.diffuseTexture = loadGLTexture(planetProperties[i].images.diffuse.c_str());
+//        planetProperties[i].texture.specularTexture = loadGLTexture(planetProperties[i].images.specular.c_str());
+//        planetProperties[i].texture.normalTexture = loadGLTexture(planetProperties[i].images.normal.c_str());
+//    }
     
-    saturnRingTexBinder.diffuseTexture = loadGLTexture("saturnring.jpg");
-    
+//    saturnRingTexBinder.diffuseTexture = loadGLTexture("saturnring.jpg");
+//    
     uranusRingTexBinder.diffuseTexture = loadGLTexture("uranusringcolour.jpg");
-    
-    moonTexBinder.diffuseTexture = loadGLTexture("moon.jpg");
-    
-    orbitTexBinder.diffuseTexture = loadGLTexture("orbit_texture.jpg");
+//
+//    moonTexBinder.diffuseTexture = loadGLTexture("moon.jpg");
+//    
+//    orbitTexBinder.diffuseTexture = loadGLTexture("orbit_texture.jpg");
     
     int ibLen, vbLen;
     getSphereVbIbLen(20, 20, vbLen, ibLen);
@@ -508,7 +508,7 @@ void init() {
     
     std::vector<VertexPN> vtx1;
     std::vector<unsigned short> idx1;
-    loadObjFile("torus_final.obj", vtx1, idx1);
+//    loadObjFile("torus_final.obj", vtx1, idx1);
     
     glGenBuffers(1, &orbitPositionBO);
     glBindBuffer(GL_ARRAY_BUFFER, orbitPositionBO);
@@ -521,7 +521,8 @@ void init() {
     
     std::vector<VertexPN> vtx2;
     std::vector<unsigned short> idx2;
-    loadObjFile("planet_ring.obj", vtx2, idx2);
+//    loadObjFile("planet_ring.obj", vtx2, idx2);
+    loadObjFile("/Users/kaybus/Documents/nandukalidindi-github/CS6533-NYU/Assignments/Assignment-3/3D\ models/shell.obj", vtx2, idx2);
     
     glGenBuffers(1, &ringPositionBO);
     glBindBuffer(GL_ARRAY_BUFFER, ringPositionBO);

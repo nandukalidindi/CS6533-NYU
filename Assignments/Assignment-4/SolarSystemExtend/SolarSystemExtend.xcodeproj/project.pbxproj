@@ -26,11 +26,31 @@
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
+		5B36FF6F1E05FB140020607B /* black_and_white_vertex.glsl */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = black_and_white_vertex.glsl; sourceTree = "<group>"; };
+		5B36FF701E05FB210020607B /* black_and_white_fragment.glsl */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = black_and_white_fragment.glsl; sourceTree = "<group>"; };
+		5B36FF711E05FB600020607B /* invert_color_vertex.glsl */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = invert_color_vertex.glsl; sourceTree = "<group>"; };
+		5B36FF721E05FB6D0020607B /* invert_color_fragment.glsl */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = invert_color_fragment.glsl; sourceTree = "<group>"; };
+		5B36FF731E05FBD10020607B /* fxaa_vertex.glsl */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = fxaa_vertex.glsl; sourceTree = "<group>"; };
+		5B36FF741E05FBDE0020607B /* fxaa_fragment.glsl */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = fxaa_fragment.glsl; sourceTree = "<group>"; };
+		5B36FF751E06000A0020607B /* hdr_vertex.glsl */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = hdr_vertex.glsl; sourceTree = "<group>"; };
+		5B36FF761E0600130020607B /* hdr_fragment.glsl */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = hdr_fragment.glsl; sourceTree = "<group>"; };
+		5B36FF781E06139F0020607B /* luminance_clamp_fragment.glsl */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = luminance_clamp_fragment.glsl; sourceTree = "<group>"; };
+		5B36FF791E0613B20020607B /* luminance_clamp_vertex.glsl */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = luminance_clamp_vertex.glsl; sourceTree = "<group>"; };
+		5B36FF7A1E0613CB0020607B /* final_additive_vertex.glsl */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = final_additive_vertex.glsl; sourceTree = "<group>"; };
+		5B36FF7B1E0613D70020607B /* final_additive_fragment.glsl */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = final_additive_fragment.glsl; sourceTree = "<group>"; };
+		5B36FF7C1E064ECB0020607B /* screen_vertex.glsl */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = screen_vertex.glsl; sourceTree = "<group>"; };
+		5B36FF7D1E064ED70020607B /* screen_fragment.glsl */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = screen_fragment.glsl; sourceTree = "<group>"; };
+		5B61A1BF1DF7D56E00EA7146 /* skybox_v.glsl */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = skybox_v.glsl; sourceTree = "<group>"; };
+		5B61A1C01DF7D57A00EA7146 /* skybox_f.glsl */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = skybox_f.glsl; sourceTree = "<group>"; };
 		5B69BA491DD2DA6800EA8A7B /* tiny_obj_loader.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = tiny_obj_loader.h; sourceTree = "<group>"; };
 		5B7764761DA90237008AF42E /* vertex.glsl */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = vertex.glsl; sourceTree = "<group>"; };
 		5B7764771DA90246008AF42E /* fragment.glsl */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = fragment.glsl; sourceTree = "<group>"; };
+		5B9126201E027DD900D3F227 /* h_blur_v.glsl */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = h_blur_v.glsl; sourceTree = "<group>"; };
+		5B9126211E027DE300D3F227 /* h_blur_f.glsl */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = h_blur_f.glsl; sourceTree = "<group>"; };
+		5B9126221E027DEF00D3F227 /* v_blur_v.glsl */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = v_blur_v.glsl; sourceTree = "<group>"; };
+		5B9126231E027DF900D3F227 /* v_blur_f.glsl */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = v_blur_f.glsl; sourceTree = "<group>"; };
 		5BDA3BFC1DBBDE8A009DCDA0 /* quat.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = quat.h; sourceTree = "<group>"; };
-		6D5ABB251D7E261400E93B80 /* SolarSystem */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = SolarSystem; sourceTree = BUILT_PRODUCTS_DIR; };
+		6D5ABB251D7E261400E93B80 /* SolarSystemExtend */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = SolarSystemExtend; sourceTree = BUILT_PRODUCTS_DIR; };
 		6D5ABB281D7E261400E93B80 /* main.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = main.cpp; sourceTree = "<group>"; };
 		6D5ABB2F1D7E273300E93B80 /* GLUT.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = GLUT.framework; path = System/Library/Frameworks/GLUT.framework; sourceTree = SDKROOT; };
 		6D5ABB311D7E274900E93B80 /* OpenGL.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = OpenGL.framework; path = System/Library/Frameworks/OpenGL.framework; sourceTree = SDKROOT; };
@@ -58,7 +78,7 @@
 			children = (
 				6D5ABB311D7E274900E93B80 /* OpenGL.framework */,
 				6D5ABB2F1D7E273300E93B80 /* GLUT.framework */,
-				6D5ABB271D7E261400E93B80 /* SolarSystem */,
+				6D5ABB271D7E261400E93B80 /* SolarSystemExtend */,
 				6D5ABB261D7E261400E93B80 /* Products */,
 			);
 			sourceTree = "<group>";
@@ -66,12 +86,12 @@
 		6D5ABB261D7E261400E93B80 /* Products */ = {
 			isa = PBXGroup;
 			children = (
-				6D5ABB251D7E261400E93B80 /* SolarSystem */,
+				6D5ABB251D7E261400E93B80 /* SolarSystemExtend */,
 			);
 			name = Products;
 			sourceTree = "<group>";
 		};
-		6D5ABB271D7E261400E93B80 /* SolarSystem */ = {
+		6D5ABB271D7E261400E93B80 /* SolarSystemExtend */ = {
 			isa = PBXGroup;
 			children = (
 				5BDA3BFC1DBBDE8A009DCDA0 /* quat.h */,
@@ -83,17 +103,37 @@
 				5B7764761DA90237008AF42E /* vertex.glsl */,
 				5B7764771DA90246008AF42E /* fragment.glsl */,
 				5B69BA491DD2DA6800EA8A7B /* tiny_obj_loader.h */,
+				5B61A1BF1DF7D56E00EA7146 /* skybox_v.glsl */,
+				5B61A1C01DF7D57A00EA7146 /* skybox_f.glsl */,
+				5B9126201E027DD900D3F227 /* h_blur_v.glsl */,
+				5B9126211E027DE300D3F227 /* h_blur_f.glsl */,
+				5B9126221E027DEF00D3F227 /* v_blur_v.glsl */,
+				5B9126231E027DF900D3F227 /* v_blur_f.glsl */,
+				5B36FF6F1E05FB140020607B /* black_and_white_vertex.glsl */,
+				5B36FF701E05FB210020607B /* black_and_white_fragment.glsl */,
+				5B36FF711E05FB600020607B /* invert_color_vertex.glsl */,
+				5B36FF721E05FB6D0020607B /* invert_color_fragment.glsl */,
+				5B36FF731E05FBD10020607B /* fxaa_vertex.glsl */,
+				5B36FF741E05FBDE0020607B /* fxaa_fragment.glsl */,
+				5B36FF751E06000A0020607B /* hdr_vertex.glsl */,
+				5B36FF761E0600130020607B /* hdr_fragment.glsl */,
+				5B36FF791E0613B20020607B /* luminance_clamp_vertex.glsl */,
+				5B36FF781E06139F0020607B /* luminance_clamp_fragment.glsl */,
+				5B36FF7A1E0613CB0020607B /* final_additive_vertex.glsl */,
+				5B36FF7B1E0613D70020607B /* final_additive_fragment.glsl */,
+				5B36FF7C1E064ECB0020607B /* screen_vertex.glsl */,
+				5B36FF7D1E064ED70020607B /* screen_fragment.glsl */,
 			);
-			name = SolarSystem;
-			path = "/Users/kaybus/Documents/nandukalidindi-github/CS6533-NYU/Assignments/Assignment-3/SolarSystem/SolarSystem";
+			name = SolarSystemExtend;
+			path = "/Users/kaybus/Documents/nandukalidindi-github/CS6533-NYU/Assignments/Assignment-4/SolarSystemExtend/SolarSystemExtend";
 			sourceTree = "<absolute>";
 		};
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
-		6D5ABB241D7E261400E93B80 /* SolarSystem */ = {
+		6D5ABB241D7E261400E93B80 /* SolarSystemExtend */ = {
 			isa = PBXNativeTarget;
-			buildConfigurationList = 6D5ABB2C1D7E261400E93B80 /* Build configuration list for PBXNativeTarget "SolarSystem" */;
+			buildConfigurationList = 6D5ABB2C1D7E261400E93B80 /* Build configuration list for PBXNativeTarget "SolarSystemExtend" */;
 			buildPhases = (
 				6D5ABB211D7E261400E93B80 /* Sources */,
 				6D5ABB221D7E261400E93B80 /* Frameworks */,
@@ -103,9 +143,9 @@
 			);
 			dependencies = (
 			);
-			name = SolarSystem;
+			name = SolarSystemExtend;
 			productName = TemplateProject;
-			productReference = 6D5ABB251D7E261400E93B80 /* SolarSystem */;
+			productReference = 6D5ABB251D7E261400E93B80 /* SolarSystemExtend */;
 			productType = "com.apple.product-type.tool";
 		};
 /* End PBXNativeTarget section */
@@ -122,7 +162,7 @@
 					};
 				};
 			};
-			buildConfigurationList = 6D5ABB201D7E261400E93B80 /* Build configuration list for PBXProject "SolarSystem" */;
+			buildConfigurationList = 6D5ABB201D7E261400E93B80 /* Build configuration list for PBXProject "SolarSystemExtend" */;
 			compatibilityVersion = "Xcode 3.2";
 			developmentRegion = English;
 			hasScannedForEncodings = 0;
@@ -134,7 +174,7 @@
 			projectDirPath = "";
 			projectRoot = "";
 			targets = (
-				6D5ABB241D7E261400E93B80 /* SolarSystem */,
+				6D5ABB241D7E261400E93B80 /* SolarSystemExtend */,
 			);
 		};
 /* End PBXProject section */
@@ -238,7 +278,7 @@
 			buildSettings = {
 				GCC_WARN_ABOUT_DEPRECATED_FUNCTIONS = NO;
 				HEADER_SEARCH_PATHS = /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.11.sdk/System/Library/Frameworks/GLUT.framework/Versions/A/Headers;
-				PRODUCT_NAME = SolarSystem;
+				PRODUCT_NAME = SolarSystemExtend;
 			};
 			name = Debug;
 		};
@@ -247,14 +287,14 @@
 			buildSettings = {
 				GCC_WARN_ABOUT_DEPRECATED_FUNCTIONS = NO;
 				HEADER_SEARCH_PATHS = /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.11.sdk/System/Library/Frameworks/GLUT.framework/Versions/A/Headers;
-				PRODUCT_NAME = SolarSystem;
+				PRODUCT_NAME = SolarSystemExtend;
 			};
 			name = Release;
 		};
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
-		6D5ABB201D7E261400E93B80 /* Build configuration list for PBXProject "SolarSystem" */ = {
+		6D5ABB201D7E261400E93B80 /* Build configuration list for PBXProject "SolarSystemExtend" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				6D5ABB2A1D7E261400E93B80 /* Debug */,
@@ -263,7 +303,7 @@
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
 		};
-		6D5ABB2C1D7E261400E93B80 /* Build configuration list for PBXNativeTarget "SolarSystem" */ = {
+		6D5ABB2C1D7E261400E93B80 /* Build configuration list for PBXNativeTarget "SolarSystemExtend" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				6D5ABB2D1D7E261400E93B80 /* Debug */,
