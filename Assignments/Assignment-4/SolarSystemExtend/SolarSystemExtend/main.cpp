@@ -11,6 +11,18 @@
 
 GLuint program;
 
+struct postProcessor {
+    GLuint program,
+           framebufferUniform,
+           positionBuffer,
+           positionAttribute,
+           uvBuffer,
+           texCoordAttribute,
+           frameBuffer,
+           frameBufferTexture,
+           depthBufferTexture;
+};
+
 GLuint horizontalBlurProgram,
        horizontalBlurFramebufferUniform,
        horizontalBlurPositionBuffer,
