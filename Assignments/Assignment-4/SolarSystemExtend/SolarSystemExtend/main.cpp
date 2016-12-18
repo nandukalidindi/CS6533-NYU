@@ -7,6 +7,7 @@
 #include "quat.h"
 #define TINYOBJLOADER_IMPLEMENTATION
 #include "tiny_obj_loader.h"
+#include "planet_properties.h"
 
 GLuint program;
 
@@ -52,8 +53,6 @@ GLuint finalAdditiveProgram,
 
 GLuint environmentMapProgram;
 GLuint cubeMap;
-
-float wHeight = 1280.0, wWidth = 720.0;
 
 GLuint vertexPositionBO,
        orbitPositionBO,
@@ -107,12 +106,12 @@ int numIndices,
     cubeNumIndices,
     timeSinceStart = 0.0;
 
-struct TextureBinder {
-    GLuint diffuseTexture;
-    GLuint specularTexture;
-    GLuint normalTexture;
-    GLuint environmentMap;
-};
+//struct TextureBinder {
+//    GLuint diffuseTexture;
+//    GLuint specularTexture;
+//    GLuint normalTexture;
+//    GLuint environmentMap;
+//};
 
 TextureBinder sunTexBinder,
 mercuryTexBinder,
@@ -134,51 +133,51 @@ TextureBinder orbitTexBinder;
 
 TextureBinder environmentTexBinder;
 
-struct CelestialBodyTexture {
-    string diffuse;
-    string specular;
-    string normal;
-};
+//struct CelestialBodyTexture {
+//    string diffuse;
+//    string specular;
+//    string normal;
+//};
+//
+//CelestialBodyTexture celestialBodyTextures[] = {
+//    { "sun.jpg", "sun_SPEC.png", "sun_NRM.png" },
+//    
+//    { "mercury.jpg", "mercury_SPEC.png", "mercury_NRM.png" },
+//    
+//    { "venus.jpg", "venus_SPEC.png", "venus_NRM.png" },
+//    
+//    { "earth.jpg", "earth_SPEC.png", "earth_NRM.png" },
+//    
+//    { "mars.jpg", "mars_SPEC.png", "mars_NRM.png" },
+//    
+//    { "jupiter.jpg", "jupiter_SPEC.png", "jupiter_NRM.png" },
+//    
+//    { "saturn.jpg", "saturn_SPEC.png", "saturn_NRM.png" },
+//    
+//    { "uranus.jpg", "uranus_SPEC.png", "uranus_NRM.png" },
+//    
+//    { "neptune.jpg", "neptune_SPEC.png", "neptune_NRM.png" },
+//    
+//    { "pluto.jpg", "pluto_SPEC.png", "pluto_NRM.png" }
+//};
 
-CelestialBodyTexture celestialBodyTextures[] = {
-    { "sun.jpg", "sun_SPEC.png", "sun_NRM.png" },
-    
-    { "mercury.jpg", "mercury_SPEC.png", "mercury_NRM.png" },
-    
-    { "venus.jpg", "venus_SPEC.png", "venus_NRM.png" },
-    
-    { "earth.jpg", "earth_SPEC.png", "earth_NRM.png" },
-    
-    { "mars.jpg", "mars_SPEC.png", "mars_NRM.png" },
-    
-    { "jupiter.jpg", "jupiter_SPEC.png", "jupiter_NRM.png" },
-    
-    { "saturn.jpg", "saturn_SPEC.png", "saturn_NRM.png" },
-    
-    { "uranus.jpg", "uranus_SPEC.png", "uranus_NRM.png" },
-    
-    { "neptune.jpg", "neptune_SPEC.png", "neptune_NRM.png" },
-    
-    { "pluto.jpg", "pluto_SPEC.png", "pluto_NRM.png" }
-};
-
-struct VertexPN {
-    Cvec3f p;
-    Cvec3f n;
-    Cvec2f t;
-    Cvec3f b, tg;
-    VertexPN() {}
-    VertexPN(float x, float y, float z, float nx, float ny, float nz) : p(x,y,z), n(nx, ny, nz) {}
-    
-    VertexPN& operator = (const GenericVertex& v) {
-        p = v.pos;
-        n = v.normal;
-        t = v.tex;
-        b = v.binormal;
-        tg = v.tangent;
-        return *this;
-    }
-};
+//struct VertexPN {
+//    Cvec3f p;
+//    Cvec3f n;
+//    Cvec2f t;
+//    Cvec3f b, tg;
+//    VertexPN() {}
+//    VertexPN(float x, float y, float z, float nx, float ny, float nz) : p(x,y,z), n(nx, ny, nz) {}
+//    
+//    VertexPN& operator = (const GenericVertex& v) {
+//        p = v.pos;
+//        n = v.normal;
+//        t = v.tex;
+//        b = v.binormal;
+//        tg = v.tangent;
+//        return *this;
+//    }
+//};
 
 /**
  * Structure to hold all the attribute, uniform, buffer object locations and bind
@@ -186,60 +185,61 @@ struct VertexPN {
  *
  * Structure: BufferBinder
  */
-struct BufferBinder {
-    GLuint vertexBufferObject;
-    GLuint colorBufferObject;
-    GLuint indexBufferObject;
-    
-    GLuint positionAttribute;
-    GLuint colorAttribute;
-    GLuint normalAttribute;
-    GLuint textureAttribute;
-    GLuint binormalAttribute;
-    GLuint tangentAttribute;
-    
-    GLuint modelViewMatrixUniform;
-    GLuint normalMatrixUniform;
-    GLuint diffuseTextureUniform;
-    GLuint specularTextureUniform;
-    GLuint normalTextureUniform;
-    
-    TextureBinder texBinder;
-    
-    int numIndices;
-    
-    void draw() {
-        glBindBuffer(GL_ARRAY_BUFFER, vertexBufferObject);
-        glVertexAttribPointer(positionAttribute, 3, GL_FLOAT, GL_FALSE, sizeof(VertexPN), (void*)offsetof(VertexPN, p));
-        glEnableVertexAttribArray(positionAttribute);
-        
-        glVertexAttribPointer(normalAttribute, 3, GL_FLOAT, GL_FALSE, sizeof(VertexPN), (void*)offsetof(VertexPN, n));
-        glEnableVertexAttribArray(normalAttribute);
-        
-        glEnableVertexAttribArray(textureAttribute);
-        glVertexAttribPointer(textureAttribute, 2, GL_FLOAT, GL_FALSE, sizeof(VertexPN), (void*)offsetof(VertexPN, t));
-        
-        glEnableVertexAttribArray(binormalAttribute);
-        glVertexAttribPointer(binormalAttribute, 3, GL_FLOAT, GL_FALSE, sizeof(VertexPN), (void*)offsetof(VertexPN, b));
-        
-        glEnableVertexAttribArray(tangentAttribute);
-        glVertexAttribPointer(tangentAttribute, 3, GL_FLOAT, GL_FALSE, sizeof(VertexPN), (void*)offsetof(VertexPN, tg));
-        
-        glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, indexBufferObject);
-        
-        glUniform1i(diffuseTextureUniform, 0);
-        glActiveTexture(GL_TEXTURE0);
-        glBindTexture(GL_TEXTURE_2D, texBinder.diffuseTexture);
-        
-        glUniform1i(specularTextureUniform, 1);
-        glActiveTexture(GL_TEXTURE1);
-        glBindTexture(GL_TEXTURE_2D, texBinder.specularTexture);
-        
-        glUniform1i(normalTextureUniform, 2);
-        glActiveTexture(GL_TEXTURE2);
-        glBindTexture(GL_TEXTURE_2D, texBinder.normalTexture);
-    }
-};
+//struct BufferBinder {
+//    GLuint vertexBufferObject;
+//    GLuint colorBufferObject;
+//    GLuint indexBufferObject;
+//    
+//    GLuint positionAttribute;
+//    GLuint colorAttribute;
+//    GLuint normalAttribute;
+//    GLuint textureAttribute;
+//    GLuint binormalAttribute;
+//    GLuint tangentAttribute;
+//    
+//    GLuint modelViewMatrixUniform;
+//    GLuint normalMatrixUniform;
+//    GLuint projectionMatrixUniform;
+//    GLuint diffuseTextureUniform;
+//    GLuint specularTextureUniform;
+//    GLuint normalTextureUniform;
+//    
+//    TextureBinder texBinder;
+//    
+//    int numIndices;
+//    
+//    void draw() {
+//        glBindBuffer(GL_ARRAY_BUFFER, vertexBufferObject);
+//        glVertexAttribPointer(positionAttribute, 3, GL_FLOAT, GL_FALSE, sizeof(VertexPN), (void*)offsetof(VertexPN, p));
+//        glEnableVertexAttribArray(positionAttribute);
+//        
+//        glVertexAttribPointer(normalAttribute, 3, GL_FLOAT, GL_FALSE, sizeof(VertexPN), (void*)offsetof(VertexPN, n));
+//        glEnableVertexAttribArray(normalAttribute);
+//        
+//        glEnableVertexAttribArray(textureAttribute);
+//        glVertexAttribPointer(textureAttribute, 2, GL_FLOAT, GL_FALSE, sizeof(VertexPN), (void*)offsetof(VertexPN, t));
+//        
+//        glEnableVertexAttribArray(binormalAttribute);
+//        glVertexAttribPointer(binormalAttribute, 3, GL_FLOAT, GL_FALSE, sizeof(VertexPN), (void*)offsetof(VertexPN, b));
+//        
+//        glEnableVertexAttribArray(tangentAttribute);
+//        glVertexAttribPointer(tangentAttribute, 3, GL_FLOAT, GL_FALSE, sizeof(VertexPN), (void*)offsetof(VertexPN, tg));
+//        
+//        glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, indexBufferObject);
+//        
+//        glUniform1i(diffuseTextureUniform, 0);
+//        glActiveTexture(GL_TEXTURE0);
+//        glBindTexture(GL_TEXTURE_2D, texBinder.diffuseTexture);
+//        
+//        glUniform1i(specularTextureUniform, 1);
+//        glActiveTexture(GL_TEXTURE1);
+//        glBindTexture(GL_TEXTURE_2D, texBinder.specularTexture);
+//        
+//        glUniform1i(normalTextureUniform, 2);
+//        glActiveTexture(GL_TEXTURE2);
+//        glBindTexture(GL_TEXTURE_2D, texBinder.normalTexture);
+//    }
+//};
 
 /**
  * Structure to perform the Hierarchical operations on children objects and to issue
@@ -248,70 +248,70 @@ struct BufferBinder {
  * Structure: Entity
  */
 
-struct Entity {
-    Matrix4 objectMatrix;
-    BufferBinder bufferBinder;
-    Matrix4 modelViewMatrix;
-    Entity *parent;
-    
-    void draw(Matrix4 &eyeMatrix) {
-        if(parent == NULL)
-            modelViewMatrix = inv(eyeMatrix) * objectMatrix;
-        else
-            modelViewMatrix = (parent->modelViewMatrix) * (objectMatrix);
-        
-        bufferBinder.draw();
-        
-        GLfloat glmatrix[16];
-        modelViewMatrix.writeToColumnMajorMatrix(glmatrix);
-        glUniformMatrix4fv(modelViewMatrixUniformFromVertexShader, 1, GL_FALSE, glmatrix);
-        
-        Matrix4 normalizedMatrix = normalMatrix(modelViewMatrix);
-        normalizedMatrix.writeToColumnMajorMatrix(glmatrix);
-        glUniformMatrix4fv(normalMatrixUniformFromVertexShader, 1, GL_FALSE, glmatrix);
-        
-        Matrix4 projectionMatrix;
-        projectionMatrix = projectionMatrix.makeProjection(45, (wHeight/800.0), -0.5, -1000.0);
-        GLfloat glmatrixProjection[16];
-        projectionMatrix.writeToColumnMajorMatrix(glmatrixProjection);
-        glUniformMatrix4fv(projectionMatrixUniformFromVertexShader, 1, GL_FALSE, glmatrixProjection);
-        
-        glDrawElements(GL_TRIANGLES, bufferBinder.numIndices, GL_UNSIGNED_SHORT, 0);
-    }
-};
+//struct Entity {
+//    Matrix4 objectMatrix;
+//    BufferBinder bufferBinder;
+//    Matrix4 modelViewMatrix;
+//    Entity *parent;
+//    
+//    void draw(Matrix4 &eyeMatrix) {
+//        if(parent == NULL)
+//            modelViewMatrix = inv(eyeMatrix) * objectMatrix;
+//        else
+//            modelViewMatrix = (parent->modelViewMatrix) * (objectMatrix);
+//        
+//        bufferBinder.draw();
+//        
+//        GLfloat glmatrix[16];
+//        modelViewMatrix.writeToColumnMajorMatrix(glmatrix);
+//        glUniformMatrix4fv(bufferBinder.modelViewMatrixUniform, 1, GL_FALSE, glmatrix);
+//        
+//        Matrix4 normalizedMatrix = normalMatrix(modelViewMatrix);
+//        normalizedMatrix.writeToColumnMajorMatrix(glmatrix);
+//        glUniformMatrix4fv(bufferBinder.normalMatrixUniform, 1, GL_FALSE, glmatrix);
+//        
+//        Matrix4 projectionMatrix;
+//        projectionMatrix = projectionMatrix.makeProjection(45, (wHeight/800.0), -0.5, -1000.0);
+//        GLfloat glmatrixProjection[16];
+//        projectionMatrix.writeToColumnMajorMatrix(glmatrixProjection);
+//        glUniformMatrix4fv(bufferBinder.projectionMatrixUniform, 1, GL_FALSE, glmatrixProjection);
+//        
+//        glDrawElements(GL_TRIANGLES, bufferBinder.numIndices, GL_UNSIGNED_SHORT, 0);
+//    }
+//};
 
-struct PlanetProperty {
-    float revolutionRate;
-    float intialAngle;
-    Cvec3 size;
-    Cvec3 radius;
-    Cvec3 orbit;
-    CelestialBodyTexture images;
-    TextureBinder texture;
-    Entity *planetEntity;
-};
-
-PlanetProperty planetProperties[] = {
-    { 01.00, 00.00, Cvec3(1.80, 1.80, 1.80), Cvec3(00.0, 0.0, 0.0), Cvec3(0.0, 0.0, 0.0), celestialBodyTextures[0] },
-    
-    { 47.89, -80.0, Cvec3(0.20, 0.20, 0.20), Cvec3(03.0, 0.0, 0.0), Cvec3(1.0/2.0, 1.0/2.0, 1.0/2.0), celestialBodyTextures[1] },
-    
-    { 35.03, -70.0, Cvec3(0.30, 0.30, 0.30), Cvec3(04.5, 0.0, 0.0), Cvec3(1.0/1.35, 1.0/1.35, 1.0/1.35), celestialBodyTextures[2] },
-    
-    { 29.79, 45.00, Cvec3(0.50, 0.50, 0.50), Cvec3(06.0, 0.0, 0.0), Cvec3(1.0, 1.0, 1.0), celestialBodyTextures[3] },
-    
-    { 24.13, -30.0, Cvec3(0.40, 0.40, 0.40), Cvec3(08.0, 0.0, 0.0), Cvec3(1.35, 1.0, 1.35), celestialBodyTextures[4] },
-    
-    { 13.06, -40.0, Cvec3(1.00, 1.00, 1.00), Cvec3(11.0, 0.0, 0.0), Cvec3(1.85, 1.0, 1.85), celestialBodyTextures[5] },
-    
-    { 09.64, -45.0, Cvec3(0.80, 0.80, 0.80), Cvec3(14.5, 0.0, 0.0), Cvec3(2.40, 1.0, 2.40), celestialBodyTextures[6] },
-    
-    { 06.81, 45.00, Cvec3(0.30, 0.30, 0.30), Cvec3(17.0, 0.0, 0.0), Cvec3(2.825, 1.0, 2.825), celestialBodyTextures[7] },
-    
-    { 05.43, 60.00, Cvec3(0.25, 0.25, 0.25), Cvec3(18.0, 0.0, 0.0), Cvec3(3.0, 1.0, 3.0), celestialBodyTextures[8] },
-    
-    { 04.00, 70.00, Cvec3(0.15, 0.15, 0.15), Cvec3(19.0, 0.0, 0.0), Cvec3(3.165, 1.0, 3.165), celestialBodyTextures[9] }
-};
+//struct PlanetProperty {
+//    float revolutionRate;
+//    float intialAngle;
+//    Cvec3 size;
+//    Cvec3 radius;
+//    Cvec3 orbit;
+//    CelestialBodyTexture images;
+//    TextureBinder texture;
+//    Entity *planetEntity;
+//};
+//
+//PlanetProperty planetProperties[] = {
+//    { 01.00, 00.00, Cvec3(1.80, 1.80, 1.80), Cvec3(00.0, 0.0, 0.0), Cvec3(0.0, 0.0, 0.0), celestialBodyTextures[0] },
+//    
+//    { 47.89, -80.0, Cvec3(0.20, 0.20, 0.20), Cvec3(03.0, 0.0, 0.0), Cvec3(1.0/2.0, 1.0/2.0, 1.0/2.0), celestialBodyTextures[1] },
+//    
+//    { 35.03, -70.0, Cvec3(0.30, 0.30, 0.30), Cvec3(04.5, 0.0, 0.0), Cvec3(1.0/1.35, 1.0/1.35, 1.0/1.35), celestialBodyTextures[2] },
+//    
+//    { 29.79, 45.00, Cvec3(0.50, 0.50, 0.50), Cvec3(06.0, 0.0, 0.0), Cvec3(1.0, 1.0, 1.0), celestialBodyTextures[3] },
+//    
+//    { 24.13, -30.0, Cvec3(0.40, 0.40, 0.40), Cvec3(08.0, 0.0, 0.0), Cvec3(1.35, 1.0, 1.35), celestialBodyTextures[4] },
+//    
+//    { 13.06, -40.0, Cvec3(1.00, 1.00, 1.00), Cvec3(11.0, 0.0, 0.0), Cvec3(1.85, 1.0, 1.85), celestialBodyTextures[5] },
+//    
+//    { 09.64, -45.0, Cvec3(0.80, 0.80, 0.80), Cvec3(14.5, 0.0, 0.0), Cvec3(2.40, 1.0, 2.40), celestialBodyTextures[6] },
+//    
+//    { 06.81, 45.00, Cvec3(0.30, 0.30, 0.30), Cvec3(17.0, 0.0, 0.0), Cvec3(2.825, 1.0, 2.825), celestialBodyTextures[7] },
+//    
+//    { 05.43, 60.00, Cvec3(0.25, 0.25, 0.25), Cvec3(18.0, 0.0, 0.0), Cvec3(3.0, 1.0, 3.0), celestialBodyTextures[8] },
+//    
+//    { 04.00, 70.00, Cvec3(0.15, 0.15, 0.15), Cvec3(19.0, 0.0, 0.0), Cvec3(3.165, 1.0, 3.165), celestialBodyTextures[9] }
+//};
 
 /**
  * Function to issue a draw call to the respective entity object by assigning all the
@@ -394,32 +394,28 @@ void loadObjFile(const std::string &fileName, std::vector<VertexPN> &outVertices
     }
 }
 
-void display(void) {
+void generateFrameBuffer(GLuint &frameBuffer, GLuint &frameBufferTexture, GLuint &depthBufferTexture, bool isHDR) {
+    glGenFramebuffers(1, &frameBuffer);
+    glBindFramebuffer(GL_FRAMEBUFFER, frameBuffer);
     
-    //***************************************************************************************************************
-    //***************************************************************************************************************
-    //******************************************** BIND FRAMEBUFFER A ***********************************************
-    //***************************************************************************************************************
-    //***************************************************************************************************************
+    glGenTextures(1, &frameBufferTexture);
+    glBindTexture(GL_TEXTURE_2D, frameBufferTexture);
     
-    glGenFramebuffers(1, &luminanceClampFrameBuffer);
-    glBindFramebuffer(GL_FRAMEBUFFER, luminanceClampFrameBuffer);
-    
-    glGenTextures(1, &luminanceClampFrameBufferTexture);
-    glBindTexture(GL_TEXTURE_2D, luminanceClampFrameBufferTexture);
-    
-    glTexImage2D(GL_TEXTURE_2D, 0,GL_RGBA16F_ARB, wHeight, wWidth, 0, GL_RGB, GL_FLOAT, NULL);
+    if (isHDR)
+        glTexImage2D(GL_TEXTURE_2D, 0,GL_RGBA16F_ARB, wHeight, wWidth, 0, GL_RGB, GL_FLOAT, NULL);
+    else
+        glTexImage2D(GL_TEXTURE_2D, 0,GL_RGB, wHeight, wWidth, 0, GL_RGB, GL_UNSIGNED_BYTE, NULL);
     
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
     
     
     glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0,
-                           GL_TEXTURE_2D, luminanceClampFrameBufferTexture, 0);
+                           GL_TEXTURE_2D, frameBufferTexture, 0);
     
     
-    glGenTextures(1, &luminanceClampDepthBufferTexture);
-    glBindTexture(GL_TEXTURE_2D, luminanceClampDepthBufferTexture);
+    glGenTextures(1, &depthBufferTexture);
+    glBindTexture(GL_TEXTURE_2D, depthBufferTexture);
     glTexImage2D(GL_TEXTURE_2D, 0,GL_DEPTH_COMPONENT, wHeight, wWidth, 0,GL_DEPTH_COMPONENT,
                  GL_UNSIGNED_BYTE, NULL);
     
@@ -428,19 +424,81 @@ void display(void) {
     
     glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH_COMPONENT24, wHeight, wWidth);
     glFramebufferTexture2D(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_TEXTURE_2D,
-                           luminanceClampDepthBufferTexture, 0);
+                           depthBufferTexture, 0);
     
     glBindFramebuffer(GL_FRAMEBUFFER, 0);
+}
+
+void renderSceneUsingFramebuffer(GLuint &shaderProgram, GLuint &frameBufferUniform, GLuint positionBuffer, GLuint uvBuffer, vector<GLuint> &frameBufferTexture, GLuint positionAttribute, GLuint texCoordAttribute, int textureCount) {
+    vector<GLuint> textureArray = {GL_TEXTURE0, GL_TEXTURE1, GL_TEXTURE2};
     
-    glBindFramebuffer(GL_FRAMEBUFFER, luminanceClampFrameBuffer);
-    glViewport(0, 0, wHeight, wWidth);
-    glClear(GL_COLOR_BUFFER_BIT|GL_DEPTH_BUFFER_BIT);
-    //***************************************************************************************************************
-    //***************************************************************************************************************
-    //******************************************** SOLAR SYSTEM SCENE ***********************************************
-    //***************************************************************************************************************
-    //***************************************************************************************************************
+    glUseProgram(shaderProgram);
     
+    for (int i = 0; i< textureCount; i++) {
+        glUniform1i(frameBufferUniform, i);
+        glActiveTexture(textureArray[i]);
+        glBindTexture(GL_TEXTURE_2D, frameBufferTexture[i]);
+    }
+    
+    
+    glBindBuffer(GL_ARRAY_BUFFER, positionBuffer);
+    glVertexAttribPointer(positionAttribute, 2, GL_FLOAT, GL_FALSE, 0, 0);
+    glEnableVertexAttribArray(positionAttribute);
+    
+    glBindBuffer(GL_ARRAY_BUFFER, uvBuffer);
+    glVertexAttribPointer(texCoordAttribute, 2, GL_FLOAT, GL_FALSE, 0, 0);
+    glEnableVertexAttribArray(texCoordAttribute);
+    
+    glDrawArrays(GL_TRIANGLES, 0, 6);
+    
+    glDisableVertexAttribArray(positionAttribute);
+    glDisableVertexAttribArray(texCoordAttribute);
+}
+
+void renderSkybox() {
+    glUseProgram(environmentMapProgram);
+    
+    
+    
+    glBindBuffer(GL_ARRAY_BUFFER, cubePositionBO);
+    glVertexAttribPointer(postionAttributeFromVertexShaderE, 3, GL_FLOAT, GL_FALSE, sizeof(VertexPN), (void*)offsetof(VertexPN, p));
+    
+    glEnableVertexAttribArray(postionAttributeFromVertexShaderE);
+    
+    glVertexAttribPointer(normalAttributeFromVertexShaderE, 3, GL_FLOAT, GL_FALSE, sizeof(VertexPN), (void*)offsetof(VertexPN, n));
+    glEnableVertexAttribArray(normalAttributeFromVertexShaderE);
+    
+    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, cubeIndexBO);
+    
+    glUniform1i(environmentMapUniformLocation, 0);
+    glActiveTexture(GL_TEXTURE0);
+    glBindTexture(GL_TEXTURE_CUBE_MAP, cubeMap);
+    
+    Matrix4 environmentMatrix = Matrix4::makeScale(Cvec3(50.0, 50.0, 50.0));
+    Matrix4 modelViewMatrix = inv(eyeMatrix) * environmentMatrix;
+    
+    GLfloat glmatrix[16];
+    modelViewMatrix.writeToColumnMajorMatrix(glmatrix);
+    glUniformMatrix4fv(modelViewMatrixUniformFromVertexShaderE, 1, GL_FALSE, glmatrix);
+    
+    Matrix4 normalizedMatrix = normalMatrix(modelViewMatrix);
+    normalizedMatrix.writeToColumnMajorMatrix(glmatrix);
+    glUniformMatrix4fv(normalMatrixUniformFromVertexShaderE, 1, GL_FALSE, glmatrix);
+    
+    Matrix4 projectionMatrix;
+    projectionMatrix = projectionMatrix.makeProjection(45, (wHeight/800.0), -0.5, -1000.0);
+    GLfloat glmatrixProjection[16];
+    projectionMatrix.writeToColumnMajorMatrix(glmatrixProjection);
+    glUniformMatrix4fv(projectionMatrixUniformFromVertexShaderE, 1, GL_FALSE, glmatrixProjection);
+    
+    glDrawElements(GL_TRIANGLES, cubeNumIndices, GL_UNSIGNED_SHORT, 0);
+    
+    glDisableVertexAttribArray(postionAttributeFromVertexShaderE);
+    glDisableVertexAttribArray(normalAttributeFromVertexShaderE);
+}
+
+
+void renderScene() {
     glEnable(GL_BLEND);
     glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
     glClearColor(0.0, 0.0, 0.0, 0.0);
@@ -450,10 +508,10 @@ void display(void) {
     timeSinceStart = glutGet(GLUT_ELAPSED_TIME);
     
     Cvec4 lightPosition0 = inv(eyeMatrix) * Cvec4(-8.0, 0.0, 8.0, 1.0),
-          lightPosition1 = inv(eyeMatrix) * Cvec4(8.0, 0.0, 8.0, 1.0),
-          lightPosition2 = inv(eyeMatrix) * Cvec4(8.0, 0.0, -8.0, 1.0),
-          lightPosition3 = inv(eyeMatrix) * Cvec4(-8.0, 0.0, -8.0, 1.0),
-          lightPosition4 = inv(eyeMatrix) * Cvec4(0.0, 8.0, 0.0, 1.0);
+    lightPosition1 = inv(eyeMatrix) * Cvec4(8.0, 0.0, 8.0, 1.0),
+    lightPosition2 = inv(eyeMatrix) * Cvec4(8.0, 0.0, -8.0, 1.0),
+    lightPosition3 = inv(eyeMatrix) * Cvec4(-8.0, 0.0, -8.0, 1.0),
+    lightPosition4 = inv(eyeMatrix) * Cvec4(0.0, 8.0, 0.0, 1.0);
     
     glUniform3f(lightPositionUniformFromFragmentShader0, lightPosition0[0], lightPosition0[1], lightPosition0[2]);
     glUniform3f(lightPositionUniformFromFragmentShader1, lightPosition1[0], lightPosition1[1], lightPosition1[2]);
@@ -467,9 +525,9 @@ void display(void) {
     
     // ------------------------------- EYE -------------------------------
     eyeMatrix = quatToMatrix(Quat::makeXRotation(-20.0)) *
-                quatToMatrix(Quat::makeKRotation(kVector, finalAngle)) *
-                Matrix4::makeTranslation(Cvec3(0.0, 0.0, 35.0)) *
-                Matrix4::makeZRotation(-25.0);
+    quatToMatrix(Quat::makeKRotation(kVector, finalAngle)) *
+    Matrix4::makeTranslation(Cvec3(0.0, 0.0, 35.0)) *
+    Matrix4::makeZRotation(-25.0);
     // ------------------------------- EYE -------------------------------
     
     // Initialising a Genric bufferBinder object as the same buffers are used to
@@ -484,6 +542,10 @@ void display(void) {
     genericBufferBinder.binormalAttribute = binormalAttributeFromVertexShader;
     genericBufferBinder.tangentAttribute = tangentAttributeFromVertexShader;
     
+    genericBufferBinder.modelViewMatrixUniform = modelViewMatrixUniformFromVertexShader;
+    genericBufferBinder.normalMatrixUniform = normalMatrixUniformFromVertexShader;
+    genericBufferBinder.projectionMatrixUniform = projectionMatrixUniformFromVertexShader;
+    
     genericBufferBinder.diffuseTextureUniform = diffuseTextureUniformLocation;
     genericBufferBinder.specularTextureUniform = specularTextureUniformLocation;
     genericBufferBinder.normalTextureUniform = normalTextureUniformLocation;
@@ -492,18 +554,18 @@ void display(void) {
     for(int i=0; i<=9; i++) {
         genericBufferBinder.texBinder = planetProperties[i].texture;
         planetMatrix = quatToMatrix(Quat::makeYRotation(timeSinceStart * planetProperties[i].revolutionRate/500.0)) *
-                       Matrix4::makeTranslation(planetProperties[i].radius) *
-                       Matrix4::makeScale(planetProperties[i].size) *
-                       quatToMatrix(Quat::makeXRotation(planetProperties[i].intialAngle)) *
-                       quatToMatrix(Quat::makeYRotation(timeSinceStart/10.0));
+        Matrix4::makeTranslation(planetProperties[i].radius) *
+        Matrix4::makeScale(planetProperties[i].size) *
+        quatToMatrix(Quat::makeXRotation(planetProperties[i].intialAngle)) *
+        quatToMatrix(Quat::makeYRotation(timeSinceStart/10.0));
         planetProperties[i].planetEntity = drawBodyParts(genericBufferBinder, planetMatrix, NULL);
     }
     
     genericBufferBinder.texBinder = moonTexBinder;
     Matrix4 moonMatrix = quatToMatrix(Quat::makeYRotation((timeSinceStart * 25.00)/500.0f)) *
-                         Matrix4::makeTranslation(Cvec3(2.0, 0.0, 0.0)) *
-                         Matrix4::makeScale(Cvec3(0.4, 0.4, 0.4)) *
-                         quatToMatrix(Quat::makeYRotation(timeSinceStart/10.0f));
+    Matrix4::makeTranslation(Cvec3(2.0, 0.0, 0.0)) *
+    Matrix4::makeScale(Cvec3(0.4, 0.4, 0.4)) *
+    quatToMatrix(Quat::makeYRotation(timeSinceStart/10.0f));
     
     drawBodyParts(genericBufferBinder, moonMatrix, planetProperties[3].planetEntity);
     
@@ -535,112 +597,54 @@ void display(void) {
     glDisableVertexAttribArray(textureAttributeFromVertexShader);
     glDisableVertexAttribArray(binormalAttributeFromVertexShader);
     glDisableVertexAttribArray(tangentAttributeFromVertexShader);
+}
+
+void display(void) {
+    
+    //***************************************************************************************************************
+    //***************************************************************************************************************
+    //******************************************** BIND FRAMEBUFFER A ***********************************************
+    //***************************************************************************************************************
+    //***************************************************************************************************************
+    generateFrameBuffer(luminanceClampFrameBuffer, luminanceClampFrameBufferTexture, luminanceClampDepthBufferTexture, true);
+    
+    glBindFramebuffer(GL_FRAMEBUFFER, luminanceClampFrameBuffer);
+    glViewport(0, 0, wHeight, wWidth);
+    glClear(GL_COLOR_BUFFER_BIT|GL_DEPTH_BUFFER_BIT);
+    //***************************************************************************************************************
+    //***************************************************************************************************************
+    //******************************************** SOLAR SYSTEM SCENE ***********************************************
+    //***************************************************************************************************************
+    //***************************************************************************************************************
+    
+    renderScene();
     
     //***************************************************************************************************************
     //***************************************************************************************************************
     //*********************************************** UNIVERSE SKYBOX ***********************************************
     //***************************************************************************************************************
     //***************************************************************************************************************
-    glUseProgram(environmentMapProgram);
     
-//    glDisable(GL_CULL_FACE);
-    
-    glBindBuffer(GL_ARRAY_BUFFER, cubePositionBO);
-    glVertexAttribPointer(postionAttributeFromVertexShaderE, 3, GL_FLOAT, GL_FALSE, sizeof(VertexPN), (void*)offsetof(VertexPN, p));
-    
-    glEnableVertexAttribArray(postionAttributeFromVertexShaderE);
-    
-    glVertexAttribPointer(normalAttributeFromVertexShaderE, 3, GL_FLOAT, GL_FALSE, sizeof(VertexPN), (void*)offsetof(VertexPN, n));
-    glEnableVertexAttribArray(normalAttributeFromVertexShaderE);
-    
-    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, cubeIndexBO);
-    
-    glUniform1i(environmentMapUniformLocation, 3);
-    glActiveTexture(GL_TEXTURE3);
-    glBindTexture(GL_TEXTURE_CUBE_MAP, cubeMap);
-    
-    Matrix4 environmentMatrix = Matrix4::makeScale(Cvec3(50.0, 50.0, 50.0));
-    Matrix4 modelViewMatrix = inv(eyeMatrix) * environmentMatrix;
-    
-    GLfloat glmatrix[16];
-    modelViewMatrix.writeToColumnMajorMatrix(glmatrix);
-    glUniformMatrix4fv(modelViewMatrixUniformFromVertexShaderE, 1, GL_FALSE, glmatrix);
-    
-    Matrix4 normalizedMatrix = normalMatrix(modelViewMatrix);
-    normalizedMatrix.writeToColumnMajorMatrix(glmatrix);
-    glUniformMatrix4fv(normalMatrixUniformFromVertexShaderE, 1, GL_FALSE, glmatrix);
-    
-    Matrix4 projectionMatrix;
-    projectionMatrix = projectionMatrix.makeProjection(45, (wHeight/800.0), -0.5, -1000.0);
-    GLfloat glmatrixProjection[16];
-    projectionMatrix.writeToColumnMajorMatrix(glmatrixProjection);
-    glUniformMatrix4fv(projectionMatrixUniformFromVertexShaderE, 1, GL_FALSE, glmatrixProjection);
-    
-    glDrawElements(GL_TRIANGLES, cubeNumIndices, GL_UNSIGNED_SHORT, 0);
-    
-    glDisableVertexAttribArray(postionAttributeFromVertexShaderE);
-    glDisableVertexAttribArray(normalAttributeFromVertexShaderE);
+    renderSkybox();
     
     //***************************************************************************************************************
     //***************************************************************************************************************
     //******************************************** BIND FRAMEBUFFER B ***********************************************
     //***************************************************************************************************************
     //***************************************************************************************************************
-    glGenFramebuffers(1, &horizontalFrameBuffer);
-    glBindFramebuffer(GL_FRAMEBUFFER, horizontalFrameBuffer);
     
-    glGenTextures(1, &horizontalFrameBufferTexture);
-    glBindTexture(GL_TEXTURE_2D, horizontalFrameBufferTexture);
-    glTexImage2D(GL_TEXTURE_2D, 0,GL_RGB, wHeight, wWidth, 0, GL_RGB,
-                 GL_UNSIGNED_BYTE, NULL);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
-    
-    
-    glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0,
-                           GL_TEXTURE_2D, horizontalFrameBufferTexture, 0);
-    
-    
-    glGenTextures(1, &horizontalDepthBufferTexture);
-    glBindTexture(GL_TEXTURE_2D, horizontalDepthBufferTexture);
-    glTexImage2D(GL_TEXTURE_2D, 0,GL_DEPTH_COMPONENT, wHeight, wWidth, 0,GL_DEPTH_COMPONENT,
-                 GL_UNSIGNED_BYTE, NULL);
-    
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
-    
-    glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH_COMPONENT24, wHeight, wWidth);
-    glFramebufferTexture2D(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_TEXTURE_2D,
-                           horizontalDepthBufferTexture, 0);
-    
-    glBindFramebuffer(GL_FRAMEBUFFER, 0);
+    generateFrameBuffer(horizontalFrameBuffer, horizontalFrameBufferTexture, horizontalDepthBufferTexture, false);
     
     glBindFramebuffer(GL_FRAMEBUFFER, horizontalFrameBuffer);
-    
     
     //***************************************************************************************************************
     //***************************************************************************************************************
     //******************************************** RENDER A USING CLAMP *********************************************
     //***************************************************************************************************************
     //***************************************************************************************************************
-    glUseProgram(luminanceClampProgram);
     
-    glUniform1i(luminanceClampFramebufferUniform, 0);
-    glActiveTexture(GL_TEXTURE0);
-    glBindTexture(GL_TEXTURE_2D, luminanceClampFrameBufferTexture);
-    
-    glBindBuffer(GL_ARRAY_BUFFER, luminanceClampPositionBuffer);
-    glVertexAttribPointer(luminanceClampPositionAttribute, 2, GL_FLOAT, GL_FALSE, 0, 0);
-    glEnableVertexAttribArray(luminanceClampPositionAttribute);
-    
-    glBindBuffer(GL_ARRAY_BUFFER, luminanceClampUVBuffer);
-    glVertexAttribPointer(luminanceClampTexCoordAttribute, 2, GL_FLOAT, GL_FALSE, 0, 0);
-    glEnableVertexAttribArray(luminanceClampTexCoordAttribute);
-    
-    glDrawArrays(GL_TRIANGLES, 0, 6);
-    
-    glDisableVertexAttribArray(luminanceClampPositionAttribute);
-    glDisableVertexAttribArray(luminanceClampTexCoordAttribute);
+    vector<GLuint> luminanceTexture = { luminanceClampFrameBufferTexture };
+    renderSceneUsingFramebuffer(luminanceClampProgram, luminanceClampFramebufferUniform, luminanceClampPositionBuffer, luminanceClampUVBuffer, luminanceTexture, luminanceClampPositionAttribute, luminanceClampTexCoordAttribute, 1);
     
     
     //***************************************************************************************************************
@@ -648,128 +652,36 @@ void display(void) {
     //******************************************** BIND FRAMEBUFFER C ***********************************************
     //***************************************************************************************************************
     //***************************************************************************************************************
-    glGenFramebuffers(1, &verticalFrameBuffer);
+    
+    generateFrameBuffer(verticalFrameBuffer, verticalFrameBufferTexture, verticalDepthBufferTexture, false);
     glBindFramebuffer(GL_FRAMEBUFFER, verticalFrameBuffer);
-    
-    glGenTextures(1, &verticalFrameBufferTexture);
-    glBindTexture(GL_TEXTURE_2D, verticalFrameBufferTexture);
-    glTexImage2D(GL_TEXTURE_2D, 0,GL_RGB, wHeight, wWidth, 0, GL_RGB,
-                 GL_UNSIGNED_BYTE, NULL);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
-    
-    
-    glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0,
-                           GL_TEXTURE_2D, verticalFrameBufferTexture, 0);
-    
-    
-    glGenTextures(1, &verticalDepthBufferTexture);
-    glBindTexture(GL_TEXTURE_2D, verticalDepthBufferTexture);
-    glTexImage2D(GL_TEXTURE_2D, 0,GL_DEPTH_COMPONENT, wHeight, wWidth, 0,GL_DEPTH_COMPONENT,
-                 GL_UNSIGNED_BYTE, NULL);
-    
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
-    
-    glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH_COMPONENT24, wHeight, wWidth);
-    glFramebufferTexture2D(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_TEXTURE_2D,
-                           verticalDepthBufferTexture, 0);
-    
-    glBindFramebuffer(GL_FRAMEBUFFER, 0);
-    
-    glBindFramebuffer(GL_FRAMEBUFFER, verticalFrameBuffer);
-    
     
     //***************************************************************************************************************
     //***************************************************************************************************************
     //******************************************** RENDER B USING HBLUR *********************************************
     //***************************************************************************************************************
     //***************************************************************************************************************
-//    glBindFramebuffer(GL_FRAMEBUFFER, 0);
-//    glViewport(0, 0, wHeight, wWidth);
-//    glClear(GL_COLOR_BUFFER_BIT|GL_DEPTH_BUFFER_BIT);
     
-    glUseProgram(horizontalTrianglesProgram);
-    
-    glUniform1i(horizontalFramebufferUniform, 0);
-    glActiveTexture(GL_TEXTURE0);
-    glBindTexture(GL_TEXTURE_2D, horizontalFrameBufferTexture);
-    
-    glBindBuffer(GL_ARRAY_BUFFER, horizontalTrianglesPositionBuffer);
-    glVertexAttribPointer(horizontalTrianglesPositionAttribute, 2, GL_FLOAT, GL_FALSE, 0, 0);
-    glEnableVertexAttribArray(horizontalTrianglesPositionAttribute);
-    
-    glBindBuffer(GL_ARRAY_BUFFER, horizontalTrianglesUVBuffer);
-    glVertexAttribPointer(horizontalTrianglesTexCoordAttribute, 2, GL_FLOAT, GL_FALSE, 0, 0);
-    glEnableVertexAttribArray(horizontalTrianglesTexCoordAttribute);
-    
-    glDrawArrays(GL_TRIANGLES, 0, 6);
-    
-    glDisableVertexAttribArray(horizontalTrianglesPositionAttribute);
-    glDisableVertexAttribArray(horizontalTrianglesTexCoordAttribute);
-
+    vector<GLuint> horizontalTexture = { horizontalFrameBufferTexture };
+    renderSceneUsingFramebuffer(horizontalTrianglesProgram, horizontalFramebufferUniform, horizontalTrianglesPositionBuffer, horizontalTrianglesUVBuffer, horizontalTexture, horizontalTrianglesPositionAttribute, horizontalTrianglesTexCoordAttribute, 1);
     
     //***************************************************************************************************************
     //***************************************************************************************************************
     //******************************************** BIND FRAMEBUFFER B ***********************************************
     //***************************************************************************************************************
     //***************************************************************************************************************
-    glGenFramebuffers(1, &horizontalFrameBuffer);
+    
+    generateFrameBuffer(horizontalFrameBuffer, horizontalFrameBufferTexture, horizontalDepthBufferTexture, false);
     glBindFramebuffer(GL_FRAMEBUFFER, horizontalFrameBuffer);
-    
-    glGenTextures(1, &horizontalFrameBufferTexture);
-    glBindTexture(GL_TEXTURE_2D, horizontalFrameBufferTexture);
-    glTexImage2D(GL_TEXTURE_2D, 0,GL_RGB, wHeight, wWidth, 0, GL_RGB,
-                 GL_UNSIGNED_BYTE, NULL);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
-    
-    
-    glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0,
-                           GL_TEXTURE_2D, horizontalFrameBufferTexture, 0);
-    
-    
-    glGenTextures(1, &horizontalDepthBufferTexture);
-    glBindTexture(GL_TEXTURE_2D, horizontalDepthBufferTexture);
-    glTexImage2D(GL_TEXTURE_2D, 0,GL_DEPTH_COMPONENT, wHeight, wWidth, 0,GL_DEPTH_COMPONENT,
-                 GL_UNSIGNED_BYTE, NULL);
-    
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
-    
-    glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH_COMPONENT24, wHeight, wWidth);
-    glFramebufferTexture2D(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_TEXTURE_2D,
-                           horizontalDepthBufferTexture, 0);
-    
-    glBindFramebuffer(GL_FRAMEBUFFER, 0);
-    
-    glBindFramebuffer(GL_FRAMEBUFFER, horizontalFrameBuffer);
-    
     
     //***************************************************************************************************************
     //***************************************************************************************************************
     //******************************************** RENDER C USING VBLUR *********************************************
     //***************************************************************************************************************
     //***************************************************************************************************************
-    glUseProgram(verticalTrianglesProgram);
     
-    glUniform1i(verticalFramebufferUniform, 0);
-    glActiveTexture(GL_TEXTURE0);
-    glBindTexture(GL_TEXTURE_2D, verticalFrameBufferTexture);
-    
-    glBindBuffer(GL_ARRAY_BUFFER, verticalTrianglesPositionBuffer);
-    glVertexAttribPointer(verticalTrianglesPositionAttribute, 2, GL_FLOAT, GL_FALSE, 0, 0);
-    glEnableVertexAttribArray(verticalTrianglesPositionAttribute);
-    
-    glBindBuffer(GL_ARRAY_BUFFER, verticalTrianglesUVBuffer);
-    glVertexAttribPointer(verticalTrianglesTexCoordAttribute, 2, GL_FLOAT, GL_FALSE, 0, 0);
-    glEnableVertexAttribArray(verticalTrianglesTexCoordAttribute);
-    
-    glDrawArrays(GL_TRIANGLES, 0, 6);
-    
-    glDisableVertexAttribArray(verticalTrianglesPositionAttribute);
-    glDisableVertexAttribArray(verticalTrianglesTexCoordAttribute);    
-    
+    vector<GLuint> verticalTexture = { verticalFrameBufferTexture };
+    renderSceneUsingFramebuffer(verticalTrianglesProgram, verticalFramebufferUniform, verticalTrianglesPositionBuffer, verticalTrianglesUVBuffer, verticalTexture, verticalTrianglesPositionAttribute, verticalTrianglesTexCoordAttribute, 1);
     //***************************************************************************************************************
     //***************************************************************************************************************
     //************************************ RENDER A AND B USING ADDITIVE ********************************************
@@ -779,33 +691,8 @@ void display(void) {
     glViewport(0, 0, wHeight, wWidth);
     glClear(GL_COLOR_BUFFER_BIT|GL_DEPTH_BUFFER_BIT);
     
-    glUseProgram(finalAdditiveProgram);
-    
-    glUniform1i(finalAdditiveFramebufferUniform, 0);
-    glActiveTexture(GL_TEXTURE0);
-    glBindTexture(GL_TEXTURE_2D, luminanceClampFrameBufferTexture);
-    
-    glUniform1i(finalAdditiveFramebufferUniform, 1);
-    glActiveTexture(GL_TEXTURE1);
-    glBindTexture(GL_TEXTURE_2D, horizontalFrameBufferTexture);
-    
-    glBindBuffer(GL_ARRAY_BUFFER, finalAdditivePositionBuffer);
-    glVertexAttribPointer(finalAdditivePositionAttribute, 2, GL_FLOAT, GL_FALSE, 0, 0);
-    glEnableVertexAttribArray(finalAdditivePositionAttribute);
-    
-    glBindBuffer(GL_ARRAY_BUFFER, finalAdditiveUVBuffer);
-    glVertexAttribPointer(finalAdditiveTexCoordAttribute, 2, GL_FLOAT, GL_FALSE, 0, 0);
-    glEnableVertexAttribArray(finalAdditiveTexCoordAttribute);
-    
-    glDrawArrays(GL_TRIANGLES, 0, 6);
-    glDisableVertexAttribArray(finalAdditivePositionAttribute);
-    glDisableVertexAttribArray(finalAdditiveTexCoordAttribute);
-
-    //***************************************************************************************************************
-    //***************************************************************************************************************
-    //******************************************** SOLAR SYSTEM SCENE ***********************************************
-    //***************************************************************************************************************
-    //***************************************************************************************************************
+    vector<GLuint> finalTextures = { luminanceClampFrameBufferTexture, horizontalFrameBufferTexture };
+    renderSceneUsingFramebuffer(finalAdditiveProgram, finalAdditiveFramebufferUniform, finalAdditivePositionBuffer, finalAdditiveUVBuffer, finalTextures, finalAdditivePositionAttribute, finalAdditiveTexCoordAttribute, 2);
     
     glutSwapBuffers();
     }
