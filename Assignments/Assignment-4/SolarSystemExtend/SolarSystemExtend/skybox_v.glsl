@@ -9,7 +9,7 @@ varying vec3 varyingPosition;
 varying vec3 varyingNormal;
 
 void main() {
-    varyingNormal = normalize((normalMatrix * normal).xyz);
+    varyingNormal = (normalMatrix * normal).xyz;
     vec4 p = modelViewMatrix * position;
     varyingPosition = p.xyz;
     gl_Position = projectionMatrix * p;

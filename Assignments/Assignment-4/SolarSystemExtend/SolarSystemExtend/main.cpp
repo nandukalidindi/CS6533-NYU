@@ -387,23 +387,57 @@ void loadObjFile(const std::string &fileName, std::vector<VertexPN> &outVertices
 
 void display(void) {
     
-    glGenFramebuffers(1, &horizontalFrameBuffer);
-    glBindFramebuffer(GL_FRAMEBUFFER, horizontalFrameBuffer);
+//    glGenFramebuffers(1, &horizontalFrameBuffer);
+//    glBindFramebuffer(GL_FRAMEBUFFER, horizontalFrameBuffer);
+//    
+//    glGenTextures(1, &horizontalFrameBufferTexture);
+//    glBindTexture(GL_TEXTURE_2D, horizontalFrameBufferTexture);
+//    glTexImage2D(GL_TEXTURE_2D, 0,GL_RGB, 1280, 720, 0, GL_RGB,
+//                 GL_UNSIGNED_BYTE, NULL);
+//    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+//    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+//    
+//    
+//    glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0,
+//                           GL_TEXTURE_2D, horizontalFrameBufferTexture, 0);
+//    
+//    
+//    glGenTextures(1, &horizontalDepthBufferTexture);
+//    glBindTexture(GL_TEXTURE_2D, horizontalDepthBufferTexture);
+//    glTexImage2D(GL_TEXTURE_2D, 0,GL_DEPTH_COMPONENT, 1280, 720, 0,GL_DEPTH_COMPONENT,
+//                 GL_UNSIGNED_BYTE, NULL);
+//    
+//    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+//    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+//    
+//    glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH_COMPONENT24, 1280, 720);
+//    glFramebufferTexture2D(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_TEXTURE_2D,
+//                           horizontalDepthBufferTexture, 0);
+//    
+//    glBindFramebuffer(GL_FRAMEBUFFER, 0);
     
-    glGenTextures(1, &horizontalFrameBufferTexture);
-    glBindTexture(GL_TEXTURE_2D, horizontalFrameBufferTexture);
-    glTexImage2D(GL_TEXTURE_2D, 0,GL_RGB, 1280, 720, 0, GL_RGB,
-                 GL_UNSIGNED_BYTE, NULL);
+    glGenFramebuffers(1, &verticalFrameBuffer);
+    glBindFramebuffer(GL_FRAMEBUFFER, verticalFrameBuffer);
+    
+//    glGenTextures(1, &verticalFrameBufferTexture);
+//    glBindTexture(GL_TEXTURE_2D, verticalFrameBufferTexture);
+//    glTexImage2D(GL_TEXTURE_2D, 0,GL_RGB, 1280, 720, 0, GL_RGB,
+//                 GL_UNSIGNED_BYTE, NULL);
+    
+    glGenTextures(1, &verticalFrameBufferTexture);
+    glBindTexture(GL_TEXTURE_2D, verticalFrameBufferTexture);
+    glTexImage2D(GL_TEXTURE_2D, 0,GL_RGBA16F_ARB, 1280.0, 720.0, 0, GL_RGB, GL_FLOAT, NULL);
+    
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
     
     
     glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0,
-                           GL_TEXTURE_2D, horizontalFrameBufferTexture, 0);
+                           GL_TEXTURE_2D, verticalFrameBufferTexture, 0);
     
     
-    glGenTextures(1, &horizontalDepthBufferTexture);
-    glBindTexture(GL_TEXTURE_2D, horizontalDepthBufferTexture);
+    glGenTextures(1, &verticalDepthBufferTexture);
+    glBindTexture(GL_TEXTURE_2D, verticalDepthBufferTexture);
     glTexImage2D(GL_TEXTURE_2D, 0,GL_DEPTH_COMPONENT, 1280, 720, 0,GL_DEPTH_COMPONENT,
                  GL_UNSIGNED_BYTE, NULL);
     
@@ -412,12 +446,14 @@ void display(void) {
     
     glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH_COMPONENT24, 1280, 720);
     glFramebufferTexture2D(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_TEXTURE_2D,
-                           horizontalDepthBufferTexture, 0);
+                           verticalDepthBufferTexture, 0);
     
     glBindFramebuffer(GL_FRAMEBUFFER, 0);
+    
+    glBindFramebuffer(GL_FRAMEBUFFER, verticalFrameBuffer);
 
     
-    glBindFramebuffer(GL_FRAMEBUFFER, horizontalFrameBuffer);
+//    glBindFramebuffer(GL_FRAMEBUFFER, horizontalFrameBuffer);
     glViewport(0, 0, 1280, 720);
     glClear(GL_COLOR_BUFFER_BIT|GL_DEPTH_BUFFER_BIT);
     
@@ -448,7 +484,7 @@ void display(void) {
     // ------------------------------- EYE -------------------------------
     eyeMatrix = quatToMatrix(Quat::makeXRotation(-20.0)) *
                 quatToMatrix(Quat::makeKRotation(kVector, finalAngle)) *
-                Matrix4::makeTranslation(Cvec3(0.0, -2.5, 35.0)) *
+                Matrix4::makeTranslation(Cvec3(0.0, 0.0, 35.0)) *
                 Matrix4::makeZRotation(-25.0);
     // ------------------------------- EYE -------------------------------
     
@@ -469,7 +505,7 @@ void display(void) {
     genericBufferBinder.normalTextureUniform = normalTextureUniformLocation;
     
     Matrix4 planetMatrix;
-    for(int i=1; i<=9; i++) {
+    for(int i=0; i<=9; i++) {
         genericBufferBinder.texBinder = planetProperties[i].texture;
         planetMatrix = quatToMatrix(Quat::makeYRotation(timeSinceStart * planetProperties[i].revolutionRate/500.0)) *
                        Matrix4::makeTranslation(planetProperties[i].radius) *
@@ -535,9 +571,9 @@ void display(void) {
     glBindTexture(GL_TEXTURE_CUBE_MAP, cubeMap);
     
     
-    Matrix4 environmentMatrix = Matrix4::makeScale(Cvec3(100.0, 100.0, 100.0));
-//                                quatToMatrix(Quat::makeXRotation(timeSinceStart/10.0f)) *
-//                                quatToMatrix(Quat::makeYRotation(timeSinceStart/10.0f)) *
+    Matrix4 environmentMatrix = Matrix4::makeScale(Cvec3(50.0, 50.0, 50.0));
+//                                quatToMatrix(Quat::makeXRotation(timeSinceStart/100.0f));
+//    quatToMatrix(Quat::makeYRotation(timeSinceStart/100.0f));
 //                                quatToMatrix(Quat::makeZRotation(timeSinceStart/10.0f)) ;
     
     Matrix4 modelViewMatrix = inv(eyeMatrix) * environmentMatrix;
@@ -561,85 +597,56 @@ void display(void) {
     glDisableVertexAttribArray(postionAttributeFromVertexShaderE);
     glDisableVertexAttribArray(normalAttributeFromVertexShaderE);
     
+//    glGenFramebuffers(1, &verticalFrameBuffer);
+//    glBindFramebuffer(GL_FRAMEBUFFER, verticalFrameBuffer);
+//    
+//    glGenTextures(1, &verticalFrameBufferTexture);
+//    glBindTexture(GL_TEXTURE_2D, verticalFrameBufferTexture);
+//    glTexImage2D(GL_TEXTURE_2D, 0,GL_RGB, 1280, 720, 0, GL_RGB,
+//                 GL_UNSIGNED_BYTE, NULL);
+//    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+//    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+//    
+//    
+//    glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0,
+//                           GL_TEXTURE_2D, verticalFrameBufferTexture, 0);
+//    
+//    
+//    glGenTextures(1, &verticalDepthBufferTexture);
+//    glBindTexture(GL_TEXTURE_2D, verticalDepthBufferTexture);
+//    glTexImage2D(GL_TEXTURE_2D, 0,GL_DEPTH_COMPONENT, 1280, 720, 0,GL_DEPTH_COMPONENT,
+//                 GL_UNSIGNED_BYTE, NULL);
+//    
+//    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+//    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+//    
+//    glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH_COMPONENT24, 1280, 720);
+//    glFramebufferTexture2D(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_TEXTURE_2D,
+//                           verticalDepthBufferTexture, 0);
+//    
 //    glBindFramebuffer(GL_FRAMEBUFFER, 0);
-//    glViewport(0, 0, 1280, 720);
-//    glClear(GL_COLOR_BUFFER_BIT|GL_DEPTH_BUFFER_BIT);
 //    
-//    glUseProgram(screenTrianglesProgram);
+//    glBindFramebuffer(GL_FRAMEBUFFER, verticalFrameBuffer);
 //    
-//    glUniform1i(screenFramebufferUniform, 0);
+//    glUseProgram(horizontalTrianglesProgram);
+//    
+//    glUniform1i(horizontalFramebufferUniform, 0);
 //    glActiveTexture(GL_TEXTURE0);
-//    glBindTexture(GL_TEXTURE_2D, screenFrameBufferTexture);
+//    glBindTexture(GL_TEXTURE_2D, horizontalFrameBufferTexture);
 //    
-//    glBindBuffer(GL_ARRAY_BUFFER, screenTrianglesPositionBuffer);
-//    glVertexAttribPointer(screenTrianglesPositionAttribute, 2, GL_FLOAT, GL_FALSE, 0, 0);
-//    glEnableVertexAttribArray(screenTrianglesPositionAttribute);
+//    glBindBuffer(GL_ARRAY_BUFFER, horizontalTrianglesPositionBuffer);
+//    glVertexAttribPointer(horizontalTrianglesPositionAttribute, 2, GL_FLOAT, GL_FALSE, 0, 0);
+//    glEnableVertexAttribArray(horizontalTrianglesPositionAttribute);
 //    
-//    glBindBuffer(GL_ARRAY_BUFFER, screenTrianglesUVBuffer);
-//    glVertexAttribPointer(screenTrianglesTexCoordAttribute, 2, GL_FLOAT, GL_FALSE, 0, 0);
-//    glEnableVertexAttribArray(screenTrianglesTexCoordAttribute);
+//    glBindBuffer(GL_ARRAY_BUFFER, horizontalTrianglesUVBuffer);
+//    glVertexAttribPointer(horizontalTrianglesTexCoordAttribute, 2, GL_FLOAT, GL_FALSE, 0, 0);
+//    glEnableVertexAttribArray(horizontalTrianglesTexCoordAttribute);
 //    
 //    glDrawArrays(GL_TRIANGLES, 0, 6);
 //    
-//    glDisableVertexAttribArray(screenTrianglesPositionAttribute);
-//    glDisableVertexAttribArray(screenTrianglesTexCoordAttribute);
-    
-//    glBindFramebuffer(GL_FRAMEBUFFER, 0);
-//    glViewport(0, 0, 1280, 720);
-//    glClear(GL_COLOR_BUFFER_BIT|GL_DEPTH_BUFFER_BIT);
-    
-    
-    
-    glGenFramebuffers(1, &verticalFrameBuffer);
-    glBindFramebuffer(GL_FRAMEBUFFER, verticalFrameBuffer);
-    
-    glGenTextures(1, &verticalFrameBufferTexture);
-    glBindTexture(GL_TEXTURE_2D, verticalFrameBufferTexture);
-    glTexImage2D(GL_TEXTURE_2D, 0,GL_RGB, 1280, 720, 0, GL_RGB,
-                 GL_UNSIGNED_BYTE, NULL);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
-    
-    
-    glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0,
-                           GL_TEXTURE_2D, verticalFrameBufferTexture, 0);
-    
-    
-    glGenTextures(1, &verticalDepthBufferTexture);
-    glBindTexture(GL_TEXTURE_2D, verticalDepthBufferTexture);
-    glTexImage2D(GL_TEXTURE_2D, 0,GL_DEPTH_COMPONENT, 1280, 720, 0,GL_DEPTH_COMPONENT,
-                 GL_UNSIGNED_BYTE, NULL);
-    
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
-    
-    glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH_COMPONENT24, 1280, 720);
-    glFramebufferTexture2D(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_TEXTURE_2D,
-                           verticalDepthBufferTexture, 0);
-    
-    glBindFramebuffer(GL_FRAMEBUFFER, 0);
-    
-    glBindFramebuffer(GL_FRAMEBUFFER, verticalFrameBuffer);
-    
-    glUseProgram(horizontalTrianglesProgram);
-    
-    glUniform1i(horizontalFramebufferUniform, 0);
-    glActiveTexture(GL_TEXTURE0);
-    glBindTexture(GL_TEXTURE_2D, horizontalFrameBufferTexture);
-    
-    glBindBuffer(GL_ARRAY_BUFFER, horizontalTrianglesPositionBuffer);
-    glVertexAttribPointer(horizontalTrianglesPositionAttribute, 2, GL_FLOAT, GL_FALSE, 0, 0);
-    glEnableVertexAttribArray(horizontalTrianglesPositionAttribute);
-    
-    glBindBuffer(GL_ARRAY_BUFFER, horizontalTrianglesUVBuffer);
-    glVertexAttribPointer(horizontalTrianglesTexCoordAttribute, 2, GL_FLOAT, GL_FALSE, 0, 0);
-    glEnableVertexAttribArray(horizontalTrianglesTexCoordAttribute);
-    
-    glDrawArrays(GL_TRIANGLES, 0, 6);
-    
-    glDisableVertexAttribArray(horizontalTrianglesPositionAttribute);
-    glDisableVertexAttribArray(horizontalTrianglesTexCoordAttribute);
-
+//    glDisableVertexAttribArray(horizontalTrianglesPositionAttribute);
+//    glDisableVertexAttribArray(horizontalTrianglesTexCoordAttribute);
+//
     
     glBindFramebuffer(GL_FRAMEBUFFER, 0);
     glViewport(0, 0, 1280, 720);
@@ -788,12 +795,14 @@ void init() {
     projectionMatrixUniformFromVertexShaderE = glGetUniformLocation(environmentMapProgram, "projectionMatrix");
     
     std::vector<std::string> cubemapFiles;
-    cubemapFiles.push_back("/Users/kaybus/Documents/nandukalidindi-github/CS6533-NYU/Assignments/Assignment-4/Cubemaps/neg-x.png");
-    cubemapFiles.push_back("/Users/kaybus/Documents/nandukalidindi-github/CS6533-NYU/Assignments/Assignment-4/Cubemaps/neg-y.png");
-    cubemapFiles.push_back("/Users/kaybus/Documents/nandukalidindi-github/CS6533-NYU/Assignments/Assignment-4/Cubemaps/neg-z.png");
-    cubemapFiles.push_back("/Users/kaybus/Documents/nandukalidindi-github/CS6533-NYU/Assignments/Assignment-4/Cubemaps/pos-x.png");
-    cubemapFiles.push_back("/Users/kaybus/Documents/nandukalidindi-github/CS6533-NYU/Assignments/Assignment-4/Cubemaps/pos-x.png");
-    cubemapFiles.push_back("/Users/kaybus/Documents/nandukalidindi-github/CS6533-NYU/Assignments/Assignment-4/Cubemaps/pos-x.png");
+    cubemapFiles.push_back("/Users/kaybus/Documents/nandukalidindi-github/CS6533-NYU/Assignments/Assignment-4/Cubemaps/nebulaLF.png");
+    cubemapFiles.push_back("/Users/kaybus/Documents/nandukalidindi-github/CS6533-NYU/Assignments/Assignment-4/Cubemaps/nebulaRT.png");
+    cubemapFiles.push_back("/Users/kaybus/Documents/nandukalidindi-github/CS6533-NYU/Assignments/Assignment-4/Cubemaps/nebulaUP180.png");
+    cubemapFiles.push_back("/Users/kaybus/Documents/nandukalidindi-github/CS6533-NYU/Assignments/Assignment-4/Cubemaps/nebulaDN180.png");
+    cubemapFiles.push_back("/Users/kaybus/Documents/nandukalidindi-github/CS6533-NYU/Assignments/Assignment-4/Cubemaps/nebulaBK.png");
+    cubemapFiles.push_back("/Users/kaybus/Documents/nandukalidindi-github/CS6533-NYU/Assignments/Assignment-4/Cubemaps/nebulaFT.png");
+    
+    
     cubeMap = loadGLCubemap(cubemapFiles);
     
     
@@ -863,36 +872,7 @@ void init() {
     
     horizontalTrianglesProgram = glCreateProgram();
     
-    readAndCompileShader(horizontalTrianglesProgram, "/Users/kaybus/Documents/nandukalidindi-github/CS6533-NYU/Assignments/Assignment-4/SolarSystemExtend/SolarSystemExtend/h_blur_v.glsl", "/Users/kaybus/Documents/nandukalidindi-github/CS6533-NYU/Assignments/Assignment-4/SolarSystemExtend/SolarSystemExtend/h_blur_f.glsl");
-    
-//    glGenFramebuffers(1, &horizontalFrameBuffer);
-//    glBindFramebuffer(GL_FRAMEBUFFER, horizontalFrameBuffer);
-//    
-//    glGenTextures(1, &horizontalFrameBufferTexture);
-//    glBindTexture(GL_TEXTURE_2D, horizontalFrameBufferTexture);
-//    glTexImage2D(GL_TEXTURE_2D, 0,GL_RGB, 1280, 720, 0, GL_RGB,
-//                 GL_UNSIGNED_BYTE, NULL);
-//    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
-//    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
-//    
-//    
-//    glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0,
-//                           GL_TEXTURE_2D, horizontalFrameBufferTexture, 0);
-//    
-//    
-//    glGenTextures(1, &horizontalDepthBufferTexture);
-//    glBindTexture(GL_TEXTURE_2D, horizontalDepthBufferTexture);
-//    glTexImage2D(GL_TEXTURE_2D, 0,GL_DEPTH_COMPONENT, 1280, 720, 0,GL_DEPTH_COMPONENT,
-//                 GL_UNSIGNED_BYTE, NULL);
-//    
-//    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
-//    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
-//    
-//    glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH_COMPONENT24, 1280, 720);
-//    glFramebufferTexture2D(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_TEXTURE_2D,
-//                           horizontalDepthBufferTexture, 0);
-//    
-//    glBindFramebuffer(GL_FRAMEBUFFER, 0);
+    readAndCompileShader(horizontalTrianglesProgram, "/Users/kaybus/Documents/nandukalidindi-github/CS6533-NYU/Assignments/Assignment-4/SolarSystemExtend/SolarSystemExtend/invert_color_vertex.glsl", "/Users/kaybus/Documents/nandukalidindi-github/CS6533-NYU/Assignments/Assignment-4/SolarSystemExtend/SolarSystemExtend/invert_color_fragment.glsl");
     
     horizontalTrianglesPositionAttribute = glGetAttribLocation(horizontalTrianglesProgram, "position");
     horizontalTrianglesTexCoordAttribute = glGetAttribLocation(horizontalTrianglesProgram, "texCoord");
@@ -925,37 +905,8 @@ void init() {
     
     verticalTrianglesProgram = glCreateProgram();
 
-    readAndCompileShader(verticalTrianglesProgram, "/Users/kaybus/Documents/nandukalidindi-github/CS6533-NYU/Assignments/Assignment-4/SolarSystemExtend/SolarSystemExtend/screen_v.glsl", "/Users/kaybus/Documents/nandukalidindi-github/CS6533-NYU/Assignments/Assignment-4/SolarSystemExtend/SolarSystemExtend/screen_f.glsl");
-    
-//    glGenFramebuffers(1, &verticalFrameBuffer);
-//    glBindFramebuffer(GL_FRAMEBUFFER, verticalFrameBuffer);
-//    
-//    glGenTextures(1, &verticalFrameBufferTexture);
-//    glBindTexture(GL_TEXTURE_2D, verticalFrameBufferTexture);
-//    glTexImage2D(GL_TEXTURE_2D, 0,GL_RGB, 1280, 720, 0, GL_RGB,
-//                 GL_UNSIGNED_BYTE, NULL);
-//    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
-//    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
-//    
-//    
-//    glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0,
-//                           GL_TEXTURE_2D, verticalFrameBufferTexture, 0);
-//    
-//    
-//    glGenTextures(1, &verticalDepthBufferTexture);
-//    glBindTexture(GL_TEXTURE_2D, verticalDepthBufferTexture);
-//    glTexImage2D(GL_TEXTURE_2D, 0,GL_DEPTH_COMPONENT, 1280, 720, 0,GL_DEPTH_COMPONENT,
-//                 GL_UNSIGNED_BYTE, NULL);
-//    
-//    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
-//    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
-//    
-//    glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH_COMPONENT24, 1280, 720);
-//    glFramebufferTexture2D(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_TEXTURE_2D,
-//                           verticalDepthBufferTexture, 0);
-//    
-//    glBindFramebuffer(GL_FRAMEBUFFER, 0);
-    
+    readAndCompileShader(verticalTrianglesProgram, "/Users/kaybus/Documents/nandukalidindi-github/CS6533-NYU/Assignments/Assignment-4/SolarSystemExtend/SolarSystemExtend/hdr_vertex.glsl", "/Users/kaybus/Documents/nandukalidindi-github/CS6533-NYU/Assignments/Assignment-4/SolarSystemExtend/SolarSystemExtend/hdr_fragment.glsl");
+        
     verticalTrianglesPositionAttribute = glGetAttribLocation(verticalTrianglesProgram, "position");
     verticalTrianglesTexCoordAttribute = glGetAttribLocation(verticalTrianglesProgram, "texCoord");
     verticalFramebufferUniform = glGetUniformLocation(verticalTrianglesProgram, "screenFramebuffer");
