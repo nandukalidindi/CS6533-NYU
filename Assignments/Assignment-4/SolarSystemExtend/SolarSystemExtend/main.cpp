@@ -51,6 +51,46 @@ GLuint finalAdditiveProgram,
        finalAdditiveFrameBufferTexture,
        finalAdditiveDepthBufferTexture;
 
+GLuint invertColorProgram,
+       invertColorFramebufferUniform,
+       invertColorPositionBuffer,
+       invertColorPositionAttribute,
+       invertColorUVBuffer,
+       invertColorTexCoordAttribute,
+       invertColorFrameBuffer,
+       invertColorFrameBufferTexture,
+       invertColorDepthBufferTexture;
+
+GLuint blackAndWhiteProgram,
+       blackAndWhiteFramebufferUniform,
+       blackAndWhitePositionBuffer,
+       blackAndWhitePositionAttribute,
+       blackAndWhiteUVBuffer,
+       blackAndWhiteTexCoordAttribute,
+       blackAndWhiteFrameBuffer,
+       blackAndWhiteFrameBufferTexture,
+       blackAndWhiteDepthBufferTexture;
+
+GLuint fxaaProgram,
+       fxaaFramebufferUniform,
+       fxaaPositionBuffer,
+       fxaaPositionAttribute,
+       fxaaUVBuffer,
+       fxaaTexCoordAttribute,
+       fxaaFrameBuffer,
+       fxaaFrameBufferTexture,
+       fxaaDepthBufferTexture;
+
+GLuint hdrProgram,
+       hdrFramebufferUniform,
+       hdrPositionBuffer,
+       hdrPositionAttribute,
+       hdrUVBuffer,
+       hdrTexCoordAttribute,
+       hdrFrameBuffer,
+       hdrFrameBufferTexture,
+       hdrDepthBufferTexture;
+
 GLuint environmentMapProgram;
 GLuint cubeMap;
 
@@ -329,94 +369,45 @@ void renderScene() {
     glDisableVertexAttribArray(tangentAttributeFromVertexShader);
 }
 
-void display(void) {
-    
-    //***************************************************************************************************************
-    //***************************************************************************************************************
+void glare() {
     //******************************************** BIND FRAMEBUFFER A ***********************************************
-    //***************************************************************************************************************
-    //***************************************************************************************************************
     generateFrameBuffer(luminanceClampFrameBuffer, luminanceClampFrameBufferTexture, luminanceClampDepthBufferTexture, true);
     
     glBindFramebuffer(GL_FRAMEBUFFER, luminanceClampFrameBuffer);
     glViewport(0, 0, wHeight, wWidth);
     glClear(GL_COLOR_BUFFER_BIT|GL_DEPTH_BUFFER_BIT);
-    //***************************************************************************************************************
-    //***************************************************************************************************************
     //******************************************** SOLAR SYSTEM SCENE ***********************************************
-    //***************************************************************************************************************
-    //***************************************************************************************************************
-    
     renderScene();
     
-    //***************************************************************************************************************
-    //***************************************************************************************************************
     //*********************************************** UNIVERSE SKYBOX ***********************************************
-    //***************************************************************************************************************
-    //***************************************************************************************************************
-    
     renderSkybox();
     
-    //***************************************************************************************************************
-    //***************************************************************************************************************
     //******************************************** BIND FRAMEBUFFER B ***********************************************
-    //***************************************************************************************************************
-    //***************************************************************************************************************
-    
     generateFrameBuffer(horizontalBlurFrameBuffer, horizontalBlurFrameBufferTexture, horizontalBlurDepthBufferTexture, false);
     
     glBindFramebuffer(GL_FRAMEBUFFER, horizontalBlurFrameBuffer);
     
-    //***************************************************************************************************************
-    //***************************************************************************************************************
     //******************************************** RENDER A USING CLAMP *********************************************
-    //***************************************************************************************************************
-    //***************************************************************************************************************
-    
     vector<GLuint> luminanceTexture = { luminanceClampFrameBufferTexture };
     renderSceneUsingFramebuffer(luminanceClampProgram, luminanceClampFramebufferUniform, luminanceClampPositionBuffer, luminanceClampUVBuffer, luminanceTexture, luminanceClampPositionAttribute, luminanceClampTexCoordAttribute, 1);
-    
-    
-    //***************************************************************************************************************
-    //***************************************************************************************************************
+
     //******************************************** BIND FRAMEBUFFER C ***********************************************
-    //***************************************************************************************************************
-    //***************************************************************************************************************
-    
     generateFrameBuffer(verticalBlurFrameBuffer, verticalBlurFrameBufferTexture, verticalBlurDepthBufferTexture, false);
     glBindFramebuffer(GL_FRAMEBUFFER, verticalBlurFrameBuffer);
-    
-    //***************************************************************************************************************
-    //***************************************************************************************************************
+
     //******************************************** RENDER B USING HBLUR *********************************************
-    //***************************************************************************************************************
-    //***************************************************************************************************************
-    
     vector<GLuint> horizontalTexture = { horizontalBlurFrameBufferTexture };
     renderSceneUsingFramebuffer(horizontalBlurProgram, horizontalBlurFramebufferUniform, horizontalBlurPositionBuffer, horizontalBlurUVBuffer, horizontalTexture, horizontalBlurPositionAttribute, horizontalBlurTexCoordAttribute, 1);
     
-    //***************************************************************************************************************
-    //***************************************************************************************************************
     //******************************************** BIND FRAMEBUFFER B ***********************************************
-    //***************************************************************************************************************
-    //***************************************************************************************************************
-    
     generateFrameBuffer(horizontalBlurFrameBuffer, horizontalBlurFrameBufferTexture, horizontalBlurDepthBufferTexture, false);
     glBindFramebuffer(GL_FRAMEBUFFER, horizontalBlurFrameBuffer);
     
-    //***************************************************************************************************************
-    //***************************************************************************************************************
     //******************************************** RENDER C USING VBLUR *********************************************
-    //***************************************************************************************************************
-    //***************************************************************************************************************
-    
     vector<GLuint> verticalTexture = { verticalBlurFrameBufferTexture };
     renderSceneUsingFramebuffer(verticalBlurProgram, verticalBlurFramebufferUniform, verticalBlurPositionBuffer, verticalBlurUVBuffer, verticalTexture, verticalBlurPositionAttribute, verticalBlurTexCoordAttribute, 1);
-    //***************************************************************************************************************
-    //***************************************************************************************************************
+    
     //************************************ RENDER A AND B USING ADDITIVE ********************************************
-    //***************************************************************************************************************
-    //***************************************************************************************************************
     glBindFramebuffer(GL_FRAMEBUFFER, 0);
     glViewport(0, 0, wHeight, wWidth);
     glClear(GL_COLOR_BUFFER_BIT|GL_DEPTH_BUFFER_BIT);
@@ -425,7 +416,165 @@ void display(void) {
     renderSceneUsingFramebuffer(finalAdditiveProgram, finalAdditiveFramebufferUniform, finalAdditivePositionBuffer, finalAdditiveUVBuffer, finalTextures, finalAdditivePositionAttribute, finalAdditiveTexCoordAttribute, 2);
     
     glutSwapBuffers();
-    }
+    
+}
+
+void blur() {
+    generateFrameBuffer(horizontalBlurFrameBuffer, horizontalBlurFrameBufferTexture, horizontalBlurDepthBufferTexture, false);
+    glBindFramebuffer(GL_FRAMEBUFFER, horizontalBlurFrameBuffer);
+    glViewport(0, 0, wHeight, wWidth);
+    glClear(GL_COLOR_BUFFER_BIT|GL_DEPTH_BUFFER_BIT);
+    
+    renderScene();
+    
+    renderSkybox();
+    
+    generateFrameBuffer(verticalBlurFrameBuffer, verticalBlurFrameBufferTexture, verticalBlurDepthBufferTexture, false);
+    glBindFramebuffer(GL_FRAMEBUFFER, verticalBlurFrameBuffer);
+    
+    vector<GLuint> horizontalTexture = { horizontalBlurFrameBufferTexture };
+    renderSceneUsingFramebuffer(horizontalBlurProgram, horizontalBlurFramebufferUniform, horizontalBlurPositionBuffer, horizontalBlurUVBuffer, horizontalTexture, horizontalBlurPositionAttribute, horizontalBlurTexCoordAttribute, 1);
+    
+    glBindFramebuffer(GL_FRAMEBUFFER, 0);
+    glViewport(0, 0, wHeight, wWidth);
+    glClear(GL_COLOR_BUFFER_BIT|GL_DEPTH_BUFFER_BIT);
+    
+    vector<GLuint> verticalTexture = { verticalBlurFrameBufferTexture };
+    renderSceneUsingFramebuffer(verticalBlurProgram, verticalBlurFramebufferUniform, verticalBlurPositionBuffer, verticalBlurUVBuffer, verticalTexture, verticalBlurPositionAttribute, verticalBlurTexCoordAttribute, 1);
+    
+    glutSwapBuffers();
+}
+
+void invertColor() {
+    generateFrameBuffer(invertColorFrameBuffer, invertColorFrameBufferTexture, invertColorDepthBufferTexture, false);
+    
+    glBindFramebuffer(GL_FRAMEBUFFER, invertColorFrameBuffer);
+    glViewport(0, 0, wHeight, wWidth);
+    glClear(GL_COLOR_BUFFER_BIT|GL_DEPTH_BUFFER_BIT);
+    
+    renderScene();
+    
+    renderSkybox();
+    
+    glBindFramebuffer(GL_FRAMEBUFFER, 0);
+    glViewport(0, 0, wHeight, wWidth);
+    glClear(GL_COLOR_BUFFER_BIT|GL_DEPTH_BUFFER_BIT);
+    
+    vector<GLuint> invertColorTexture = { invertColorFrameBufferTexture };
+    renderSceneUsingFramebuffer(invertColorProgram, invertColorFramebufferUniform, invertColorPositionBuffer, invertColorUVBuffer, invertColorTexture, invertColorPositionAttribute, invertColorTexCoordAttribute, 1);
+    
+    glutSwapBuffers();
+}
+
+void blackAndWhite() {
+    generateFrameBuffer(blackAndWhiteFrameBuffer, blackAndWhiteFrameBufferTexture, blackAndWhiteDepthBufferTexture, false);
+    
+    glBindFramebuffer(GL_FRAMEBUFFER, blackAndWhiteFrameBuffer);
+    glViewport(0, 0, wHeight, wWidth);
+    glClear(GL_COLOR_BUFFER_BIT|GL_DEPTH_BUFFER_BIT);
+    
+    renderScene();
+    
+    renderSkybox();
+    
+    glBindFramebuffer(GL_FRAMEBUFFER, 0);
+    glViewport(0, 0, wHeight, wWidth);
+    glClear(GL_COLOR_BUFFER_BIT|GL_DEPTH_BUFFER_BIT);
+    
+    vector<GLuint> blackAndWhiteTexture = { blackAndWhiteFrameBufferTexture };
+    renderSceneUsingFramebuffer(blackAndWhiteProgram, blackAndWhiteFramebufferUniform, blackAndWhitePositionBuffer, blackAndWhiteUVBuffer, blackAndWhiteTexture, blackAndWhitePositionAttribute, blackAndWhiteTexCoordAttribute, 1);
+    
+    glutSwapBuffers();
+}
+
+void blackAndWhiteWithInvertColor() {
+    generateFrameBuffer(blackAndWhiteFrameBuffer, blackAndWhiteFrameBufferTexture, blackAndWhiteDepthBufferTexture, false);
+    
+    glBindFramebuffer(GL_FRAMEBUFFER, blackAndWhiteFrameBuffer);
+    glViewport(0, 0, wHeight, wWidth);
+    glClear(GL_COLOR_BUFFER_BIT|GL_DEPTH_BUFFER_BIT);
+    
+    renderScene();
+    
+    renderSkybox();
+    
+    generateFrameBuffer(invertColorFrameBuffer, invertColorFrameBufferTexture, invertColorDepthBufferTexture, false);
+    glBindFramebuffer(GL_FRAMEBUFFER, invertColorFrameBuffer);
+    
+    vector<GLuint> blackAndWhiteTexture = { blackAndWhiteFrameBufferTexture };
+    renderSceneUsingFramebuffer(blackAndWhiteProgram, blackAndWhiteFramebufferUniform, blackAndWhitePositionBuffer, blackAndWhiteUVBuffer, blackAndWhiteTexture, blackAndWhitePositionAttribute, blackAndWhiteTexCoordAttribute, 1);
+    
+    glBindFramebuffer(GL_FRAMEBUFFER, 0);
+    glViewport(0, 0, wHeight, wWidth);
+    glClear(GL_COLOR_BUFFER_BIT|GL_DEPTH_BUFFER_BIT);
+    
+    vector<GLuint> invertColorTexture = { invertColorFrameBufferTexture };
+    renderSceneUsingFramebuffer(invertColorProgram, invertColorFramebufferUniform, invertColorPositionBuffer, invertColorUVBuffer, invertColorTexture, invertColorPositionAttribute, invertColorTexCoordAttribute, 1);
+    
+    glutSwapBuffers();
+}
+
+void hdr() {
+    generateFrameBuffer(hdrFrameBuffer, hdrFrameBufferTexture, hdrDepthBufferTexture, false);
+    
+    glBindFramebuffer(GL_FRAMEBUFFER, hdrFrameBuffer);
+    glViewport(0, 0, wHeight, wWidth);
+    glClear(GL_COLOR_BUFFER_BIT|GL_DEPTH_BUFFER_BIT);
+    
+    renderScene();
+    
+    renderSkybox();
+    
+    glBindFramebuffer(GL_FRAMEBUFFER, 0);
+    glViewport(0, 0, wHeight, wWidth);
+    glClear(GL_COLOR_BUFFER_BIT|GL_DEPTH_BUFFER_BIT);
+    
+    vector<GLuint> hdrTexture = { hdrFrameBufferTexture };
+    
+    renderSceneUsingFramebuffer(hdrProgram, hdrFramebufferUniform, hdrPositionBuffer, hdrUVBuffer, hdrTexture, hdrPositionAttribute, hdrTexCoordAttribute, 1);
+    glutSwapBuffers();
+}
+
+void fxaa() {
+    generateFrameBuffer(fxaaFrameBuffer, fxaaFrameBufferTexture, fxaaDepthBufferTexture, false);
+    
+    glBindFramebuffer(GL_FRAMEBUFFER, fxaaFrameBuffer);
+    glViewport(0, 0, wHeight, wWidth);
+    glClear(GL_COLOR_BUFFER_BIT|GL_DEPTH_BUFFER_BIT);
+    
+    renderScene();
+    
+    renderSkybox();
+    
+    glBindFramebuffer(GL_FRAMEBUFFER, 0);
+    glViewport(0, 0, wHeight, wWidth);
+    glClear(GL_COLOR_BUFFER_BIT|GL_DEPTH_BUFFER_BIT);
+    
+    vector<GLuint> fxaaTexture = { fxaaFrameBufferTexture };
+    renderSceneUsingFramebuffer(fxaaProgram, fxaaFramebufferUniform, fxaaPositionBuffer, fxaaUVBuffer, fxaaTexture, fxaaPositionAttribute, fxaaTexCoordAttribute, 1);
+    
+    glutSwapBuffers();
+}
+
+void plainScene() {
+    glViewport(0, 0, wHeight, wWidth);
+    glClear(GL_COLOR_BUFFER_BIT|GL_DEPTH_BUFFER_BIT);
+    
+    renderScene();
+    renderSkybox();
+    glutSwapBuffers();
+}
+
+void display(void) {
+    plainScene();
+//    glare();
+//    blur();
+//    invertColor();
+//    blackAndWhite();
+//    blackAndWhiteWithInvertColor();
+//    hdr();
+//    fxaa();
+}
 
 
 GLuint loadShaders(string vertexShader, string fragmentShader, GLuint &positionAttribute, GLuint &texCoordAttribute, GLuint &frameBufferUniform, GLuint &positionBuffer, GLuint &uvBuffer) {
@@ -591,7 +740,7 @@ void init() {
     cubemapFiles.push_back("/Users/kaybus/Documents/nandukalidindi-github/CS6533-NYU/Assignments/Assignment-4/Cubemaps/nebulaBK.png");
     cubemapFiles.push_back("/Users/kaybus/Documents/nandukalidindi-github/CS6533-NYU/Assignments/Assignment-4/Cubemaps/nebulaFT.png");
     cubeMap = loadGLCubemap(cubemapFiles);
-    environmentTexBinder.environmentMap = cubeMap;
+    environmentTexBinder.environmentMap = cubeMap;        
 
     luminanceClampProgram = loadShaders("/Users/kaybus/Documents/nandukalidindi-github/CS6533-NYU/Assignments/Assignment-4/SolarSystemExtend/SolarSystemExtend/luminance_clamp_vertex.glsl", "/Users/kaybus/Documents/nandukalidindi-github/CS6533-NYU/Assignments/Assignment-4/SolarSystemExtend/SolarSystemExtend/luminance_clamp_fragment.glsl", luminanceClampPositionAttribute, luminanceClampTexCoordAttribute, luminanceClampFramebufferUniform, luminanceClampPositionBuffer, luminanceClampUVBuffer);
     
@@ -600,6 +749,14 @@ void init() {
     verticalBlurProgram = loadShaders("/Users/kaybus/Documents/nandukalidindi-github/CS6533-NYU/Assignments/Assignment-4/SolarSystemExtend/SolarSystemExtend/v_blur_v.glsl", "/Users/kaybus/Documents/nandukalidindi-github/CS6533-NYU/Assignments/Assignment-4/SolarSystemExtend/SolarSystemExtend/v_blur_f.glsl", verticalBlurPositionAttribute, verticalBlurTexCoordAttribute, verticalBlurFramebufferUniform, verticalBlurPositionBuffer, verticalBlurUVBuffer);
     
     finalAdditiveProgram = loadShaders("/Users/kaybus/Documents/nandukalidindi-github/CS6533-NYU/Assignments/Assignment-4/SolarSystemExtend/SolarSystemExtend/final_additive_vertex.glsl", "/Users/kaybus/Documents/nandukalidindi-github/CS6533-NYU/Assignments/Assignment-4/SolarSystemExtend/SolarSystemExtend/final_additive_fragment.glsl", finalAdditivePositionAttribute, finalAdditiveTexCoordAttribute, finalAdditiveFramebufferUniform, finalAdditivePositionBuffer, finalAdditiveUVBuffer);
+    
+    invertColorProgram = loadShaders("/Users/kaybus/Documents/nandukalidindi-github/CS6533-NYU/Assignments/Assignment-4/SolarSystemExtend/SolarSystemExtend/invert_color_vertex.glsl", "/Users/kaybus/Documents/nandukalidindi-github/CS6533-NYU/Assignments/Assignment-4/SolarSystemExtend/SolarSystemExtend/invert_color_fragment.glsl", invertColorPositionAttribute, invertColorTexCoordAttribute, invertColorFramebufferUniform, invertColorPositionBuffer, invertColorUVBuffer);
+    
+    blackAndWhiteProgram = loadShaders("/Users/kaybus/Documents/nandukalidindi-github/CS6533-NYU/Assignments/Assignment-4/SolarSystemExtend/SolarSystemExtend/black_and_white_vertex.glsl", "/Users/kaybus/Documents/nandukalidindi-github/CS6533-NYU/Assignments/Assignment-4/SolarSystemExtend/SolarSystemExtend/black_and_white_fragment.glsl", blackAndWhitePositionAttribute, blackAndWhiteTexCoordAttribute, blackAndWhiteFramebufferUniform, blackAndWhitePositionBuffer, blackAndWhiteUVBuffer);
+    
+    fxaaProgram = loadShaders("/Users/kaybus/Documents/nandukalidindi-github/CS6533-NYU/Assignments/Assignment-4/SolarSystemExtend/SolarSystemExtend/fxaa_vertex.glsl", "/Users/kaybus/Documents/nandukalidindi-github/CS6533-NYU/Assignments/Assignment-4/SolarSystemExtend/SolarSystemExtend/fxaa_fragment.glsl", fxaaPositionAttribute, fxaaTexCoordAttribute, fxaaFramebufferUniform, fxaaPositionBuffer, fxaaUVBuffer);
+    
+    hdrProgram = loadShaders("/Users/kaybus/Documents/nandukalidindi-github/CS6533-NYU/Assignments/Assignment-4/SolarSystemExtend/SolarSystemExtend/hdr_vertex.glsl", "/Users/kaybus/Documents/nandukalidindi-github/CS6533-NYU/Assignments/Assignment-4/SolarSystemExtend/SolarSystemExtend/hdr_fragment.glsl", hdrPositionAttribute, hdrTexCoordAttribute, hdrFramebufferUniform, hdrPositionBuffer, hdrUVBuffer);
 }
 
 void reshape(int w, int h) {
