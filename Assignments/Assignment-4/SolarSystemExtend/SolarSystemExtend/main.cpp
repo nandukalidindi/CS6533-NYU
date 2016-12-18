@@ -106,24 +106,6 @@ int numIndices,
     cubeNumIndices,
     timeSinceStart = 0.0;
 
-//struct TextureBinder {
-//    GLuint diffuseTexture;
-//    GLuint specularTexture;
-//    GLuint normalTexture;
-//    GLuint environmentMap;
-//};
-
-TextureBinder sunTexBinder,
-mercuryTexBinder,
-venusTexBinder,
-earthTexBinder,
-marsTexBinder,
-jupiterTexBinder,
-saturnTexBinder,
-uranusTexBinder,
-neptuneTexBinder,
-plutoTexBinder;
-
 TextureBinder moonTexBinder;
 
 TextureBinder uranusRingTexBinder,
@@ -133,195 +115,6 @@ TextureBinder orbitTexBinder;
 
 TextureBinder environmentTexBinder;
 
-//struct CelestialBodyTexture {
-//    string diffuse;
-//    string specular;
-//    string normal;
-//};
-//
-//CelestialBodyTexture celestialBodyTextures[] = {
-//    { "sun.jpg", "sun_SPEC.png", "sun_NRM.png" },
-//    
-//    { "mercury.jpg", "mercury_SPEC.png", "mercury_NRM.png" },
-//    
-//    { "venus.jpg", "venus_SPEC.png", "venus_NRM.png" },
-//    
-//    { "earth.jpg", "earth_SPEC.png", "earth_NRM.png" },
-//    
-//    { "mars.jpg", "mars_SPEC.png", "mars_NRM.png" },
-//    
-//    { "jupiter.jpg", "jupiter_SPEC.png", "jupiter_NRM.png" },
-//    
-//    { "saturn.jpg", "saturn_SPEC.png", "saturn_NRM.png" },
-//    
-//    { "uranus.jpg", "uranus_SPEC.png", "uranus_NRM.png" },
-//    
-//    { "neptune.jpg", "neptune_SPEC.png", "neptune_NRM.png" },
-//    
-//    { "pluto.jpg", "pluto_SPEC.png", "pluto_NRM.png" }
-//};
-
-//struct VertexPN {
-//    Cvec3f p;
-//    Cvec3f n;
-//    Cvec2f t;
-//    Cvec3f b, tg;
-//    VertexPN() {}
-//    VertexPN(float x, float y, float z, float nx, float ny, float nz) : p(x,y,z), n(nx, ny, nz) {}
-//    
-//    VertexPN& operator = (const GenericVertex& v) {
-//        p = v.pos;
-//        n = v.normal;
-//        t = v.tex;
-//        b = v.binormal;
-//        tg = v.tangent;
-//        return *this;
-//    }
-//};
-
-/**
- * Structure to hold all the attribute, uniform, buffer object locations and bind
- * them to the buffers accordingly
- *
- * Structure: BufferBinder
- */
-//struct BufferBinder {
-//    GLuint vertexBufferObject;
-//    GLuint colorBufferObject;
-//    GLuint indexBufferObject;
-//    
-//    GLuint positionAttribute;
-//    GLuint colorAttribute;
-//    GLuint normalAttribute;
-//    GLuint textureAttribute;
-//    GLuint binormalAttribute;
-//    GLuint tangentAttribute;
-//    
-//    GLuint modelViewMatrixUniform;
-//    GLuint normalMatrixUniform;
-//    GLuint projectionMatrixUniform;
-//    GLuint diffuseTextureUniform;
-//    GLuint specularTextureUniform;
-//    GLuint normalTextureUniform;
-//    
-//    TextureBinder texBinder;
-//    
-//    int numIndices;
-//    
-//    void draw() {
-//        glBindBuffer(GL_ARRAY_BUFFER, vertexBufferObject);
-//        glVertexAttribPointer(positionAttribute, 3, GL_FLOAT, GL_FALSE, sizeof(VertexPN), (void*)offsetof(VertexPN, p));
-//        glEnableVertexAttribArray(positionAttribute);
-//        
-//        glVertexAttribPointer(normalAttribute, 3, GL_FLOAT, GL_FALSE, sizeof(VertexPN), (void*)offsetof(VertexPN, n));
-//        glEnableVertexAttribArray(normalAttribute);
-//        
-//        glEnableVertexAttribArray(textureAttribute);
-//        glVertexAttribPointer(textureAttribute, 2, GL_FLOAT, GL_FALSE, sizeof(VertexPN), (void*)offsetof(VertexPN, t));
-//        
-//        glEnableVertexAttribArray(binormalAttribute);
-//        glVertexAttribPointer(binormalAttribute, 3, GL_FLOAT, GL_FALSE, sizeof(VertexPN), (void*)offsetof(VertexPN, b));
-//        
-//        glEnableVertexAttribArray(tangentAttribute);
-//        glVertexAttribPointer(tangentAttribute, 3, GL_FLOAT, GL_FALSE, sizeof(VertexPN), (void*)offsetof(VertexPN, tg));
-//        
-//        glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, indexBufferObject);
-//        
-//        glUniform1i(diffuseTextureUniform, 0);
-//        glActiveTexture(GL_TEXTURE0);
-//        glBindTexture(GL_TEXTURE_2D, texBinder.diffuseTexture);
-//        
-//        glUniform1i(specularTextureUniform, 1);
-//        glActiveTexture(GL_TEXTURE1);
-//        glBindTexture(GL_TEXTURE_2D, texBinder.specularTexture);
-//        
-//        glUniform1i(normalTextureUniform, 2);
-//        glActiveTexture(GL_TEXTURE2);
-//        glBindTexture(GL_TEXTURE_2D, texBinder.normalTexture);
-//    }
-//};
-
-/**
- * Structure to perform the Hierarchical operations on children objects and to issue
- * a draw call via drawElements
- *
- * Structure: Entity
- */
-
-//struct Entity {
-//    Matrix4 objectMatrix;
-//    BufferBinder bufferBinder;
-//    Matrix4 modelViewMatrix;
-//    Entity *parent;
-//    
-//    void draw(Matrix4 &eyeMatrix) {
-//        if(parent == NULL)
-//            modelViewMatrix = inv(eyeMatrix) * objectMatrix;
-//        else
-//            modelViewMatrix = (parent->modelViewMatrix) * (objectMatrix);
-//        
-//        bufferBinder.draw();
-//        
-//        GLfloat glmatrix[16];
-//        modelViewMatrix.writeToColumnMajorMatrix(glmatrix);
-//        glUniformMatrix4fv(bufferBinder.modelViewMatrixUniform, 1, GL_FALSE, glmatrix);
-//        
-//        Matrix4 normalizedMatrix = normalMatrix(modelViewMatrix);
-//        normalizedMatrix.writeToColumnMajorMatrix(glmatrix);
-//        glUniformMatrix4fv(bufferBinder.normalMatrixUniform, 1, GL_FALSE, glmatrix);
-//        
-//        Matrix4 projectionMatrix;
-//        projectionMatrix = projectionMatrix.makeProjection(45, (wHeight/800.0), -0.5, -1000.0);
-//        GLfloat glmatrixProjection[16];
-//        projectionMatrix.writeToColumnMajorMatrix(glmatrixProjection);
-//        glUniformMatrix4fv(bufferBinder.projectionMatrixUniform, 1, GL_FALSE, glmatrixProjection);
-//        
-//        glDrawElements(GL_TRIANGLES, bufferBinder.numIndices, GL_UNSIGNED_SHORT, 0);
-//    }
-//};
-
-//struct PlanetProperty {
-//    float revolutionRate;
-//    float intialAngle;
-//    Cvec3 size;
-//    Cvec3 radius;
-//    Cvec3 orbit;
-//    CelestialBodyTexture images;
-//    TextureBinder texture;
-//    Entity *planetEntity;
-//};
-//
-//PlanetProperty planetProperties[] = {
-//    { 01.00, 00.00, Cvec3(1.80, 1.80, 1.80), Cvec3(00.0, 0.0, 0.0), Cvec3(0.0, 0.0, 0.0), celestialBodyTextures[0] },
-//    
-//    { 47.89, -80.0, Cvec3(0.20, 0.20, 0.20), Cvec3(03.0, 0.0, 0.0), Cvec3(1.0/2.0, 1.0/2.0, 1.0/2.0), celestialBodyTextures[1] },
-//    
-//    { 35.03, -70.0, Cvec3(0.30, 0.30, 0.30), Cvec3(04.5, 0.0, 0.0), Cvec3(1.0/1.35, 1.0/1.35, 1.0/1.35), celestialBodyTextures[2] },
-//    
-//    { 29.79, 45.00, Cvec3(0.50, 0.50, 0.50), Cvec3(06.0, 0.0, 0.0), Cvec3(1.0, 1.0, 1.0), celestialBodyTextures[3] },
-//    
-//    { 24.13, -30.0, Cvec3(0.40, 0.40, 0.40), Cvec3(08.0, 0.0, 0.0), Cvec3(1.35, 1.0, 1.35), celestialBodyTextures[4] },
-//    
-//    { 13.06, -40.0, Cvec3(1.00, 1.00, 1.00), Cvec3(11.0, 0.0, 0.0), Cvec3(1.85, 1.0, 1.85), celestialBodyTextures[5] },
-//    
-//    { 09.64, -45.0, Cvec3(0.80, 0.80, 0.80), Cvec3(14.5, 0.0, 0.0), Cvec3(2.40, 1.0, 2.40), celestialBodyTextures[6] },
-//    
-//    { 06.81, 45.00, Cvec3(0.30, 0.30, 0.30), Cvec3(17.0, 0.0, 0.0), Cvec3(2.825, 1.0, 2.825), celestialBodyTextures[7] },
-//    
-//    { 05.43, 60.00, Cvec3(0.25, 0.25, 0.25), Cvec3(18.0, 0.0, 0.0), Cvec3(3.0, 1.0, 3.0), celestialBodyTextures[8] },
-//    
-//    { 04.00, 70.00, Cvec3(0.15, 0.15, 0.15), Cvec3(19.0, 0.0, 0.0), Cvec3(3.165, 1.0, 3.165), celestialBodyTextures[9] }
-//};
-
-/**
- * Function to issue a draw call to the respective entity object by assigning all the
- * required attributes
- *
- * Function: drawBodyParts
- *           bufferBinder - Structure to bind the resepective attributes and buffer objects
- *           objectMatrix - Object matrix with respect to the object frame
- *           parent - Immediate hierarchical parent
- */
 Entity *drawBodyParts(BufferBinder bufferBinder, Matrix4 objectMatrix, Entity *parent) {
     Entity *partEntity = new Entity;
     partEntity->parent = parent;
@@ -329,69 +122,6 @@ Entity *drawBodyParts(BufferBinder bufferBinder, Matrix4 objectMatrix, Entity *p
     partEntity->objectMatrix = objectMatrix;
     partEntity->draw(eyeMatrix);
     return partEntity;
-}
-
-void calculateFaceTangent(const Cvec3f &v1, const Cvec3f &v2, const Cvec3f &v3, const Cvec2f &texCoord1, const Cvec2f &texCoord2, const Cvec2f &texCoord3, Cvec3f &tangent, Cvec3f &binormal) {
-    Cvec3f side0 = v1 - v2;
-    Cvec3f side1 = v3 - v1;
-    Cvec3f normal = cross(side1, side0);
-    normalize(normal);
-    float deltaV0 = texCoord1[1] - texCoord2[1];
-    float deltaV1 = texCoord3[1] - texCoord1[1];
-    tangent = side0 * deltaV1 - side1 * deltaV0;
-    normalize(tangent);
-    float deltaU0 = texCoord1[0] - texCoord2[0];
-    float deltaU1 = texCoord3[0] - texCoord1[0];
-    binormal = side0 * deltaU1 - side1 * deltaU0;
-    normalize(binormal);
-    Cvec3f tangentCross = cross(tangent, binormal);
-    if (dot(tangentCross, normal) < 0.0f) {
-        tangent = tangent * -1;
-    }
-}
-
-void loadObjFile(const std::string &fileName, std::vector<VertexPN> &outVertices, std::vector<unsigned short> &outIndices) {
-    tinyobj::attrib_t attrib;
-    std::vector<tinyobj::shape_t> shapes;
-    std::vector<tinyobj::material_t> materials;
-    std::string err;
-    bool ret = tinyobj::LoadObj(&attrib, &shapes, &materials, &err, fileName.c_str(), NULL, true);
-    if(ret) {
-        for(int i=0; i < shapes.size(); i++) {
-            for(int j=0; j < shapes[i].mesh.indices.size(); j++) {
-                unsigned int vertexOffset = shapes[i].mesh.indices[j].vertex_index * 3;
-                unsigned int normalOffset = shapes[i].mesh.indices[j].normal_index * 3;
-                unsigned int texOffset = shapes[i].mesh.indices[j].texcoord_index * 2;
-                VertexPN v;
-                v.p[0] = attrib.vertices[vertexOffset];
-                v.p[1] = attrib.vertices[vertexOffset+1];
-                v.p[2] = attrib.vertices[vertexOffset+2];
-                v.n[0] = attrib.normals[normalOffset];
-                v.n[1] = attrib.normals[normalOffset+1];
-                v.n[2] = attrib.normals[normalOffset+2];
-                v.t[0] = attrib.texcoords[texOffset];
-                v.t[1] = 1.0-attrib.texcoords[texOffset+1];
-                outVertices.push_back(v);
-                outIndices.push_back(outVertices.size()-1);
-            }
-        }
-        
-        for(int i=0; i < outVertices.size(); i += 3) {
-            Cvec3f tangent;
-            Cvec3f binormal;
-            calculateFaceTangent(outVertices[i].p, outVertices[i+1].p, outVertices[i+2].p,
-                                 outVertices[i].t, outVertices[i+1].t, outVertices[i+2].t, tangent, binormal);
-            outVertices[i].tg = tangent;
-            outVertices[i+1].tg = tangent;
-            outVertices[i+2].tg = tangent;
-            outVertices[i].b = binormal;
-            outVertices[i+1].b = binormal;
-            outVertices[i+2].b = binormal;
-        }
-    } else {
-        std::cout << err << std::endl;
-        assert(false);
-    }
 }
 
 void generateFrameBuffer(GLuint &frameBuffer, GLuint &frameBufferTexture, GLuint &depthBufferTexture, bool isHDR) {
@@ -697,6 +427,42 @@ void display(void) {
     glutSwapBuffers();
     }
 
+
+GLuint loadShaders(string vertexShader, string fragmentShader, GLuint &positionAttribute, GLuint &texCoordAttribute, GLuint &frameBufferUniform, GLuint &positionBuffer, GLuint &uvBuffer) {
+    GLuint shaderProgram = glCreateProgram();
+    readAndCompileShader(shaderProgram, vertexShader.c_str(), fragmentShader.c_str());
+    
+    positionAttribute = glGetAttribLocation(shaderProgram, "position");
+    texCoordAttribute = glGetAttribLocation(shaderProgram, "texCoord");
+    frameBufferUniform = glGetUniformLocation(shaderProgram, "screenFramebuffer");
+    
+    glGenBuffers(1, &positionBuffer);
+    glBindBuffer(GL_ARRAY_BUFFER, positionBuffer);
+    GLfloat framePositions[] = {
+        1.0f, 1.0f,
+        1.0f, -1.0f,
+        -1.0f, -1.0f,
+        -1.0f, -1.0f,
+        -1.0f, 1.0f,
+        1.0f, 1.0f
+    };
+    glBufferData(GL_ARRAY_BUFFER, sizeof(framePositions), framePositions, GL_STATIC_DRAW);
+    
+    glGenBuffers(1, &uvBuffer);
+    glBindBuffer(GL_ARRAY_BUFFER, uvBuffer);
+    GLfloat frameUVs[] = {
+        1.0f, 1.0f,
+        1.0f, 0.0f,
+        0.0f, 0.0,
+        0.0f, 0.0f,
+        0.0f, 1.0f,
+        1.0f, 1.0f
+    };
+    glBufferData(GL_ARRAY_BUFFER, sizeof(frameUVs), frameUVs, GL_STATIC_DRAW);
+    
+    return shaderProgram;
+}
+
 void init() {
     glClearDepth(0.0f);
     glCullFace(GL_BACK);
@@ -828,132 +594,139 @@ void init() {
     environmentTexBinder.environmentMap = cubeMap;
 
     
-    luminanceClampProgram = glCreateProgram();
-    readAndCompileShader(luminanceClampProgram, "/Users/kaybus/Documents/nandukalidindi-github/CS6533-NYU/Assignments/Assignment-4/SolarSystemExtend/SolarSystemExtend/luminance_clamp_vertex.glsl", "/Users/kaybus/Documents/nandukalidindi-github/CS6533-NYU/Assignments/Assignment-4/SolarSystemExtend/SolarSystemExtend/luminance_clamp_fragment.glsl");
+    luminanceClampProgram = loadShaders("/Users/kaybus/Documents/nandukalidindi-github/CS6533-NYU/Assignments/Assignment-4/SolarSystemExtend/SolarSystemExtend/luminance_clamp_vertex.glsl", "/Users/kaybus/Documents/nandukalidindi-github/CS6533-NYU/Assignments/Assignment-4/SolarSystemExtend/SolarSystemExtend/luminance_clamp_fragment.glsl", luminanceClampPositionAttribute, luminanceClampTexCoordAttribute, luminanceClampFramebufferUniform, luminanceClampPositionBuffer, luminanceClampUVBuffer);
     
-    luminanceClampPositionAttribute = glGetAttribLocation(luminanceClampProgram, "position");
-    luminanceClampTexCoordAttribute = glGetAttribLocation(luminanceClampProgram, "texCoord");
-    luminanceClampFramebufferUniform = glGetUniformLocation(luminanceClampProgram, "screenFramebuffer");
+//    luminanceClampProgram = glCreateProgram();
+//    readAndCompileShader(luminanceClampProgram, "/Users/kaybus/Documents/nandukalidindi-github/CS6533-NYU/Assignments/Assignment-4/SolarSystemExtend/SolarSystemExtend/luminance_clamp_vertex.glsl", "/Users/kaybus/Documents/nandukalidindi-github/CS6533-NYU/Assignments/Assignment-4/SolarSystemExtend/SolarSystemExtend/luminance_clamp_fragment.glsl");
+//    
+//    luminanceClampPositionAttribute = glGetAttribLocation(luminanceClampProgram, "position");
+//    luminanceClampTexCoordAttribute = glGetAttribLocation(luminanceClampProgram, "texCoord");
+//    luminanceClampFramebufferUniform = glGetUniformLocation(luminanceClampProgram, "screenFramebuffer");
+//    
+//    glGenBuffers(1, &luminanceClampUVBuffer);
+//    glBindBuffer(GL_ARRAY_BUFFER, luminanceClampUVBuffer);
+//    GLfloat luminanceClampUVs[] = {
+//        1.0f, 1.0f,
+//        1.0f, 0.0f,
+//        0.0f, 0.0,
+//        0.0f, 0.0f,
+//        0.0f, 1.0f,
+//        1.0f, 1.0f
+//    };
+//    glBufferData(GL_ARRAY_BUFFER, sizeof(luminanceClampUVs), luminanceClampUVs, GL_STATIC_DRAW);
+//    
+//    glGenBuffers(1, &luminanceClampPositionBuffer);
+//    glBindBuffer(GL_ARRAY_BUFFER, luminanceClampPositionBuffer);
+//    GLfloat luminanceClampPositions[] = {
+//        1.0f, 1.0f,
+//        1.0f, -1.0f,
+//        -1.0f, -1.0f,
+//        -1.0f, -1.0f,
+//        -1.0f, 1.0f,
+//        1.0f, 1.0f
+//    };
+//    glBufferData(GL_ARRAY_BUFFER, sizeof(luminanceClampPositions), luminanceClampPositions, GL_STATIC_DRAW);
     
-    glGenBuffers(1, &luminanceClampUVBuffer);
-    glBindBuffer(GL_ARRAY_BUFFER, luminanceClampUVBuffer);
-    GLfloat luminanceClampUVs[] = {
-        1.0f, 1.0f,
-        1.0f, 0.0f,
-        0.0f, 0.0,
-        0.0f, 0.0f,
-        0.0f, 1.0f,
-        1.0f, 1.0f
-    };
-    glBufferData(GL_ARRAY_BUFFER, sizeof(luminanceClampUVs), luminanceClampUVs, GL_STATIC_DRAW);
+    horizontalTrianglesProgram = loadShaders("/Users/kaybus/Documents/nandukalidindi-github/CS6533-NYU/Assignments/Assignment-4/SolarSystemExtend/SolarSystemExtend/h_blur_v.glsl", "/Users/kaybus/Documents/nandukalidindi-github/CS6533-NYU/Assignments/Assignment-4/SolarSystemExtend/SolarSystemExtend/h_blur_f.glsl", horizontalTrianglesPositionAttribute, horizontalTrianglesTexCoordAttribute, horizontalFramebufferUniform, horizontalTrianglesPositionBuffer, horizontalTrianglesUVBuffer);
     
-    glGenBuffers(1, &luminanceClampPositionBuffer);
-    glBindBuffer(GL_ARRAY_BUFFER, luminanceClampPositionBuffer);
-    GLfloat luminanceClampPositions[] = {
-        1.0f, 1.0f,
-        1.0f, -1.0f,
-        -1.0f, -1.0f,
-        -1.0f, -1.0f,
-        -1.0f, 1.0f,
-        1.0f, 1.0f
-    };
-    glBufferData(GL_ARRAY_BUFFER, sizeof(luminanceClampPositions), luminanceClampPositions, GL_STATIC_DRAW);
+//    horizontalTrianglesProgram = glCreateProgram();
+//    readAndCompileShader(horizontalTrianglesProgram, "/Users/kaybus/Documents/nandukalidindi-github/CS6533-NYU/Assignments/Assignment-4/SolarSystemExtend/SolarSystemExtend/h_blur_v.glsl", "/Users/kaybus/Documents/nandukalidindi-github/CS6533-NYU/Assignments/Assignment-4/SolarSystemExtend/SolarSystemExtend/h_blur_f.glsl");
+//    
+//    horizontalTrianglesPositionAttribute = glGetAttribLocation(horizontalTrianglesProgram, "position");
+//    horizontalTrianglesTexCoordAttribute = glGetAttribLocation(horizontalTrianglesProgram, "texCoord");
+//    horizontalFramebufferUniform = glGetUniformLocation(horizontalTrianglesProgram, "screenFramebuffer");
+//    
+//    glGenBuffers(1, &horizontalTrianglesUVBuffer);
+//    glBindBuffer(GL_ARRAY_BUFFER, horizontalTrianglesUVBuffer);
+//    GLfloat horizontalTriangleUVs[] = {
+//        1.0f, 1.0f,
+//        1.0f, 0.0f,
+//        0.0f, 0.0,
+//        0.0f, 0.0f,
+//        0.0f, 1.0f,
+//        1.0f, 1.0f
+//    };
+//    glBufferData(GL_ARRAY_BUFFER, sizeof(horizontalTriangleUVs), horizontalTriangleUVs, GL_STATIC_DRAW);
+//    
+//    glGenBuffers(1, &horizontalTrianglesPositionBuffer);
+//    glBindBuffer(GL_ARRAY_BUFFER, horizontalTrianglesPositionBuffer);
+//    GLfloat horizontalTrianglePositions[] = {
+//        1.0f, 1.0f,
+//        1.0f, -1.0f,
+//        -1.0f, -1.0f,
+//        -1.0f, -1.0f,
+//        -1.0f, 1.0f,
+//        1.0f, 1.0f
+//    };
+//    glBufferData(GL_ARRAY_BUFFER, sizeof(horizontalTrianglePositions), horizontalTrianglePositions, GL_STATIC_DRAW);
     
+    verticalTrianglesProgram = loadShaders("/Users/kaybus/Documents/nandukalidindi-github/CS6533-NYU/Assignments/Assignment-4/SolarSystemExtend/SolarSystemExtend/v_blur_v.glsl", "/Users/kaybus/Documents/nandukalidindi-github/CS6533-NYU/Assignments/Assignment-4/SolarSystemExtend/SolarSystemExtend/v_blur_f.glsl", verticalTrianglesPositionAttribute, verticalTrianglesTexCoordAttribute, verticalFramebufferUniform, verticalTrianglesPositionBuffer, verticalTrianglesUVBuffer);
     
-    horizontalTrianglesProgram = glCreateProgram();
-    readAndCompileShader(horizontalTrianglesProgram, "/Users/kaybus/Documents/nandukalidindi-github/CS6533-NYU/Assignments/Assignment-4/SolarSystemExtend/SolarSystemExtend/h_blur_v.glsl", "/Users/kaybus/Documents/nandukalidindi-github/CS6533-NYU/Assignments/Assignment-4/SolarSystemExtend/SolarSystemExtend/h_blur_f.glsl");
-    
-    horizontalTrianglesPositionAttribute = glGetAttribLocation(horizontalTrianglesProgram, "position");
-    horizontalTrianglesTexCoordAttribute = glGetAttribLocation(horizontalTrianglesProgram, "texCoord");
-    horizontalFramebufferUniform = glGetUniformLocation(horizontalTrianglesProgram, "screenFramebuffer");
-    
-    glGenBuffers(1, &horizontalTrianglesUVBuffer);
-    glBindBuffer(GL_ARRAY_BUFFER, horizontalTrianglesUVBuffer);
-    GLfloat horizontalTriangleUVs[] = {
-        1.0f, 1.0f,
-        1.0f, 0.0f,
-        0.0f, 0.0,
-        0.0f, 0.0f,
-        0.0f, 1.0f,
-        1.0f, 1.0f
-    };
-    glBufferData(GL_ARRAY_BUFFER, sizeof(horizontalTriangleUVs), horizontalTriangleUVs, GL_STATIC_DRAW);
-    
-    glGenBuffers(1, &horizontalTrianglesPositionBuffer);
-    glBindBuffer(GL_ARRAY_BUFFER, horizontalTrianglesPositionBuffer);
-    GLfloat horizontalTrianglePositions[] = {
-        1.0f, 1.0f,
-        1.0f, -1.0f,
-        -1.0f, -1.0f,
-        -1.0f, -1.0f,
-        -1.0f, 1.0f,
-        1.0f, 1.0f
-    };
-    glBufferData(GL_ARRAY_BUFFER, sizeof(horizontalTrianglePositions), horizontalTrianglePositions, GL_STATIC_DRAW);
-    
-    verticalTrianglesProgram = glCreateProgram();
-    
-    readAndCompileShader(verticalTrianglesProgram, "/Users/kaybus/Documents/nandukalidindi-github/CS6533-NYU/Assignments/Assignment-4/SolarSystemExtend/SolarSystemExtend/v_blur_v.glsl", "/Users/kaybus/Documents/nandukalidindi-github/CS6533-NYU/Assignments/Assignment-4/SolarSystemExtend/SolarSystemExtend/v_blur_f.glsl");
-    
-    verticalTrianglesPositionAttribute = glGetAttribLocation(verticalTrianglesProgram, "position");
-    verticalTrianglesTexCoordAttribute = glGetAttribLocation(verticalTrianglesProgram, "texCoord");
-    verticalFramebufferUniform = glGetUniformLocation(verticalTrianglesProgram, "screenFramebuffer");
-    
-    glGenBuffers(1, &verticalTrianglesUVBuffer);
-    glBindBuffer(GL_ARRAY_BUFFER, verticalTrianglesUVBuffer);
-    GLfloat verticalTriangleUVs[] = {
-        1.0f, 1.0f,
-        1.0f, 0.0f,
-        0.0f, 0.0,
-        0.0f, 0.0f,
-        0.0f, 1.0f,
-        1.0f, 1.0f
-    };
-    glBufferData(GL_ARRAY_BUFFER, sizeof(verticalTriangleUVs), verticalTriangleUVs, GL_STATIC_DRAW);
-    
-    glGenBuffers(1, &verticalTrianglesPositionBuffer);
-    glBindBuffer(GL_ARRAY_BUFFER, verticalTrianglesPositionBuffer);
-    GLfloat verticalTrianglePositions[] = {
-        1.0f, 1.0f,
-        1.0f, -1.0f,
-        -1.0f, -1.0f,
-        -1.0f, -1.0f,
-        -1.0f, 1.0f,
-        1.0f, 1.0f
-    };
-    glBufferData(GL_ARRAY_BUFFER, sizeof(verticalTrianglePositions), verticalTrianglePositions, GL_STATIC_DRAW);
+//    verticalTrianglesProgram = glCreateProgram();
+//    
+//    readAndCompileShader(verticalTrianglesProgram, "/Users/kaybus/Documents/nandukalidindi-github/CS6533-NYU/Assignments/Assignment-4/SolarSystemExtend/SolarSystemExtend/v_blur_v.glsl", "/Users/kaybus/Documents/nandukalidindi-github/CS6533-NYU/Assignments/Assignment-4/SolarSystemExtend/SolarSystemExtend/v_blur_f.glsl");
+//    
+//    verticalTrianglesPositionAttribute = glGetAttribLocation(verticalTrianglesProgram, "position");
+//    verticalTrianglesTexCoordAttribute = glGetAttribLocation(verticalTrianglesProgram, "texCoord");
+//    verticalFramebufferUniform = glGetUniformLocation(verticalTrianglesProgram, "screenFramebuffer");
+//    
+//    glGenBuffers(1, &verticalTrianglesUVBuffer);
+//    glBindBuffer(GL_ARRAY_BUFFER, verticalTrianglesUVBuffer);
+//    GLfloat verticalTriangleUVs[] = {
+//        1.0f, 1.0f,
+//        1.0f, 0.0f,
+//        0.0f, 0.0,
+//        0.0f, 0.0f,
+//        0.0f, 1.0f,
+//        1.0f, 1.0f
+//    };
+//    glBufferData(GL_ARRAY_BUFFER, sizeof(verticalTriangleUVs), verticalTriangleUVs, GL_STATIC_DRAW);
+//    
+//    glGenBuffers(1, &verticalTrianglesPositionBuffer);
+//    glBindBuffer(GL_ARRAY_BUFFER, verticalTrianglesPositionBuffer);
+//    GLfloat verticalTrianglePositions[] = {
+//        1.0f, 1.0f,
+//        1.0f, -1.0f,
+//        -1.0f, -1.0f,
+//        -1.0f, -1.0f,
+//        -1.0f, 1.0f,
+//        1.0f, 1.0f
+//    };
+//    glBufferData(GL_ARRAY_BUFFER, sizeof(verticalTrianglePositions), verticalTrianglePositions, GL_STATIC_DRAW);
     
     
-    finalAdditiveProgram = glCreateProgram();
-    readAndCompileShader(finalAdditiveProgram, "/Users/kaybus/Documents/nandukalidindi-github/CS6533-NYU/Assignments/Assignment-4/SolarSystemExtend/SolarSystemExtend/final_additive_vertex.glsl", "/Users/kaybus/Documents/nandukalidindi-github/CS6533-NYU/Assignments/Assignment-4/SolarSystemExtend/SolarSystemExtend/final_additive_fragment.glsl");
+    finalAdditiveProgram = loadShaders("/Users/kaybus/Documents/nandukalidindi-github/CS6533-NYU/Assignments/Assignment-4/SolarSystemExtend/SolarSystemExtend/final_additive_vertex.glsl", "/Users/kaybus/Documents/nandukalidindi-github/CS6533-NYU/Assignments/Assignment-4/SolarSystemExtend/SolarSystemExtend/final_additive_fragment.glsl", finalAdditivePositionAttribute, finalAdditiveTexCoordAttribute, finalAdditiveFramebufferUniform, finalAdditivePositionBuffer, finalAdditiveUVBuffer);
     
-    finalAdditivePositionAttribute = glGetAttribLocation(finalAdditiveProgram, "position");
-    finalAdditiveTexCoordAttribute = glGetAttribLocation(finalAdditiveProgram, "texCoord");
-    finalAdditiveFramebufferUniform = glGetUniformLocation(finalAdditiveProgram, "screenFramebuffer");
-    
-    glGenBuffers(1, &finalAdditiveUVBuffer);
-    glBindBuffer(GL_ARRAY_BUFFER, finalAdditiveUVBuffer);
-    GLfloat finalAdditiveUVs[] = {
-        1.0f, 1.0f,
-        1.0f, 0.0f,
-        0.0f, 0.0,
-        0.0f, 0.0f,
-        0.0f, 1.0f,
-        1.0f, 1.0f
-    };
-    glBufferData(GL_ARRAY_BUFFER, sizeof(finalAdditiveUVs), finalAdditiveUVs, GL_STATIC_DRAW);
-    
-    glGenBuffers(1, &finalAdditivePositionBuffer);
-    glBindBuffer(GL_ARRAY_BUFFER, finalAdditivePositionBuffer);
-    GLfloat finalAdditivePositions[] = {
-        1.0f, 1.0f,
-        1.0f, -1.0f,
-        -1.0f, -1.0f,
-        -1.0f, -1.0f,
-        -1.0f, 1.0f,
-        1.0f, 1.0f
-    };
-    glBufferData(GL_ARRAY_BUFFER, sizeof(finalAdditivePositions), finalAdditivePositions, GL_STATIC_DRAW);
+//    finalAdditiveProgram = glCreateProgram();
+//    readAndCompileShader(finalAdditiveProgram, "/Users/kaybus/Documents/nandukalidindi-github/CS6533-NYU/Assignments/Assignment-4/SolarSystemExtend/SolarSystemExtend/final_additive_vertex.glsl", "/Users/kaybus/Documents/nandukalidindi-github/CS6533-NYU/Assignments/Assignment-4/SolarSystemExtend/SolarSystemExtend/final_additive_fragment.glsl");
+//    
+//    finalAdditivePositionAttribute = glGetAttribLocation(finalAdditiveProgram, "position");
+//    finalAdditiveTexCoordAttribute = glGetAttribLocation(finalAdditiveProgram, "texCoord");
+//    finalAdditiveFramebufferUniform = glGetUniformLocation(finalAdditiveProgram, "screenFramebuffer");
+//    
+//    glGenBuffers(1, &finalAdditiveUVBuffer);
+//    glBindBuffer(GL_ARRAY_BUFFER, finalAdditiveUVBuffer);
+//    GLfloat finalAdditiveUVs[] = {
+//        1.0f, 1.0f,
+//        1.0f, 0.0f,
+//        0.0f, 0.0,
+//        0.0f, 0.0f,
+//        0.0f, 1.0f,
+//        1.0f, 1.0f
+//    };
+//    glBufferData(GL_ARRAY_BUFFER, sizeof(finalAdditiveUVs), finalAdditiveUVs, GL_STATIC_DRAW);
+//    
+//    glGenBuffers(1, &finalAdditivePositionBuffer);
+//    glBindBuffer(GL_ARRAY_BUFFER, finalAdditivePositionBuffer);
+//    GLfloat finalAdditivePositions[] = {
+//        1.0f, 1.0f,
+//        1.0f, -1.0f,
+//        -1.0f, -1.0f,
+//        -1.0f, -1.0f,
+//        -1.0f, 1.0f,
+//        1.0f, 1.0f
+//    };
+//    glBufferData(GL_ARRAY_BUFFER, sizeof(finalAdditivePositions), finalAdditivePositions, GL_STATIC_DRAW);
 }
 
 void reshape(int w, int h) {

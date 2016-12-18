@@ -175,7 +175,7 @@ inline Quat pow(const Quat& q, double exponent)
 {
     // 1. extract the unit axis khat by normalizing the last three entries of the quaternion
     // first normalize the quaternion
-    Quat unitQuat = normalize(q);
+//    Quat unitQuat = normalize(q);
     // magnitude of sin(theta/2) is the norm of the last three entries
     double sinHalfTheta = std::sqrt(q[1]*q[1] + q[2]*q[2] + q[3]*q[3]);
     

@@ -1,4 +1,4 @@
-#include "auxiliary_structures.h"
+#include "auxiliary_methods.h"
 
 struct CelestialBodyTexture {
     string diffuse;

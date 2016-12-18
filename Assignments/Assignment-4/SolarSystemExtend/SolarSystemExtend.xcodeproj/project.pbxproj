@@ -45,6 +45,7 @@
 		5B69BA491DD2DA6800EA8A7B /* tiny_obj_loader.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = tiny_obj_loader.h; sourceTree = "<group>"; };
 		5B6D0FD81E067CBB00C28C72 /* planet_properties.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = planet_properties.h; sourceTree = "<group>"; };
 		5B6D0FD91E067DDA00C28C72 /* auxiliary_structures.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = auxiliary_structures.h; sourceTree = "<group>"; };
+		5B6D0FDA1E0680E400C28C72 /* auxiliary_methods.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = auxiliary_methods.h; sourceTree = "<group>"; };
 		5B7764761DA90237008AF42E /* vertex.glsl */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = vertex.glsl; sourceTree = "<group>"; };
 		5B7764771DA90246008AF42E /* fragment.glsl */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = fragment.glsl; sourceTree = "<group>"; };
 		5B9126201E027DD900D3F227 /* h_blur_v.glsl */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = h_blur_v.glsl; sourceTree = "<group>"; };
@@ -127,6 +128,7 @@
 				5B36FF7D1E064ED70020607B /* screen_fragment.glsl */,
 				5B6D0FD81E067CBB00C28C72 /* planet_properties.h */,
 				5B6D0FD91E067DDA00C28C72 /* auxiliary_structures.h */,
+				5B6D0FDA1E0680E400C28C72 /* auxiliary_methods.h */,
 			);
 			name = SolarSystemExtend;
 			path = "/Users/kaybus/Documents/nandukalidindi-github/CS6533-NYU/Assignments/Assignment-4/SolarSystemExtend/SolarSystemExtend";
