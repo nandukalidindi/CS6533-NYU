@@ -11,25 +11,25 @@
 
 GLuint program;
 
-GLuint verticalTrianglesProgram,
-       verticalFramebufferUniform,
-       verticalTrianglesPositionBuffer,
-       verticalTrianglesPositionAttribute,
-       verticalTrianglesUVBuffer,
-       verticalTrianglesTexCoordAttribute,
-       verticalFrameBuffer,
-       verticalFrameBufferTexture,
-       verticalDepthBufferTexture;
+GLuint horizontalBlurProgram,
+       horizontalBlurFramebufferUniform,
+       horizontalBlurPositionBuffer,
+       horizontalBlurPositionAttribute,
+       horizontalBlurUVBuffer,
+       horizontalBlurTexCoordAttribute,
+       horizontalBlurFrameBuffer,
+       horizontalBlurFrameBufferTexture,
+       horizontalBlurDepthBufferTexture;
 
-GLuint horizontalTrianglesProgram,
-       horizontalFramebufferUniform,
-       horizontalTrianglesPositionBuffer,
-       horizontalTrianglesPositionAttribute,
-       horizontalTrianglesUVBuffer,
-       horizontalTrianglesTexCoordAttribute,
-       horizontalFrameBuffer,
-       horizontalFrameBufferTexture,
-       horizontalDepthBufferTexture;
+GLuint verticalBlurProgram,
+       verticalBlurFramebufferUniform,
+       verticalBlurPositionBuffer,
+       verticalBlurPositionAttribute,
+       verticalBlurUVBuffer,
+       verticalBlurTexCoordAttribute,
+       verticalBlurFrameBuffer,
+       verticalBlurFrameBufferTexture,
+       verticalBlurDepthBufferTexture;
 
 GLuint luminanceClampProgram,
        luminanceClampFramebufferUniform,
@@ -363,9 +363,9 @@ void display(void) {
     //***************************************************************************************************************
     //***************************************************************************************************************
     
-    generateFrameBuffer(horizontalFrameBuffer, horizontalFrameBufferTexture, horizontalDepthBufferTexture, false);
+    generateFrameBuffer(horizontalBlurFrameBuffer, horizontalBlurFrameBufferTexture, horizontalBlurDepthBufferTexture, false);
     
-    glBindFramebuffer(GL_FRAMEBUFFER, horizontalFrameBuffer);
+    glBindFramebuffer(GL_FRAMEBUFFER, horizontalBlurFrameBuffer);
     
     //***************************************************************************************************************
     //***************************************************************************************************************
@@ -383,8 +383,8 @@ void display(void) {
     //***************************************************************************************************************
     //***************************************************************************************************************
     
-    generateFrameBuffer(verticalFrameBuffer, verticalFrameBufferTexture, verticalDepthBufferTexture, false);
-    glBindFramebuffer(GL_FRAMEBUFFER, verticalFrameBuffer);
+    generateFrameBuffer(verticalBlurFrameBuffer, verticalBlurFrameBufferTexture, verticalBlurDepthBufferTexture, false);
+    glBindFramebuffer(GL_FRAMEBUFFER, verticalBlurFrameBuffer);
     
     //***************************************************************************************************************
     //***************************************************************************************************************
@@ -392,8 +392,8 @@ void display(void) {
     //***************************************************************************************************************
     //***************************************************************************************************************
     
-    vector<GLuint> horizontalTexture = { horizontalFrameBufferTexture };
-    renderSceneUsingFramebuffer(horizontalTrianglesProgram, horizontalFramebufferUniform, horizontalTrianglesPositionBuffer, horizontalTrianglesUVBuffer, horizontalTexture, horizontalTrianglesPositionAttribute, horizontalTrianglesTexCoordAttribute, 1);
+    vector<GLuint> horizontalTexture = { horizontalBlurFrameBufferTexture };
+    renderSceneUsingFramebuffer(horizontalBlurProgram, horizontalBlurFramebufferUniform, horizontalBlurPositionBuffer, horizontalBlurUVBuffer, horizontalTexture, horizontalBlurPositionAttribute, horizontalBlurTexCoordAttribute, 1);
     
     //***************************************************************************************************************
     //***************************************************************************************************************
@@ -401,8 +401,8 @@ void display(void) {
     //***************************************************************************************************************
     //***************************************************************************************************************
     
-    generateFrameBuffer(horizontalFrameBuffer, horizontalFrameBufferTexture, horizontalDepthBufferTexture, false);
-    glBindFramebuffer(GL_FRAMEBUFFER, horizontalFrameBuffer);
+    generateFrameBuffer(horizontalBlurFrameBuffer, horizontalBlurFrameBufferTexture, horizontalBlurDepthBufferTexture, false);
+    glBindFramebuffer(GL_FRAMEBUFFER, horizontalBlurFrameBuffer);
     
     //***************************************************************************************************************
     //***************************************************************************************************************
@@ -410,8 +410,8 @@ void display(void) {
     //***************************************************************************************************************
     //***************************************************************************************************************
     
-    vector<GLuint> verticalTexture = { verticalFrameBufferTexture };
-    renderSceneUsingFramebuffer(verticalTrianglesProgram, verticalFramebufferUniform, verticalTrianglesPositionBuffer, verticalTrianglesUVBuffer, verticalTexture, verticalTrianglesPositionAttribute, verticalTrianglesTexCoordAttribute, 1);
+    vector<GLuint> verticalTexture = { verticalBlurFrameBufferTexture };
+    renderSceneUsingFramebuffer(verticalBlurProgram, verticalBlurFramebufferUniform, verticalBlurPositionBuffer, verticalBlurUVBuffer, verticalTexture, verticalBlurPositionAttribute, verticalBlurTexCoordAttribute, 1);
     //***************************************************************************************************************
     //***************************************************************************************************************
     //************************************ RENDER A AND B USING ADDITIVE ********************************************
@@ -421,7 +421,7 @@ void display(void) {
     glViewport(0, 0, wHeight, wWidth);
     glClear(GL_COLOR_BUFFER_BIT|GL_DEPTH_BUFFER_BIT);
     
-    vector<GLuint> finalTextures = { luminanceClampFrameBufferTexture, horizontalFrameBufferTexture };
+    vector<GLuint> finalTextures = { luminanceClampFrameBufferTexture, horizontalBlurFrameBufferTexture };
     renderSceneUsingFramebuffer(finalAdditiveProgram, finalAdditiveFramebufferUniform, finalAdditivePositionBuffer, finalAdditiveUVBuffer, finalTextures, finalAdditivePositionAttribute, finalAdditiveTexCoordAttribute, 2);
     
     glutSwapBuffers();
@@ -595,9 +595,9 @@ void init() {
 
     luminanceClampProgram = loadShaders("/Users/kaybus/Documents/nandukalidindi-github/CS6533-NYU/Assignments/Assignment-4/SolarSystemExtend/SolarSystemExtend/luminance_clamp_vertex.glsl", "/Users/kaybus/Documents/nandukalidindi-github/CS6533-NYU/Assignments/Assignment-4/SolarSystemExtend/SolarSystemExtend/luminance_clamp_fragment.glsl", luminanceClampPositionAttribute, luminanceClampTexCoordAttribute, luminanceClampFramebufferUniform, luminanceClampPositionBuffer, luminanceClampUVBuffer);
     
-    horizontalTrianglesProgram = loadShaders("/Users/kaybus/Documents/nandukalidindi-github/CS6533-NYU/Assignments/Assignment-4/SolarSystemExtend/SolarSystemExtend/h_blur_v.glsl", "/Users/kaybus/Documents/nandukalidindi-github/CS6533-NYU/Assignments/Assignment-4/SolarSystemExtend/SolarSystemExtend/h_blur_f.glsl", horizontalTrianglesPositionAttribute, horizontalTrianglesTexCoordAttribute, horizontalFramebufferUniform, horizontalTrianglesPositionBuffer, horizontalTrianglesUVBuffer);
+    horizontalBlurProgram = loadShaders("/Users/kaybus/Documents/nandukalidindi-github/CS6533-NYU/Assignments/Assignment-4/SolarSystemExtend/SolarSystemExtend/h_blur_v.glsl", "/Users/kaybus/Documents/nandukalidindi-github/CS6533-NYU/Assignments/Assignment-4/SolarSystemExtend/SolarSystemExtend/h_blur_f.glsl", horizontalBlurPositionAttribute, horizontalBlurTexCoordAttribute, horizontalBlurFramebufferUniform, horizontalBlurPositionBuffer, horizontalBlurUVBuffer);
     
-    verticalTrianglesProgram = loadShaders("/Users/kaybus/Documents/nandukalidindi-github/CS6533-NYU/Assignments/Assignment-4/SolarSystemExtend/SolarSystemExtend/v_blur_v.glsl", "/Users/kaybus/Documents/nandukalidindi-github/CS6533-NYU/Assignments/Assignment-4/SolarSystemExtend/SolarSystemExtend/v_blur_f.glsl", verticalTrianglesPositionAttribute, verticalTrianglesTexCoordAttribute, verticalFramebufferUniform, verticalTrianglesPositionBuffer, verticalTrianglesUVBuffer);
+    verticalBlurProgram = loadShaders("/Users/kaybus/Documents/nandukalidindi-github/CS6533-NYU/Assignments/Assignment-4/SolarSystemExtend/SolarSystemExtend/v_blur_v.glsl", "/Users/kaybus/Documents/nandukalidindi-github/CS6533-NYU/Assignments/Assignment-4/SolarSystemExtend/SolarSystemExtend/v_blur_f.glsl", verticalBlurPositionAttribute, verticalBlurTexCoordAttribute, verticalBlurFramebufferUniform, verticalBlurPositionBuffer, verticalBlurUVBuffer);
     
     finalAdditiveProgram = loadShaders("/Users/kaybus/Documents/nandukalidindi-github/CS6533-NYU/Assignments/Assignment-4/SolarSystemExtend/SolarSystemExtend/final_additive_vertex.glsl", "/Users/kaybus/Documents/nandukalidindi-github/CS6533-NYU/Assignments/Assignment-4/SolarSystemExtend/SolarSystemExtend/final_additive_fragment.glsl", finalAdditivePositionAttribute, finalAdditiveTexCoordAttribute, finalAdditiveFramebufferUniform, finalAdditivePositionBuffer, finalAdditiveUVBuffer);
 }
