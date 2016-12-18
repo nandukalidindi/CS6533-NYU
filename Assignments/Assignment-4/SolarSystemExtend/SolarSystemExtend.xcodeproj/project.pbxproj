@@ -34,6 +34,10 @@
 		5B36FF741E05FBDE0020607B /* fxaa_fragment.glsl */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = fxaa_fragment.glsl; sourceTree = "<group>"; };
 		5B36FF751E06000A0020607B /* hdr_vertex.glsl */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = hdr_vertex.glsl; sourceTree = "<group>"; };
 		5B36FF761E0600130020607B /* hdr_fragment.glsl */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = hdr_fragment.glsl; sourceTree = "<group>"; };
+		5B36FF781E06139F0020607B /* luminance_clamp_fragment.glsl */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = luminance_clamp_fragment.glsl; sourceTree = "<group>"; };
+		5B36FF791E0613B20020607B /* luminance_clamp_vertex.glsl */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = luminance_clamp_vertex.glsl; sourceTree = "<group>"; };
+		5B36FF7A1E0613CB0020607B /* final_additive_vertex.glsl */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = final_additive_vertex.glsl; sourceTree = "<group>"; };
+		5B36FF7B1E0613D70020607B /* final_additive_fragment.glsl */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = final_additive_fragment.glsl; sourceTree = "<group>"; };
 		5B565AA01DFBFD78002483AD /* screen_v.glsl */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = screen_v.glsl; sourceTree = "<group>"; };
 		5B565AA11DFBFD83002483AD /* screen_f.glsl */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = screen_f.glsl; sourceTree = "<group>"; };
 		5B61A1BF1DF7D56E00EA7146 /* skybox_v.glsl */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = skybox_v.glsl; sourceTree = "<group>"; };
@@ -119,6 +123,10 @@
 				5B36FF741E05FBDE0020607B /* fxaa_fragment.glsl */,
 				5B36FF751E06000A0020607B /* hdr_vertex.glsl */,
 				5B36FF761E0600130020607B /* hdr_fragment.glsl */,
+				5B36FF791E0613B20020607B /* luminance_clamp_vertex.glsl */,
+				5B36FF781E06139F0020607B /* luminance_clamp_fragment.glsl */,
+				5B36FF7A1E0613CB0020607B /* final_additive_vertex.glsl */,
+				5B36FF7B1E0613D70020607B /* final_additive_fragment.glsl */,
 			);
 			name = SolarSystemExtend;
 			path = "/Users/kaybus/Documents/nandukalidindi-github/CS6533-NYU/Assignments/Assignment-4/SolarSystemExtend/SolarSystemExtend";

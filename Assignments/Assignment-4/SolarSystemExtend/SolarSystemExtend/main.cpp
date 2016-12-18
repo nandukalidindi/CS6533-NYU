@@ -30,6 +30,26 @@ GLuint horizontalTrianglesProgram,
        horizontalFrameBufferTexture,
        horizontalDepthBufferTexture;
 
+GLuint luminanceClampProgram,
+luminanceClampFramebufferUniform,
+luminanceClampPositionBuffer,
+luminanceClampPositionAttribute,
+luminanceClampUVBuffer,
+luminanceClampTexCoordAttribute,
+luminanceClampFrameBuffer,
+luminanceClampFrameBufferTexture,
+luminanceClampDepthBufferTexture;
+
+GLuint finalAdditiveProgram,
+finalAdditiveFramebufferUniform,
+finalAdditivePositionBuffer,
+finalAdditivePositionAttribute,
+finalAdditiveUVBuffer,
+finalAdditiveTexCoordAttribute,
+finalAdditiveFrameBuffer,
+finalAdditiveFrameBufferTexture,
+finalAdditiveDepthBufferTexture;
+
 //GLuint screenTrianglesProgram,
 //       screenFramebufferUniform,
 //       screenTrianglesPositionBuffer,
@@ -804,74 +824,9 @@ void init() {
     
     
     cubeMap = loadGLCubemap(cubemapFiles);
-    
-    
     environmentTexBinder.environmentMap = cubeMap;
     
-//    
-//    screenTrianglesProgram = glCreateProgram();
-//    
-//    readAndCompileShader(screenTrianglesProgram, "/Users/kaybus/Documents/nandukalidindi-github/CS6533-NYU/Assignments/Assignment-4/SolarSystemExtend/SolarSystemExtend/h_blur_v.glsl", "/Users/kaybus/Documents/nandukalidindi-github/CS6533-NYU/Assignments/Assignment-4/SolarSystemExtend/SolarSystemExtend/h_blur_f.glsl");
-//    
-//    glGenFramebuffers(1, &screenFrameBuffer);
-//    glBindFramebuffer(GL_FRAMEBUFFER, screenFrameBuffer);
-//    
-//    glGenTextures(1, &screenFrameBufferTexture);
-//    glBindTexture(GL_TEXTURE_2D, screenFrameBufferTexture);
-//    glTexImage2D(GL_TEXTURE_2D, 0,GL_RGB, 1280, 720, 0, GL_RGB,
-//                 GL_UNSIGNED_BYTE, NULL);
-//    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
-//    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
-//    
-//    
-//    glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0,
-//                           GL_TEXTURE_2D, screenFrameBufferTexture, 0);
-//    
-//    
-//    glGenTextures(1, &screenDepthBufferTexture);
-//    glBindTexture(GL_TEXTURE_2D, screenDepthBufferTexture);
-//    glTexImage2D(GL_TEXTURE_2D, 0,GL_DEPTH_COMPONENT, 1280, 720, 0,GL_DEPTH_COMPONENT,
-//                 GL_UNSIGNED_BYTE, NULL);
-//    
-//    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
-//    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
-//    
-//    glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH_COMPONENT24, 1280, 720);
-//    glFramebufferTexture2D(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_TEXTURE_2D,
-//                           screenDepthBufferTexture, 0);
-//    
-//    glBindFramebuffer(GL_FRAMEBUFFER, 0);
-//    
-//    screenTrianglesPositionAttribute = glGetAttribLocation(screenTrianglesProgram, "position");
-//    screenTrianglesTexCoordAttribute = glGetAttribLocation(screenTrianglesProgram, "texCoord");
-//    screenFramebufferUniform = glGetUniformLocation(screenTrianglesProgram, "screenFramebuffer");
-//    
-//    glGenBuffers(1, &screenTrianglesUVBuffer);
-//    glBindBuffer(GL_ARRAY_BUFFER, screenTrianglesUVBuffer);
-//    GLfloat screenTriangleUVs[] = {
-//        1.0f, 1.0f,
-//        1.0f, 0.0f,
-//        0.0f, 0.0,
-//        0.0f, 0.0f,
-//        0.0f, 1.0f,
-//        1.0f, 1.0f
-//    };
-//    glBufferData(GL_ARRAY_BUFFER, sizeof(screenTriangleUVs), screenTriangleUVs, GL_STATIC_DRAW);
-//    
-//    glGenBuffers(1, &screenTrianglesPositionBuffer);
-//    glBindBuffer(GL_ARRAY_BUFFER, screenTrianglesPositionBuffer);
-//    GLfloat screenTrianglePositions[] = {
-//        1.0f, 1.0f,
-//        1.0f, -1.0f,
-//        -1.0f, -1.0f,
-//        -1.0f, -1.0f,
-//        -1.0f, 1.0f,
-//        1.0f, 1.0f
-//    };
-//    glBufferData(GL_ARRAY_BUFFER, sizeof(screenTrianglePositions), screenTrianglePositions, GL_STATIC_DRAW);
-    
     horizontalTrianglesProgram = glCreateProgram();
-    
     readAndCompileShader(horizontalTrianglesProgram, "/Users/kaybus/Documents/nandukalidindi-github/CS6533-NYU/Assignments/Assignment-4/SolarSystemExtend/SolarSystemExtend/invert_color_vertex.glsl", "/Users/kaybus/Documents/nandukalidindi-github/CS6533-NYU/Assignments/Assignment-4/SolarSystemExtend/SolarSystemExtend/invert_color_fragment.glsl");
     
     horizontalTrianglesPositionAttribute = glGetAttribLocation(horizontalTrianglesProgram, "position");
@@ -901,6 +856,70 @@ void init() {
         1.0f, 1.0f
     };
     glBufferData(GL_ARRAY_BUFFER, sizeof(horizontalTrianglePositions), horizontalTrianglePositions, GL_STATIC_DRAW);
+    
+    
+    luminanceClampProgram = glCreateProgram();
+    readAndCompileShader(luminanceClampProgram, "/Users/kaybus/Documents/nandukalidindi-github/CS6533-NYU/Assignments/Assignment-4/SolarSystemExtend/SolarSystemExtend/invert_color_vertex.glsl", "/Users/kaybus/Documents/nandukalidindi-github/CS6533-NYU/Assignments/Assignment-4/SolarSystemExtend/SolarSystemExtend/invert_color_fragment.glsl");
+    
+    luminanceClampPositionAttribute = glGetAttribLocation(luminanceClampProgram, "position");
+    luminanceClampTexCoordAttribute = glGetAttribLocation(luminanceClampProgram, "texCoord");
+    luminanceClampFramebufferUniform = glGetUniformLocation(luminanceClampProgram, "screenFramebuffer");
+    
+    glGenBuffers(1, &luminanceClampUVBuffer);
+    glBindBuffer(GL_ARRAY_BUFFER, luminanceClampUVBuffer);
+    GLfloat luminanceClampUVs[] = {
+        1.0f, 1.0f,
+        1.0f, 0.0f,
+        0.0f, 0.0,
+        0.0f, 0.0f,
+        0.0f, 1.0f,
+        1.0f, 1.0f
+    };
+    glBufferData(GL_ARRAY_BUFFER, sizeof(luminanceClampUVs), luminanceClampUVs, GL_STATIC_DRAW);
+    
+    glGenBuffers(1, &luminanceClampPositionBuffer);
+    glBindBuffer(GL_ARRAY_BUFFER, luminanceClampPositionBuffer);
+    GLfloat luminanceClampPositions[] = {
+        1.0f, 1.0f,
+        1.0f, -1.0f,
+        -1.0f, -1.0f,
+        -1.0f, -1.0f,
+        -1.0f, 1.0f,
+        1.0f, 1.0f
+    };
+    glBufferData(GL_ARRAY_BUFFER, sizeof(luminanceClampPositions), luminanceClampPositions, GL_STATIC_DRAW);
+    
+    
+    finalAdditiveProgram = glCreateProgram();
+    readAndCompileShader(finalAdditiveProgram, "/Users/kaybus/Documents/nandukalidindi-github/CS6533-NYU/Assignments/Assignment-4/SolarSystemExtend/SolarSystemExtend/invert_color_vertex.glsl", "/Users/kaybus/Documents/nandukalidindi-github/CS6533-NYU/Assignments/Assignment-4/SolarSystemExtend/SolarSystemExtend/invert_color_fragment.glsl");
+    
+    finalAdditivePositionAttribute = glGetAttribLocation(finalAdditiveProgram, "position");
+    finalAdditiveTexCoordAttribute = glGetAttribLocation(finalAdditiveProgram, "texCoord");
+    finalAdditiveFramebufferUniform = glGetUniformLocation(finalAdditiveProgram, "screenFramebuffer");
+    
+    glGenBuffers(1, &finalAdditiveUVBuffer);
+    glBindBuffer(GL_ARRAY_BUFFER, finalAdditiveUVBuffer);
+    GLfloat finalAdditiveUVs[] = {
+        1.0f, 1.0f,
+        1.0f, 0.0f,
+        0.0f, 0.0,
+        0.0f, 0.0f,
+        0.0f, 1.0f,
+        1.0f, 1.0f
+    };
+    glBufferData(GL_ARRAY_BUFFER, sizeof(finalAdditiveUVs), finalAdditiveUVs, GL_STATIC_DRAW);
+    
+    glGenBuffers(1, &finalAdditivePositionBuffer);
+    glBindBuffer(GL_ARRAY_BUFFER, finalAdditivePositionBuffer);
+    GLfloat finalAdditivePositions[] = {
+        1.0f, 1.0f,
+        1.0f, -1.0f,
+        -1.0f, -1.0f,
+        -1.0f, -1.0f,
+        -1.0f, 1.0f,
+        1.0f, 1.0f
+    };
+    glBufferData(GL_ARRAY_BUFFER, sizeof(finalAdditivePositions), finalAdditivePositions, GL_STATIC_DRAW);
     
     
     verticalTrianglesProgram = glCreateProgram();
