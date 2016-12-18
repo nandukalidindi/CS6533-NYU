@@ -38,15 +38,13 @@
 		5B36FF791E0613B20020607B /* luminance_clamp_vertex.glsl */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = luminance_clamp_vertex.glsl; sourceTree = "<group>"; };
 		5B36FF7A1E0613CB0020607B /* final_additive_vertex.glsl */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = final_additive_vertex.glsl; sourceTree = "<group>"; };
 		5B36FF7B1E0613D70020607B /* final_additive_fragment.glsl */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = final_additive_fragment.glsl; sourceTree = "<group>"; };
-		5B565AA01DFBFD78002483AD /* screen_v.glsl */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = screen_v.glsl; sourceTree = "<group>"; };
-		5B565AA11DFBFD83002483AD /* screen_f.glsl */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = screen_f.glsl; sourceTree = "<group>"; };
+		5B36FF7C1E064ECB0020607B /* screen_vertex.glsl */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = screen_vertex.glsl; sourceTree = "<group>"; };
+		5B36FF7D1E064ED70020607B /* screen_fragment.glsl */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = screen_fragment.glsl; sourceTree = "<group>"; };
 		5B61A1BF1DF7D56E00EA7146 /* skybox_v.glsl */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = skybox_v.glsl; sourceTree = "<group>"; };
 		5B61A1C01DF7D57A00EA7146 /* skybox_f.glsl */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = skybox_f.glsl; sourceTree = "<group>"; };
 		5B69BA491DD2DA6800EA8A7B /* tiny_obj_loader.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = tiny_obj_loader.h; sourceTree = "<group>"; };
 		5B7764761DA90237008AF42E /* vertex.glsl */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = vertex.glsl; sourceTree = "<group>"; };
 		5B7764771DA90246008AF42E /* fragment.glsl */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = fragment.glsl; sourceTree = "<group>"; };
-		5B91261E1E02757E00D3F227 /* sun_v.glsl */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = sun_v.glsl; sourceTree = "<group>"; };
-		5B91261F1E02758B00D3F227 /* sun_f.glsl */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = sun_f.glsl; sourceTree = "<group>"; };
 		5B9126201E027DD900D3F227 /* h_blur_v.glsl */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = h_blur_v.glsl; sourceTree = "<group>"; };
 		5B9126211E027DE300D3F227 /* h_blur_f.glsl */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = h_blur_f.glsl; sourceTree = "<group>"; };
 		5B9126221E027DEF00D3F227 /* v_blur_v.glsl */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = v_blur_v.glsl; sourceTree = "<group>"; };
@@ -107,10 +105,6 @@
 				5B69BA491DD2DA6800EA8A7B /* tiny_obj_loader.h */,
 				5B61A1BF1DF7D56E00EA7146 /* skybox_v.glsl */,
 				5B61A1C01DF7D57A00EA7146 /* skybox_f.glsl */,
-				5B565AA01DFBFD78002483AD /* screen_v.glsl */,
-				5B565AA11DFBFD83002483AD /* screen_f.glsl */,
-				5B91261E1E02757E00D3F227 /* sun_v.glsl */,
-				5B91261F1E02758B00D3F227 /* sun_f.glsl */,
 				5B9126201E027DD900D3F227 /* h_blur_v.glsl */,
 				5B9126211E027DE300D3F227 /* h_blur_f.glsl */,
 				5B9126221E027DEF00D3F227 /* v_blur_v.glsl */,
@@ -127,6 +121,8 @@
 				5B36FF781E06139F0020607B /* luminance_clamp_fragment.glsl */,
 				5B36FF7A1E0613CB0020607B /* final_additive_vertex.glsl */,
 				5B36FF7B1E0613D70020607B /* final_additive_fragment.glsl */,
+				5B36FF7C1E064ECB0020607B /* screen_vertex.glsl */,
+				5B36FF7D1E064ED70020607B /* screen_fragment.glsl */,
 			);
 			name = SolarSystemExtend;
 			path = "/Users/kaybus/Documents/nandukalidindi-github/CS6533-NYU/Assignments/Assignment-4/SolarSystemExtend/SolarSystemExtend";

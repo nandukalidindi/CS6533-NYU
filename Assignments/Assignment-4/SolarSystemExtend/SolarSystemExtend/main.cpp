@@ -31,14 +31,14 @@ GLuint horizontalTrianglesProgram,
        horizontalDepthBufferTexture;
 
 GLuint luminanceClampProgram,
-luminanceClampFramebufferUniform,
-luminanceClampPositionBuffer,
-luminanceClampPositionAttribute,
-luminanceClampUVBuffer,
-luminanceClampTexCoordAttribute,
-luminanceClampFrameBuffer,
-luminanceClampFrameBufferTexture,
-luminanceClampDepthBufferTexture;
+       luminanceClampFramebufferUniform,
+       luminanceClampPositionBuffer,
+       luminanceClampPositionAttribute,
+       luminanceClampUVBuffer,
+       luminanceClampTexCoordAttribute,
+       luminanceClampFrameBuffer,
+       luminanceClampFrameBufferTexture,
+       luminanceClampDepthBufferTexture;
 
 GLuint finalAdditiveProgram,
 finalAdditiveFramebufferUniform,
@@ -49,17 +49,6 @@ finalAdditiveTexCoordAttribute,
 finalAdditiveFrameBuffer,
 finalAdditiveFrameBufferTexture,
 finalAdditiveDepthBufferTexture;
-
-//GLuint screenTrianglesProgram,
-//       screenFramebufferUniform,
-//       screenTrianglesPositionBuffer,
-//       screenTrianglesPositionAttribute,
-//       screenTrianglesUVBuffer,
-//       screenTrianglesTexCoordAttribute,
-//       screenFrameBuffer,
-//       screenFrameBufferTexture,
-//       screenDepthBufferTexture;
-
 
 GLuint environmentMapProgram;
 GLuint cubeMap;
@@ -282,7 +271,7 @@ struct Entity {
         glUniformMatrix4fv(normalMatrixUniformFromVertexShader, 1, GL_FALSE, glmatrix);
         
         Matrix4 projectionMatrix;
-        projectionMatrix = projectionMatrix.makeProjection(45, (1280.0/800.0), -0.5, -1000.0);
+        projectionMatrix = projectionMatrix.makeProjection(45, (wHeight/800.0), -0.5, -1000.0);
         GLfloat glmatrixProjection[16];
         projectionMatrix.writeToColumnMajorMatrix(glmatrixProjection);
         glUniformMatrix4fv(projectionMatrixUniformFromVertexShader, 1, GL_FALSE, glmatrixProjection);
@@ -407,75 +396,50 @@ void loadObjFile(const std::string &fileName, std::vector<VertexPN> &outVertices
 
 void display(void) {
     
-//    glGenFramebuffers(1, &horizontalFrameBuffer);
-//    glBindFramebuffer(GL_FRAMEBUFFER, horizontalFrameBuffer);
-//    
-//    glGenTextures(1, &horizontalFrameBufferTexture);
-//    glBindTexture(GL_TEXTURE_2D, horizontalFrameBufferTexture);
-//    glTexImage2D(GL_TEXTURE_2D, 0,GL_RGB, 1280, 720, 0, GL_RGB,
-//                 GL_UNSIGNED_BYTE, NULL);
-//    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
-//    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
-//    
-//    
-//    glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0,
-//                           GL_TEXTURE_2D, horizontalFrameBufferTexture, 0);
-//    
-//    
-//    glGenTextures(1, &horizontalDepthBufferTexture);
-//    glBindTexture(GL_TEXTURE_2D, horizontalDepthBufferTexture);
-//    glTexImage2D(GL_TEXTURE_2D, 0,GL_DEPTH_COMPONENT, 1280, 720, 0,GL_DEPTH_COMPONENT,
-//                 GL_UNSIGNED_BYTE, NULL);
-//    
-//    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
-//    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
-//    
-//    glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH_COMPONENT24, 1280, 720);
-//    glFramebufferTexture2D(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_TEXTURE_2D,
-//                           horizontalDepthBufferTexture, 0);
-//    
-//    glBindFramebuffer(GL_FRAMEBUFFER, 0);
+    //***************************************************************************************************************
+    //***************************************************************************************************************
+    //******************************************** BIND FRAMEBUFFER A ***********************************************
+    //***************************************************************************************************************
+    //***************************************************************************************************************
     
-    glGenFramebuffers(1, &verticalFrameBuffer);
-    glBindFramebuffer(GL_FRAMEBUFFER, verticalFrameBuffer);
+    glGenFramebuffers(1, &luminanceClampFrameBuffer);
+    glBindFramebuffer(GL_FRAMEBUFFER, luminanceClampFrameBuffer);
     
-//    glGenTextures(1, &verticalFrameBufferTexture);
-//    glBindTexture(GL_TEXTURE_2D, verticalFrameBufferTexture);
-//    glTexImage2D(GL_TEXTURE_2D, 0,GL_RGB, 1280, 720, 0, GL_RGB,
-//                 GL_UNSIGNED_BYTE, NULL);
+    glGenTextures(1, &luminanceClampFrameBufferTexture);
+    glBindTexture(GL_TEXTURE_2D, luminanceClampFrameBufferTexture);
     
-    glGenTextures(1, &verticalFrameBufferTexture);
-    glBindTexture(GL_TEXTURE_2D, verticalFrameBufferTexture);
-    glTexImage2D(GL_TEXTURE_2D, 0,GL_RGBA16F_ARB, 1280.0, 720.0, 0, GL_RGB, GL_FLOAT, NULL);
+    glTexImage2D(GL_TEXTURE_2D, 0,GL_RGBA16F_ARB, wHeight, wWidth, 0, GL_RGB, GL_FLOAT, NULL);
     
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
     
     
     glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0,
-                           GL_TEXTURE_2D, verticalFrameBufferTexture, 0);
+                           GL_TEXTURE_2D, luminanceClampFrameBufferTexture, 0);
     
     
-    glGenTextures(1, &verticalDepthBufferTexture);
-    glBindTexture(GL_TEXTURE_2D, verticalDepthBufferTexture);
-    glTexImage2D(GL_TEXTURE_2D, 0,GL_DEPTH_COMPONENT, 1280, 720, 0,GL_DEPTH_COMPONENT,
+    glGenTextures(1, &luminanceClampDepthBufferTexture);
+    glBindTexture(GL_TEXTURE_2D, luminanceClampDepthBufferTexture);
+    glTexImage2D(GL_TEXTURE_2D, 0,GL_DEPTH_COMPONENT, wHeight, wWidth, 0,GL_DEPTH_COMPONENT,
                  GL_UNSIGNED_BYTE, NULL);
     
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
     
-    glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH_COMPONENT24, 1280, 720);
+    glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH_COMPONENT24, wHeight, wWidth);
     glFramebufferTexture2D(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_TEXTURE_2D,
-                           verticalDepthBufferTexture, 0);
+                           luminanceClampDepthBufferTexture, 0);
     
     glBindFramebuffer(GL_FRAMEBUFFER, 0);
     
-    glBindFramebuffer(GL_FRAMEBUFFER, verticalFrameBuffer);
-
-    
-//    glBindFramebuffer(GL_FRAMEBUFFER, horizontalFrameBuffer);
-    glViewport(0, 0, 1280, 720);
+    glBindFramebuffer(GL_FRAMEBUFFER, luminanceClampFrameBuffer);
+    glViewport(0, 0, wHeight, wWidth);
     glClear(GL_COLOR_BUFFER_BIT|GL_DEPTH_BUFFER_BIT);
+    //***************************************************************************************************************
+    //***************************************************************************************************************
+    //******************************************** SOLAR SYSTEM SCENE ***********************************************
+    //***************************************************************************************************************
+    //***************************************************************************************************************
     
     glEnable(GL_BLEND);
     glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
@@ -572,6 +536,11 @@ void display(void) {
     glDisableVertexAttribArray(binormalAttributeFromVertexShader);
     glDisableVertexAttribArray(tangentAttributeFromVertexShader);
     
+    //***************************************************************************************************************
+    //***************************************************************************************************************
+    //*********************************************** UNIVERSE SKYBOX ***********************************************
+    //***************************************************************************************************************
+    //***************************************************************************************************************
     glUseProgram(environmentMapProgram);
     
 //    glDisable(GL_CULL_FACE);
@@ -590,12 +559,7 @@ void display(void) {
     glActiveTexture(GL_TEXTURE3);
     glBindTexture(GL_TEXTURE_CUBE_MAP, cubeMap);
     
-    
     Matrix4 environmentMatrix = Matrix4::makeScale(Cvec3(50.0, 50.0, 50.0));
-//                                quatToMatrix(Quat::makeXRotation(timeSinceStart/100.0f));
-//    quatToMatrix(Quat::makeYRotation(timeSinceStart/100.0f));
-//                                quatToMatrix(Quat::makeZRotation(timeSinceStart/10.0f)) ;
-    
     Matrix4 modelViewMatrix = inv(eyeMatrix) * environmentMatrix;
     
     GLfloat glmatrix[16];
@@ -607,7 +571,7 @@ void display(void) {
     glUniformMatrix4fv(normalMatrixUniformFromVertexShaderE, 1, GL_FALSE, glmatrix);
     
     Matrix4 projectionMatrix;
-    projectionMatrix = projectionMatrix.makeProjection(45, (1280.0/800.0), -0.5, -1000.0);
+    projectionMatrix = projectionMatrix.makeProjection(45, (wHeight/800.0), -0.5, -1000.0);
     GLfloat glmatrixProjection[16];
     projectionMatrix.writeToColumnMajorMatrix(glmatrixProjection);
     glUniformMatrix4fv(projectionMatrixUniformFromVertexShaderE, 1, GL_FALSE, glmatrixProjection);
@@ -617,61 +581,176 @@ void display(void) {
     glDisableVertexAttribArray(postionAttributeFromVertexShaderE);
     glDisableVertexAttribArray(normalAttributeFromVertexShaderE);
     
-//    glGenFramebuffers(1, &verticalFrameBuffer);
-//    glBindFramebuffer(GL_FRAMEBUFFER, verticalFrameBuffer);
-//    
-//    glGenTextures(1, &verticalFrameBufferTexture);
-//    glBindTexture(GL_TEXTURE_2D, verticalFrameBufferTexture);
-//    glTexImage2D(GL_TEXTURE_2D, 0,GL_RGB, 1280, 720, 0, GL_RGB,
-//                 GL_UNSIGNED_BYTE, NULL);
-//    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
-//    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
-//    
-//    
-//    glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0,
-//                           GL_TEXTURE_2D, verticalFrameBufferTexture, 0);
-//    
-//    
-//    glGenTextures(1, &verticalDepthBufferTexture);
-//    glBindTexture(GL_TEXTURE_2D, verticalDepthBufferTexture);
-//    glTexImage2D(GL_TEXTURE_2D, 0,GL_DEPTH_COMPONENT, 1280, 720, 0,GL_DEPTH_COMPONENT,
-//                 GL_UNSIGNED_BYTE, NULL);
-//    
-//    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
-//    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
-//    
-//    glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH_COMPONENT24, 1280, 720);
-//    glFramebufferTexture2D(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_TEXTURE_2D,
-//                           verticalDepthBufferTexture, 0);
-//    
-//    glBindFramebuffer(GL_FRAMEBUFFER, 0);
-//    
-//    glBindFramebuffer(GL_FRAMEBUFFER, verticalFrameBuffer);
-//    
-//    glUseProgram(horizontalTrianglesProgram);
-//    
-//    glUniform1i(horizontalFramebufferUniform, 0);
-//    glActiveTexture(GL_TEXTURE0);
-//    glBindTexture(GL_TEXTURE_2D, horizontalFrameBufferTexture);
-//    
-//    glBindBuffer(GL_ARRAY_BUFFER, horizontalTrianglesPositionBuffer);
-//    glVertexAttribPointer(horizontalTrianglesPositionAttribute, 2, GL_FLOAT, GL_FALSE, 0, 0);
-//    glEnableVertexAttribArray(horizontalTrianglesPositionAttribute);
-//    
-//    glBindBuffer(GL_ARRAY_BUFFER, horizontalTrianglesUVBuffer);
-//    glVertexAttribPointer(horizontalTrianglesTexCoordAttribute, 2, GL_FLOAT, GL_FALSE, 0, 0);
-//    glEnableVertexAttribArray(horizontalTrianglesTexCoordAttribute);
-//    
-//    glDrawArrays(GL_TRIANGLES, 0, 6);
-//    
-//    glDisableVertexAttribArray(horizontalTrianglesPositionAttribute);
-//    glDisableVertexAttribArray(horizontalTrianglesTexCoordAttribute);
-//
+    //***************************************************************************************************************
+    //***************************************************************************************************************
+    //******************************************** BIND FRAMEBUFFER B ***********************************************
+    //***************************************************************************************************************
+    //***************************************************************************************************************
+    glGenFramebuffers(1, &horizontalFrameBuffer);
+    glBindFramebuffer(GL_FRAMEBUFFER, horizontalFrameBuffer);
+    
+    glGenTextures(1, &horizontalFrameBufferTexture);
+    glBindTexture(GL_TEXTURE_2D, horizontalFrameBufferTexture);
+    glTexImage2D(GL_TEXTURE_2D, 0,GL_RGB, wHeight, wWidth, 0, GL_RGB,
+                 GL_UNSIGNED_BYTE, NULL);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+    
+    
+    glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0,
+                           GL_TEXTURE_2D, horizontalFrameBufferTexture, 0);
+    
+    
+    glGenTextures(1, &horizontalDepthBufferTexture);
+    glBindTexture(GL_TEXTURE_2D, horizontalDepthBufferTexture);
+    glTexImage2D(GL_TEXTURE_2D, 0,GL_DEPTH_COMPONENT, wHeight, wWidth, 0,GL_DEPTH_COMPONENT,
+                 GL_UNSIGNED_BYTE, NULL);
+    
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+    
+    glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH_COMPONENT24, wHeight, wWidth);
+    glFramebufferTexture2D(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_TEXTURE_2D,
+                           horizontalDepthBufferTexture, 0);
     
     glBindFramebuffer(GL_FRAMEBUFFER, 0);
-    glViewport(0, 0, 1280, 720);
-    glClear(GL_COLOR_BUFFER_BIT|GL_DEPTH_BUFFER_BIT);
     
+    glBindFramebuffer(GL_FRAMEBUFFER, horizontalFrameBuffer);
+    
+    
+    //***************************************************************************************************************
+    //***************************************************************************************************************
+    //******************************************** RENDER A USING CLAMP *********************************************
+    //***************************************************************************************************************
+    //***************************************************************************************************************
+    glUseProgram(luminanceClampProgram);
+    
+    glUniform1i(luminanceClampFramebufferUniform, 0);
+    glActiveTexture(GL_TEXTURE0);
+    glBindTexture(GL_TEXTURE_2D, luminanceClampFrameBufferTexture);
+    
+    glBindBuffer(GL_ARRAY_BUFFER, luminanceClampPositionBuffer);
+    glVertexAttribPointer(luminanceClampPositionAttribute, 2, GL_FLOAT, GL_FALSE, 0, 0);
+    glEnableVertexAttribArray(luminanceClampPositionAttribute);
+    
+    glBindBuffer(GL_ARRAY_BUFFER, luminanceClampUVBuffer);
+    glVertexAttribPointer(luminanceClampTexCoordAttribute, 2, GL_FLOAT, GL_FALSE, 0, 0);
+    glEnableVertexAttribArray(luminanceClampTexCoordAttribute);
+    
+    glDrawArrays(GL_TRIANGLES, 0, 6);
+    
+    glDisableVertexAttribArray(luminanceClampPositionAttribute);
+    glDisableVertexAttribArray(luminanceClampTexCoordAttribute);
+    
+    
+    //***************************************************************************************************************
+    //***************************************************************************************************************
+    //******************************************** BIND FRAMEBUFFER C ***********************************************
+    //***************************************************************************************************************
+    //***************************************************************************************************************
+    glGenFramebuffers(1, &verticalFrameBuffer);
+    glBindFramebuffer(GL_FRAMEBUFFER, verticalFrameBuffer);
+    
+    glGenTextures(1, &verticalFrameBufferTexture);
+    glBindTexture(GL_TEXTURE_2D, verticalFrameBufferTexture);
+    glTexImage2D(GL_TEXTURE_2D, 0,GL_RGB, wHeight, wWidth, 0, GL_RGB,
+                 GL_UNSIGNED_BYTE, NULL);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+    
+    
+    glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0,
+                           GL_TEXTURE_2D, verticalFrameBufferTexture, 0);
+    
+    
+    glGenTextures(1, &verticalDepthBufferTexture);
+    glBindTexture(GL_TEXTURE_2D, verticalDepthBufferTexture);
+    glTexImage2D(GL_TEXTURE_2D, 0,GL_DEPTH_COMPONENT, wHeight, wWidth, 0,GL_DEPTH_COMPONENT,
+                 GL_UNSIGNED_BYTE, NULL);
+    
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+    
+    glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH_COMPONENT24, wHeight, wWidth);
+    glFramebufferTexture2D(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_TEXTURE_2D,
+                           verticalDepthBufferTexture, 0);
+    
+    glBindFramebuffer(GL_FRAMEBUFFER, 0);
+    
+    glBindFramebuffer(GL_FRAMEBUFFER, verticalFrameBuffer);
+    
+    
+    //***************************************************************************************************************
+    //***************************************************************************************************************
+    //******************************************** RENDER B USING HBLUR *********************************************
+    //***************************************************************************************************************
+    //***************************************************************************************************************
+//    glBindFramebuffer(GL_FRAMEBUFFER, 0);
+//    glViewport(0, 0, wHeight, wWidth);
+//    glClear(GL_COLOR_BUFFER_BIT|GL_DEPTH_BUFFER_BIT);
+    
+    glUseProgram(horizontalTrianglesProgram);
+    
+    glUniform1i(horizontalFramebufferUniform, 0);
+    glActiveTexture(GL_TEXTURE0);
+    glBindTexture(GL_TEXTURE_2D, horizontalFrameBufferTexture);
+    
+    glBindBuffer(GL_ARRAY_BUFFER, horizontalTrianglesPositionBuffer);
+    glVertexAttribPointer(horizontalTrianglesPositionAttribute, 2, GL_FLOAT, GL_FALSE, 0, 0);
+    glEnableVertexAttribArray(horizontalTrianglesPositionAttribute);
+    
+    glBindBuffer(GL_ARRAY_BUFFER, horizontalTrianglesUVBuffer);
+    glVertexAttribPointer(horizontalTrianglesTexCoordAttribute, 2, GL_FLOAT, GL_FALSE, 0, 0);
+    glEnableVertexAttribArray(horizontalTrianglesTexCoordAttribute);
+    
+    glDrawArrays(GL_TRIANGLES, 0, 6);
+    
+    glDisableVertexAttribArray(horizontalTrianglesPositionAttribute);
+    glDisableVertexAttribArray(horizontalTrianglesTexCoordAttribute);
+
+    
+    //***************************************************************************************************************
+    //***************************************************************************************************************
+    //******************************************** BIND FRAMEBUFFER B ***********************************************
+    //***************************************************************************************************************
+    //***************************************************************************************************************
+    glGenFramebuffers(1, &horizontalFrameBuffer);
+    glBindFramebuffer(GL_FRAMEBUFFER, horizontalFrameBuffer);
+    
+    glGenTextures(1, &horizontalFrameBufferTexture);
+    glBindTexture(GL_TEXTURE_2D, horizontalFrameBufferTexture);
+    glTexImage2D(GL_TEXTURE_2D, 0,GL_RGB, wHeight, wWidth, 0, GL_RGB,
+                 GL_UNSIGNED_BYTE, NULL);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+    
+    
+    glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0,
+                           GL_TEXTURE_2D, horizontalFrameBufferTexture, 0);
+    
+    
+    glGenTextures(1, &horizontalDepthBufferTexture);
+    glBindTexture(GL_TEXTURE_2D, horizontalDepthBufferTexture);
+    glTexImage2D(GL_TEXTURE_2D, 0,GL_DEPTH_COMPONENT, wHeight, wWidth, 0,GL_DEPTH_COMPONENT,
+                 GL_UNSIGNED_BYTE, NULL);
+    
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+    
+    glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH_COMPONENT24, wHeight, wWidth);
+    glFramebufferTexture2D(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_TEXTURE_2D,
+                           horizontalDepthBufferTexture, 0);
+    
+    glBindFramebuffer(GL_FRAMEBUFFER, 0);
+    
+    glBindFramebuffer(GL_FRAMEBUFFER, horizontalFrameBuffer);
+    
+    
+    //***************************************************************************************************************
+    //***************************************************************************************************************
+    //******************************************** RENDER C USING VBLUR *********************************************
+    //***************************************************************************************************************
+    //***************************************************************************************************************
     glUseProgram(verticalTrianglesProgram);
     
     glUniform1i(verticalFramebufferUniform, 0);
@@ -689,7 +768,44 @@ void display(void) {
     glDrawArrays(GL_TRIANGLES, 0, 6);
     
     glDisableVertexAttribArray(verticalTrianglesPositionAttribute);
-    glDisableVertexAttribArray(verticalTrianglesTexCoordAttribute);
+    glDisableVertexAttribArray(verticalTrianglesTexCoordAttribute);    
+    
+    //***************************************************************************************************************
+    //***************************************************************************************************************
+    //************************************ RENDER A AND B USING ADDITIVE ********************************************
+    //***************************************************************************************************************
+    //***************************************************************************************************************
+    glBindFramebuffer(GL_FRAMEBUFFER, 0);
+    glViewport(0, 0, wHeight, wWidth);
+    glClear(GL_COLOR_BUFFER_BIT|GL_DEPTH_BUFFER_BIT);
+    
+    glUseProgram(finalAdditiveProgram);
+    
+    glUniform1i(finalAdditiveFramebufferUniform, 0);
+    glActiveTexture(GL_TEXTURE0);
+    glBindTexture(GL_TEXTURE_2D, luminanceClampFrameBufferTexture);
+    
+    glUniform1i(finalAdditiveFramebufferUniform, 1);
+    glActiveTexture(GL_TEXTURE1);
+    glBindTexture(GL_TEXTURE_2D, horizontalFrameBufferTexture);
+    
+    glBindBuffer(GL_ARRAY_BUFFER, finalAdditivePositionBuffer);
+    glVertexAttribPointer(finalAdditivePositionAttribute, 2, GL_FLOAT, GL_FALSE, 0, 0);
+    glEnableVertexAttribArray(finalAdditivePositionAttribute);
+    
+    glBindBuffer(GL_ARRAY_BUFFER, finalAdditiveUVBuffer);
+    glVertexAttribPointer(finalAdditiveTexCoordAttribute, 2, GL_FLOAT, GL_FALSE, 0, 0);
+    glEnableVertexAttribArray(finalAdditiveTexCoordAttribute);
+    
+    glDrawArrays(GL_TRIANGLES, 0, 6);
+    glDisableVertexAttribArray(finalAdditivePositionAttribute);
+    glDisableVertexAttribArray(finalAdditiveTexCoordAttribute);
+
+    //***************************************************************************************************************
+    //***************************************************************************************************************
+    //******************************************** SOLAR SYSTEM SCENE ***********************************************
+    //***************************************************************************************************************
+    //***************************************************************************************************************
     
     glutSwapBuffers();
     }
@@ -821,45 +937,12 @@ void init() {
     cubemapFiles.push_back("/Users/kaybus/Documents/nandukalidindi-github/CS6533-NYU/Assignments/Assignment-4/Cubemaps/nebulaDN180.png");
     cubemapFiles.push_back("/Users/kaybus/Documents/nandukalidindi-github/CS6533-NYU/Assignments/Assignment-4/Cubemaps/nebulaBK.png");
     cubemapFiles.push_back("/Users/kaybus/Documents/nandukalidindi-github/CS6533-NYU/Assignments/Assignment-4/Cubemaps/nebulaFT.png");
-    
-    
     cubeMap = loadGLCubemap(cubemapFiles);
     environmentTexBinder.environmentMap = cubeMap;
-    
-    horizontalTrianglesProgram = glCreateProgram();
-    readAndCompileShader(horizontalTrianglesProgram, "/Users/kaybus/Documents/nandukalidindi-github/CS6533-NYU/Assignments/Assignment-4/SolarSystemExtend/SolarSystemExtend/invert_color_vertex.glsl", "/Users/kaybus/Documents/nandukalidindi-github/CS6533-NYU/Assignments/Assignment-4/SolarSystemExtend/SolarSystemExtend/invert_color_fragment.glsl");
-    
-    horizontalTrianglesPositionAttribute = glGetAttribLocation(horizontalTrianglesProgram, "position");
-    horizontalTrianglesTexCoordAttribute = glGetAttribLocation(horizontalTrianglesProgram, "texCoord");
-    horizontalFramebufferUniform = glGetUniformLocation(horizontalTrianglesProgram, "screenFramebuffer");
-    
-    glGenBuffers(1, &horizontalTrianglesUVBuffer);
-    glBindBuffer(GL_ARRAY_BUFFER, horizontalTrianglesUVBuffer);
-    GLfloat horizontalTriangleUVs[] = {
-        1.0f, 1.0f,
-        1.0f, 0.0f,
-        0.0f, 0.0,
-        0.0f, 0.0f,
-        0.0f, 1.0f,
-        1.0f, 1.0f
-    };
-    glBufferData(GL_ARRAY_BUFFER, sizeof(horizontalTriangleUVs), horizontalTriangleUVs, GL_STATIC_DRAW);
-    
-    glGenBuffers(1, &horizontalTrianglesPositionBuffer);
-    glBindBuffer(GL_ARRAY_BUFFER, horizontalTrianglesPositionBuffer);
-    GLfloat horizontalTrianglePositions[] = {
-        1.0f, 1.0f,
-        1.0f, -1.0f,
-        -1.0f, -1.0f,
-        -1.0f, -1.0f,
-        -1.0f, 1.0f,
-        1.0f, 1.0f
-    };
-    glBufferData(GL_ARRAY_BUFFER, sizeof(horizontalTrianglePositions), horizontalTrianglePositions, GL_STATIC_DRAW);
-    
+
     
     luminanceClampProgram = glCreateProgram();
-    readAndCompileShader(luminanceClampProgram, "/Users/kaybus/Documents/nandukalidindi-github/CS6533-NYU/Assignments/Assignment-4/SolarSystemExtend/SolarSystemExtend/invert_color_vertex.glsl", "/Users/kaybus/Documents/nandukalidindi-github/CS6533-NYU/Assignments/Assignment-4/SolarSystemExtend/SolarSystemExtend/invert_color_fragment.glsl");
+    readAndCompileShader(luminanceClampProgram, "/Users/kaybus/Documents/nandukalidindi-github/CS6533-NYU/Assignments/Assignment-4/SolarSystemExtend/SolarSystemExtend/luminance_clamp_vertex.glsl", "/Users/kaybus/Documents/nandukalidindi-github/CS6533-NYU/Assignments/Assignment-4/SolarSystemExtend/SolarSystemExtend/luminance_clamp_fragment.glsl");
     
     luminanceClampPositionAttribute = glGetAttribLocation(luminanceClampProgram, "position");
     luminanceClampTexCoordAttribute = glGetAttribLocation(luminanceClampProgram, "texCoord");
@@ -890,8 +973,72 @@ void init() {
     glBufferData(GL_ARRAY_BUFFER, sizeof(luminanceClampPositions), luminanceClampPositions, GL_STATIC_DRAW);
     
     
+    horizontalTrianglesProgram = glCreateProgram();
+    readAndCompileShader(horizontalTrianglesProgram, "/Users/kaybus/Documents/nandukalidindi-github/CS6533-NYU/Assignments/Assignment-4/SolarSystemExtend/SolarSystemExtend/h_blur_v.glsl", "/Users/kaybus/Documents/nandukalidindi-github/CS6533-NYU/Assignments/Assignment-4/SolarSystemExtend/SolarSystemExtend/h_blur_f.glsl");
+    
+    horizontalTrianglesPositionAttribute = glGetAttribLocation(horizontalTrianglesProgram, "position");
+    horizontalTrianglesTexCoordAttribute = glGetAttribLocation(horizontalTrianglesProgram, "texCoord");
+    horizontalFramebufferUniform = glGetUniformLocation(horizontalTrianglesProgram, "screenFramebuffer");
+    
+    glGenBuffers(1, &horizontalTrianglesUVBuffer);
+    glBindBuffer(GL_ARRAY_BUFFER, horizontalTrianglesUVBuffer);
+    GLfloat horizontalTriangleUVs[] = {
+        1.0f, 1.0f,
+        1.0f, 0.0f,
+        0.0f, 0.0,
+        0.0f, 0.0f,
+        0.0f, 1.0f,
+        1.0f, 1.0f
+    };
+    glBufferData(GL_ARRAY_BUFFER, sizeof(horizontalTriangleUVs), horizontalTriangleUVs, GL_STATIC_DRAW);
+    
+    glGenBuffers(1, &horizontalTrianglesPositionBuffer);
+    glBindBuffer(GL_ARRAY_BUFFER, horizontalTrianglesPositionBuffer);
+    GLfloat horizontalTrianglePositions[] = {
+        1.0f, 1.0f,
+        1.0f, -1.0f,
+        -1.0f, -1.0f,
+        -1.0f, -1.0f,
+        -1.0f, 1.0f,
+        1.0f, 1.0f
+    };
+    glBufferData(GL_ARRAY_BUFFER, sizeof(horizontalTrianglePositions), horizontalTrianglePositions, GL_STATIC_DRAW);
+    
+    verticalTrianglesProgram = glCreateProgram();
+    
+    readAndCompileShader(verticalTrianglesProgram, "/Users/kaybus/Documents/nandukalidindi-github/CS6533-NYU/Assignments/Assignment-4/SolarSystemExtend/SolarSystemExtend/v_blur_v.glsl", "/Users/kaybus/Documents/nandukalidindi-github/CS6533-NYU/Assignments/Assignment-4/SolarSystemExtend/SolarSystemExtend/v_blur_f.glsl");
+    
+    verticalTrianglesPositionAttribute = glGetAttribLocation(verticalTrianglesProgram, "position");
+    verticalTrianglesTexCoordAttribute = glGetAttribLocation(verticalTrianglesProgram, "texCoord");
+    verticalFramebufferUniform = glGetUniformLocation(verticalTrianglesProgram, "screenFramebuffer");
+    
+    glGenBuffers(1, &verticalTrianglesUVBuffer);
+    glBindBuffer(GL_ARRAY_BUFFER, verticalTrianglesUVBuffer);
+    GLfloat verticalTriangleUVs[] = {
+        1.0f, 1.0f,
+        1.0f, 0.0f,
+        0.0f, 0.0,
+        0.0f, 0.0f,
+        0.0f, 1.0f,
+        1.0f, 1.0f
+    };
+    glBufferData(GL_ARRAY_BUFFER, sizeof(verticalTriangleUVs), verticalTriangleUVs, GL_STATIC_DRAW);
+    
+    glGenBuffers(1, &verticalTrianglesPositionBuffer);
+    glBindBuffer(GL_ARRAY_BUFFER, verticalTrianglesPositionBuffer);
+    GLfloat verticalTrianglePositions[] = {
+        1.0f, 1.0f,
+        1.0f, -1.0f,
+        -1.0f, -1.0f,
+        -1.0f, -1.0f,
+        -1.0f, 1.0f,
+        1.0f, 1.0f
+    };
+    glBufferData(GL_ARRAY_BUFFER, sizeof(verticalTrianglePositions), verticalTrianglePositions, GL_STATIC_DRAW);
+    
+    
     finalAdditiveProgram = glCreateProgram();
-    readAndCompileShader(finalAdditiveProgram, "/Users/kaybus/Documents/nandukalidindi-github/CS6533-NYU/Assignments/Assignment-4/SolarSystemExtend/SolarSystemExtend/invert_color_vertex.glsl", "/Users/kaybus/Documents/nandukalidindi-github/CS6533-NYU/Assignments/Assignment-4/SolarSystemExtend/SolarSystemExtend/invert_color_fragment.glsl");
+    readAndCompileShader(finalAdditiveProgram, "/Users/kaybus/Documents/nandukalidindi-github/CS6533-NYU/Assignments/Assignment-4/SolarSystemExtend/SolarSystemExtend/final_additive_vertex.glsl", "/Users/kaybus/Documents/nandukalidindi-github/CS6533-NYU/Assignments/Assignment-4/SolarSystemExtend/SolarSystemExtend/final_additive_fragment.glsl");
     
     finalAdditivePositionAttribute = glGetAttribLocation(finalAdditiveProgram, "position");
     finalAdditiveTexCoordAttribute = glGetAttribLocation(finalAdditiveProgram, "texCoord");
@@ -920,40 +1067,6 @@ void init() {
         1.0f, 1.0f
     };
     glBufferData(GL_ARRAY_BUFFER, sizeof(finalAdditivePositions), finalAdditivePositions, GL_STATIC_DRAW);
-    
-    
-    verticalTrianglesProgram = glCreateProgram();
-
-    readAndCompileShader(verticalTrianglesProgram, "/Users/kaybus/Documents/nandukalidindi-github/CS6533-NYU/Assignments/Assignment-4/SolarSystemExtend/SolarSystemExtend/hdr_vertex.glsl", "/Users/kaybus/Documents/nandukalidindi-github/CS6533-NYU/Assignments/Assignment-4/SolarSystemExtend/SolarSystemExtend/hdr_fragment.glsl");
-        
-    verticalTrianglesPositionAttribute = glGetAttribLocation(verticalTrianglesProgram, "position");
-    verticalTrianglesTexCoordAttribute = glGetAttribLocation(verticalTrianglesProgram, "texCoord");
-    verticalFramebufferUniform = glGetUniformLocation(verticalTrianglesProgram, "screenFramebuffer");
-    
-    glGenBuffers(1, &verticalTrianglesUVBuffer);
-    glBindBuffer(GL_ARRAY_BUFFER, verticalTrianglesUVBuffer);
-    GLfloat verticalTriangleUVs[] = {
-        1.0f, 1.0f,
-        1.0f, 0.0f,
-        0.0f, 0.0,
-        0.0f, 0.0f,
-        0.0f, 1.0f,
-        1.0f, 1.0f
-    };
-    glBufferData(GL_ARRAY_BUFFER, sizeof(verticalTriangleUVs), verticalTriangleUVs, GL_STATIC_DRAW);
-    
-    glGenBuffers(1, &verticalTrianglesPositionBuffer);
-    glBindBuffer(GL_ARRAY_BUFFER, verticalTrianglesPositionBuffer);
-    GLfloat verticalTrianglePositions[] = {
-        1.0f, 1.0f,
-        1.0f, -1.0f,
-        -1.0f, -1.0f,
-        -1.0f, -1.0f,
-        -1.0f, 1.0f,
-        1.0f, 1.0f
-    };
-    glBufferData(GL_ARRAY_BUFFER, sizeof(verticalTrianglePositions), verticalTrianglePositions, GL_STATIC_DRAW);
-
 }
 
 void reshape(int w, int h) {
