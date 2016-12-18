@@ -41,14 +41,14 @@ GLuint luminanceClampProgram,
        luminanceClampDepthBufferTexture;
 
 GLuint finalAdditiveProgram,
-finalAdditiveFramebufferUniform,
-finalAdditivePositionBuffer,
-finalAdditivePositionAttribute,
-finalAdditiveUVBuffer,
-finalAdditiveTexCoordAttribute,
-finalAdditiveFrameBuffer,
-finalAdditiveFrameBufferTexture,
-finalAdditiveDepthBufferTexture;
+       finalAdditiveFramebufferUniform,
+       finalAdditivePositionBuffer,
+       finalAdditivePositionAttribute,
+       finalAdditiveUVBuffer,
+       finalAdditiveTexCoordAttribute,
+       finalAdditiveFrameBuffer,
+       finalAdditiveFrameBufferTexture,
+       finalAdditiveDepthBufferTexture;
 
 GLuint environmentMapProgram;
 GLuint cubeMap;
