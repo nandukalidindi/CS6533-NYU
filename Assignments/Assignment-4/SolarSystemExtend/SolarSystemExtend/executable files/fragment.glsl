@@ -8,6 +8,17 @@ uniform sampler2D normalTexture;
 
 varying mat3 varyingTBNMatrix;
 
+uniform mat4 normalMatrix;
+
+uniform samplerCube environmentMap;
+
+mat3 linearTranspose(mat4 m4) {
+    return mat3(
+                m4[0][0], m4[1][0], m4[2][0],
+                m4[0][1], m4[1][1], m4[2][1],
+                m4[0][2], m4[1][2], m4[2][2]);
+}
+
 struct Light {
     vec3 lightPosition;
     vec3 lightColor;
@@ -19,6 +30,7 @@ uniform Light lights[5];
 float attenuate(float dist, float a, float b) {
     return 1.0 / (1.0 + a*dist + b*dist*dist);
 }
+
 
 
 void main() {

@@ -648,7 +648,7 @@ void init() {
     glReadBuffer(GL_BACK);
     
     program = glCreateProgram();
-    readAndCompileShader(program, "/Users/kaybus/Documents/nandukalidindi-github/CS6533-NYU/Assignments/Assignment-4/SolarSystemExtend/SolarSystemExtend/vertex.glsl", "/Users/kaybus/Documents/nandukalidindi-github/CS6533-NYU/Assignments/Assignment-4/SolarSystemExtend/SolarSystemExtend/fragment.glsl");
+    readAndCompileShader(program, "vertex.glsl", "fragment.glsl");
     
     // Shader Atrributes
     postionAttributeFromVertexShader = glGetAttribLocation(program, "position");
@@ -748,7 +748,7 @@ void init() {
     cubeNumIndices = (int)idx3.size();
     
     environmentMapProgram = glCreateProgram();
-    readAndCompileShader(environmentMapProgram, "/Users/kaybus/Documents/nandukalidindi-github/CS6533-NYU/Assignments/Assignment-4/SolarSystemExtend/SolarSystemExtend/skybox_v.glsl", "/Users/kaybus/Documents/nandukalidindi-github/CS6533-NYU/Assignments/Assignment-4/SolarSystemExtend/SolarSystemExtend/skybox_f.glsl");
+    readAndCompileShader(environmentMapProgram, "skybox_v.glsl", "skybox_f.glsl");
     
     postionAttributeFromVertexShaderE = glGetAttribLocation(environmentMapProgram, "position");
     normalAttributeFromVertexShaderE = glGetAttribLocation(environmentMapProgram, "normal");
@@ -760,30 +760,30 @@ void init() {
     projectionMatrixUniformFromVertexShaderE = glGetUniformLocation(environmentMapProgram, "projectionMatrix");
     
     std::vector<std::string> cubemapFiles;
-    cubemapFiles.push_back("/Users/kaybus/Documents/nandukalidindi-github/CS6533-NYU/Assignments/Assignment-4/Cubemaps/nebulaLF.png");
-    cubemapFiles.push_back("/Users/kaybus/Documents/nandukalidindi-github/CS6533-NYU/Assignments/Assignment-4/Cubemaps/nebulaRT.png");
-    cubemapFiles.push_back("/Users/kaybus/Documents/nandukalidindi-github/CS6533-NYU/Assignments/Assignment-4/Cubemaps/nebulaUP180.png");
-    cubemapFiles.push_back("/Users/kaybus/Documents/nandukalidindi-github/CS6533-NYU/Assignments/Assignment-4/Cubemaps/nebulaDN180.png");
-    cubemapFiles.push_back("/Users/kaybus/Documents/nandukalidindi-github/CS6533-NYU/Assignments/Assignment-4/Cubemaps/nebulaBK.png");
-    cubemapFiles.push_back("/Users/kaybus/Documents/nandukalidindi-github/CS6533-NYU/Assignments/Assignment-4/Cubemaps/nebulaFT.png");
+    cubemapFiles.push_back("nebulaLF.png");
+    cubemapFiles.push_back("nebulaRT.png");
+    cubemapFiles.push_back("nebulaUP180.png");
+    cubemapFiles.push_back("nebulaDN180.png");
+    cubemapFiles.push_back("nebulaBK.png");
+    cubemapFiles.push_back("nebulaFT.png");
     cubeMap = loadGLCubemap(cubemapFiles);
     environmentTexBinder.environmentMap = cubeMap;        
 
-    luminanceClampProgram = loadShaders("/Users/kaybus/Documents/nandukalidindi-github/CS6533-NYU/Assignments/Assignment-4/SolarSystemExtend/SolarSystemExtend/luminance_clamp_vertex.glsl", "/Users/kaybus/Documents/nandukalidindi-github/CS6533-NYU/Assignments/Assignment-4/SolarSystemExtend/SolarSystemExtend/luminance_clamp_fragment.glsl", luminanceClampPositionAttribute, luminanceClampTexCoordAttribute, luminanceClampFramebufferUniform, luminanceClampPositionBuffer, luminanceClampUVBuffer);
+    luminanceClampProgram = loadShaders("luminance_clamp_vertex.glsl", "luminance_clamp_fragment.glsl", luminanceClampPositionAttribute, luminanceClampTexCoordAttribute, luminanceClampFramebufferUniform, luminanceClampPositionBuffer, luminanceClampUVBuffer);
     
-    horizontalBlurProgram = loadShaders("/Users/kaybus/Documents/nandukalidindi-github/CS6533-NYU/Assignments/Assignment-4/SolarSystemExtend/SolarSystemExtend/h_blur_v.glsl", "/Users/kaybus/Documents/nandukalidindi-github/CS6533-NYU/Assignments/Assignment-4/SolarSystemExtend/SolarSystemExtend/h_blur_f.glsl", horizontalBlurPositionAttribute, horizontalBlurTexCoordAttribute, horizontalBlurFramebufferUniform, horizontalBlurPositionBuffer, horizontalBlurUVBuffer);
+    horizontalBlurProgram = loadShaders("h_blur_v.glsl", "h_blur_f.glsl", horizontalBlurPositionAttribute, horizontalBlurTexCoordAttribute, horizontalBlurFramebufferUniform, horizontalBlurPositionBuffer, horizontalBlurUVBuffer);
     
-    verticalBlurProgram = loadShaders("/Users/kaybus/Documents/nandukalidindi-github/CS6533-NYU/Assignments/Assignment-4/SolarSystemExtend/SolarSystemExtend/v_blur_v.glsl", "/Users/kaybus/Documents/nandukalidindi-github/CS6533-NYU/Assignments/Assignment-4/SolarSystemExtend/SolarSystemExtend/v_blur_f.glsl", verticalBlurPositionAttribute, verticalBlurTexCoordAttribute, verticalBlurFramebufferUniform, verticalBlurPositionBuffer, verticalBlurUVBuffer);
+    verticalBlurProgram = loadShaders("v_blur_v.glsl", "v_blur_f.glsl", verticalBlurPositionAttribute, verticalBlurTexCoordAttribute, verticalBlurFramebufferUniform, verticalBlurPositionBuffer, verticalBlurUVBuffer);
     
-    finalAdditiveProgram = loadShaders("/Users/kaybus/Documents/nandukalidindi-github/CS6533-NYU/Assignments/Assignment-4/SolarSystemExtend/SolarSystemExtend/final_additive_vertex.glsl", "/Users/kaybus/Documents/nandukalidindi-github/CS6533-NYU/Assignments/Assignment-4/SolarSystemExtend/SolarSystemExtend/final_additive_fragment.glsl", finalAdditivePositionAttribute, finalAdditiveTexCoordAttribute, finalAdditiveFramebufferUniform, finalAdditivePositionBuffer, finalAdditiveUVBuffer);
+    finalAdditiveProgram = loadShaders("final_additive_vertex.glsl", "final_additive_fragment.glsl", finalAdditivePositionAttribute, finalAdditiveTexCoordAttribute, finalAdditiveFramebufferUniform, finalAdditivePositionBuffer, finalAdditiveUVBuffer);
     
-    invertColorProgram = loadShaders("/Users/kaybus/Documents/nandukalidindi-github/CS6533-NYU/Assignments/Assignment-4/SolarSystemExtend/SolarSystemExtend/invert_color_vertex.glsl", "/Users/kaybus/Documents/nandukalidindi-github/CS6533-NYU/Assignments/Assignment-4/SolarSystemExtend/SolarSystemExtend/invert_color_fragment.glsl", invertColorPositionAttribute, invertColorTexCoordAttribute, invertColorFramebufferUniform, invertColorPositionBuffer, invertColorUVBuffer);
+    invertColorProgram = loadShaders("invert_color_vertex.glsl", "invert_color_fragment.glsl", invertColorPositionAttribute, invertColorTexCoordAttribute, invertColorFramebufferUniform, invertColorPositionBuffer, invertColorUVBuffer);
     
-    blackAndWhiteProgram = loadShaders("/Users/kaybus/Documents/nandukalidindi-github/CS6533-NYU/Assignments/Assignment-4/SolarSystemExtend/SolarSystemExtend/black_and_white_vertex.glsl", "/Users/kaybus/Documents/nandukalidindi-github/CS6533-NYU/Assignments/Assignment-4/SolarSystemExtend/SolarSystemExtend/black_and_white_fragment.glsl", blackAndWhitePositionAttribute, blackAndWhiteTexCoordAttribute, blackAndWhiteFramebufferUniform, blackAndWhitePositionBuffer, blackAndWhiteUVBuffer);
+    blackAndWhiteProgram = loadShaders("black_and_white_vertex.glsl", "black_and_white_fragment.glsl", blackAndWhitePositionAttribute, blackAndWhiteTexCoordAttribute, blackAndWhiteFramebufferUniform, blackAndWhitePositionBuffer, blackAndWhiteUVBuffer);
     
-    fxaaProgram = loadShaders("/Users/kaybus/Documents/nandukalidindi-github/CS6533-NYU/Assignments/Assignment-4/SolarSystemExtend/SolarSystemExtend/fxaa_vertex.glsl", "/Users/kaybus/Documents/nandukalidindi-github/CS6533-NYU/Assignments/Assignment-4/SolarSystemExtend/SolarSystemExtend/fxaa_fragment.glsl", fxaaPositionAttribute, fxaaTexCoordAttribute, fxaaFramebufferUniform, fxaaPositionBuffer, fxaaUVBuffer);
+    fxaaProgram = loadShaders("fxaa_vertex.glsl", "fxaa_fragment.glsl", fxaaPositionAttribute, fxaaTexCoordAttribute, fxaaFramebufferUniform, fxaaPositionBuffer, fxaaUVBuffer);
     
-    hdrProgram = loadShaders("/Users/kaybus/Documents/nandukalidindi-github/CS6533-NYU/Assignments/Assignment-4/SolarSystemExtend/SolarSystemExtend/hdr_vertex.glsl", "/Users/kaybus/Documents/nandukalidindi-github/CS6533-NYU/Assignments/Assignment-4/SolarSystemExtend/SolarSystemExtend/hdr_fragment.glsl", hdrPositionAttribute, hdrTexCoordAttribute, hdrFramebufferUniform, hdrPositionBuffer, hdrUVBuffer);
+    hdrProgram = loadShaders("hdr_vertex.glsl", "hdr_fragment.glsl", hdrPositionAttribute, hdrTexCoordAttribute, hdrFramebufferUniform, hdrPositionBuffer, hdrUVBuffer);
 }
 
 void reshape(int w, int h) {
