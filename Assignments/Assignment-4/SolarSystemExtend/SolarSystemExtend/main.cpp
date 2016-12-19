@@ -11,6 +11,15 @@
 
 GLuint program;
 
+bool isBlackAndWhite = false,
+isInvertColor = false,
+isBlackAndWhiteAndInvertColor = false,
+isFxaa = false,
+isGlare = false,
+isHDR = false,
+isBlur = false;
+
+
 struct postProcessor {
     GLuint program,
            framebufferUniform,
@@ -239,8 +248,6 @@ void renderSceneUsingFramebuffer(GLuint &shaderProgram, GLuint &frameBufferUnifo
 
 void renderSkybox() {
     glUseProgram(environmentMapProgram);
-    
-    
     
     glBindBuffer(GL_ARRAY_BUFFER, cubePositionBO);
     glVertexAttribPointer(postionAttributeFromVertexShaderE, 3, GL_FLOAT, GL_FALSE, sizeof(VertexPN), (void*)offsetof(VertexPN, p));
@@ -578,14 +585,22 @@ void plainScene() {
 }
 
 void display(void) {
-    plainScene();
-//    glare();
-//    blur();
-//    invertColor();
-//    blackAndWhite();
-//    blackAndWhiteWithInvertColor();
-//    hdr();
-//    fxaa();
+    if (isBlur)
+        blur();
+    else if (isGlare)
+        glare();
+    else if (isInvertColor)
+        invertColor();
+    else if (isBlackAndWhite)
+        blackAndWhite();
+    else if (isBlackAndWhiteAndInvertColor)
+        blackAndWhiteWithInvertColor();
+    else if (isFxaa)
+        fxaa();
+    else if (isHDR)
+        hdr();
+    else
+        plainScene();
 }
 
 
@@ -817,11 +832,51 @@ void mouseMove(int x, int y) {
         kVector = normalize(crossProduct);
 }
 
+void resetAllFlags() {
+    isBlackAndWhite = false,
+    isInvertColor = false,
+    isBlackAndWhiteAndInvertColor = false,
+    isFxaa = false,
+    isGlare = false,
+    isHDR = false,
+    isBlur = false;
+}
+
+void keyboard(unsigned char key, int x, int y) {
+    resetAllFlags();
+    switch(key) {
+        case '1':
+            isBlackAndWhite = true;
+            break;
+        case '2':
+            isInvertColor = true;
+            break;
+        case '3':
+            isBlackAndWhiteAndInvertColor = true;
+            break;
+        case '4':
+            isFxaa = true;
+            break;
+        case '5':
+            isGlare = true;
+            break;
+        case '6':
+            isHDR = true;
+            break;
+        case '7':
+            isBlur = true;
+            break;
+        default:
+            break;
+    }
+}
+
 int main(int argc, char **argv) {
     glutInit(&argc, argv);
     glutInitDisplayMode(GLUT_DOUBLE | GLUT_RGB | GLUT_DEPTH);
     glutInitWindowSize(wHeight, wWidth);
     glutCreateWindow("Solar System");
+    
     
     glutDisplayFunc(display);
     glutReshapeFunc(reshape);
@@ -829,6 +884,8 @@ int main(int argc, char **argv) {
     
     glutMouseFunc(mouse);
     glutMotionFunc(mouseMove);
+    
+    glutKeyboardFunc(keyboard);
     
     init();
     glutMainLoop();
