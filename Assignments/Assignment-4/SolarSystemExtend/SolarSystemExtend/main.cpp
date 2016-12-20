@@ -17,7 +17,8 @@ isBlackAndWhiteAndInvertColor = false,
 isFxaa = false,
 isGlare = false,
 isHDR = false,
-isBlur = false;
+isBlur = false,
+isBlurWithInvertColors = false;
 
 
 struct postProcessor {
@@ -575,6 +576,39 @@ void fxaa() {
     glutSwapBuffers();
 }
 
+void blurWithInvertcolors() {
+    generateFrameBuffer(horizontalBlurFrameBuffer, horizontalBlurFrameBufferTexture, horizontalBlurDepthBufferTexture, false);
+    glBindFramebuffer(GL_FRAMEBUFFER, horizontalBlurFrameBuffer);
+    glViewport(0, 0, wHeight, wWidth);
+    glClear(GL_COLOR_BUFFER_BIT|GL_DEPTH_BUFFER_BIT);
+    
+    renderScene();
+    
+    renderSkybox();
+    
+    generateFrameBuffer(verticalBlurFrameBuffer, verticalBlurFrameBufferTexture, verticalBlurDepthBufferTexture, false);
+    glBindFramebuffer(GL_FRAMEBUFFER, verticalBlurFrameBuffer);
+    
+    vector<GLuint> horizontalTexture = { horizontalBlurFrameBufferTexture };
+    renderSceneUsingFramebuffer(horizontalBlurProgram, horizontalBlurFramebufferUniform, horizontalBlurPositionBuffer, horizontalBlurUVBuffer, horizontalTexture, horizontalBlurPositionAttribute, horizontalBlurTexCoordAttribute, 1);
+    
+    generateFrameBuffer(invertColorFrameBuffer, invertColorFrameBufferTexture, invertColorDepthBufferTexture, false);
+    glBindFramebuffer(GL_FRAMEBUFFER, invertColorFrameBuffer);
+    
+    vector<GLuint> verticalTexture = { verticalBlurFrameBufferTexture };
+    renderSceneUsingFramebuffer(verticalBlurProgram, verticalBlurFramebufferUniform, verticalBlurPositionBuffer, verticalBlurUVBuffer, verticalTexture, verticalBlurPositionAttribute, verticalBlurTexCoordAttribute, 1);
+    
+    glBindFramebuffer(GL_FRAMEBUFFER, 0);
+    glViewport(0, 0, wHeight, wWidth);
+    glClear(GL_COLOR_BUFFER_BIT|GL_DEPTH_BUFFER_BIT);
+    
+    vector<GLuint> invertColorTexture = { invertColorFrameBufferTexture };
+    renderSceneUsingFramebuffer(invertColorProgram, invertColorFramebufferUniform, invertColorPositionBuffer, invertColorUVBuffer, invertColorTexture, invertColorPositionAttribute, invertColorTexCoordAttribute, 1);
+    
+    glutSwapBuffers();
+
+}
+
 void plainScene() {
     glViewport(0, 0, wHeight, wWidth);
     glClear(GL_COLOR_BUFFER_BIT|GL_DEPTH_BUFFER_BIT);
@@ -599,6 +633,8 @@ void display(void) {
         fxaa();
     else if (isHDR)
         hdr();
+    else if (isBlurWithInvertColors)
+        blurWithInvertcolors();
     else
         plainScene();
 }
@@ -840,6 +876,7 @@ void resetAllFlags() {
     isGlare = false,
     isHDR = false,
     isBlur = false;
+    isBlurWithInvertColors = false;
 }
 
 void keyboard(unsigned char key, int x, int y) {
@@ -865,6 +902,9 @@ void keyboard(unsigned char key, int x, int y) {
             break;
         case '7':
             isBlur = true;
+            break;
+        case '8':
+            isBlurWithInvertColors = true;
             break;
         default:
             break;
