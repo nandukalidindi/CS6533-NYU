@@ -895,10 +895,10 @@ void keyboard(unsigned char key, int x, int y) {
             isFxaa = true;
             break;
         case '5':
-            isGlare = true;
+            isHDR = true;
             break;
         case '6':
-            isHDR = true;
+            isGlare = true;
             break;
         case '7':
             isBlur = true;
